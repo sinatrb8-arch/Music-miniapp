@@ -28,16 +28,12 @@
         
         #obLoading { text-align: center; color: var(--accent); font-weight: 600; margin-top: 50px; font-size: 16px; }
         
-        .artist-grid { 
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;
-        }
-        .artist-card { 
-            display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative;
-        }
+        .artist-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;}
+        .artist-card { display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative;}
         .artist-img { 
             width: 90px; height: 90px; border-radius: 50%; object-fit: cover; margin-bottom: 8px;
             border: 3px solid transparent; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            background-color: var(--secondary-bg); /* Placeholder color if image takes a second */
+            background-color: var(--secondary-bg); 
         }
         .artist-card.selected .artist-img { border-color: var(--accent); opacity: 0.8; transform: scale(0.95);}
         .artist-name { font-size: 12px; font-weight: 600; text-align: center; }
@@ -82,7 +78,7 @@
         .track-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .track-artist { font-size: 13px; color: var(--hint-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         
-        /* --- Players --- */
+        /* Players */
         .mini-player { position: fixed; bottom: 8px; left: 8px; right: 8px; background: #2a2a2a; border-radius: 8px; padding: 8px 12px; display: none; align-items: center; justify-content: space-between; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.5); cursor: pointer;}
         .mini-info { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden; }
         .mini-cover { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; }
@@ -120,6 +116,9 @@
         .fp-btn-play svg { fill: #000; width: 24px; height: 24px; }
         
         .loading-text { text-align: center; color: var(--hint-color); margin-top: 20px; font-size: 14px;}
+        
+        /* دکمه ریست برای مواقع ضروری */
+        .reset-btn { display: block; width: 100%; text-align: center; color: var(--hint-color); font-size: 12px; margin-top: 30px; cursor: pointer; background: none; border: none; text-decoration: underline;}
     </style>
 </head>
 <body>
@@ -130,9 +129,7 @@
         <div class="ob-subtitle">Choose 3 or more artists you like.</div>
         
         <div id="obLoading">Loading artists from server...</div>
-        
         <div class="artist-grid" id="onboardingGrid"></div>
-        
         <div style="height: 80px;"></div> 
 
         <div class="ob-btn-container">
@@ -164,6 +161,9 @@
             <div id="loadingReleases" class="loading-text">Curating your feed...</div>
             <div class="track-list" id="releasesList"></div>
         </div>
+        
+        <!-- یک دکمه مخفی برای ریست کردن در صورت نیاز -->
+        <button class="reset-btn" onclick="resetProfile()">Reset My Profile</button>
     </div>
 
     <!-- Players (Mini & Full) -->
@@ -224,6 +224,11 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
 
+        // 🌟 استخراج آیدی کاربر تلگرام برای جداسازی پروفایل‌ها
+        const userId = tg.initDataUnsafe?.user?.id || 'guest';
+        const FAV_ARTISTS_KEY = 'fav_artists_' + userId;
+        const RECENT_TRACKS_KEY = 'recent_tracks_' + userId;
+
         const SERVER_URL = "https://programmer-flags-brass-gba.trycloudflare.com";
         let audio = new Audio();
         let currentPlaylist = [];
@@ -237,9 +242,8 @@
         let selectedArtists = [];
         let displayedArtists = new Set(); 
 
-        // 1. Onboarding Logic (Now fetching directly from your Python Server!)
         window.onload = async () => {
-            const savedArtists = localStorage.getItem('fav_artists');
+            const savedArtists = localStorage.getItem(FAV_ARTISTS_KEY);
             
             if (!savedArtists) {
                 document.getElementById('onboarding-screen').style.display = 'block';
@@ -268,7 +272,6 @@
             const card = document.createElement('div');
             card.className = 'artist-card';
             
-            // رفع مشکل بی‌کیفیتی با درخواست عکس با وضوح بالا
             let hqImage = image ? image.replace(/=w\d+-h\d+.*/, "=w400-h400-l90-rj") : '';
             
             card.innerHTML = `
@@ -287,7 +290,6 @@
                 selectedArtists.push(artistName);
                 cardElement.classList.add('selected');
                 
-                // لود خواننده‌های مشابه همون لحظه
                 try {
                     const res = await fetch(`${SERVER_URL}/api/get_related?name=${encodeURIComponent(artistName)}`);
                     const related = await res.json();
@@ -304,21 +306,19 @@
 
         function finishOnboarding() {
             if (selectedArtists.length < 3) return;
-            localStorage.setItem('fav_artists', JSON.stringify(selectedArtists));
+            localStorage.setItem(FAV_ARTISTS_KEY, JSON.stringify(selectedArtists));
             document.getElementById('onboarding-screen').style.display = 'none';
             showHome();
         }
 
-        // --- Home Logic ---
         function showHome() {
             document.getElementById('home-screen').style.display = 'block';
             renderSpeedDial();
             fetchNewReleases();
         }
 
-        // --- Speed Dial ---
         function renderSpeedDial() {
-            const recent = JSON.parse(localStorage.getItem('recent_tracks') || '[]');
+            const recent = JSON.parse(localStorage.getItem(RECENT_TRACKS_KEY) || '[]');
             const container = document.getElementById('speedDialList');
             const section = document.getElementById('speed-dial-section');
             
@@ -346,15 +346,14 @@
         }
 
         function addToSpeedDial(track) {
-            let recent = JSON.parse(localStorage.getItem('recent_tracks') || '[]');
+            let recent = JSON.parse(localStorage.getItem(RECENT_TRACKS_KEY) || '[]');
             recent = recent.filter(t => t.id !== track.id);
             recent.unshift(track);
             if (recent.length > 10) recent.pop(); 
-            localStorage.setItem('recent_tracks', JSON.stringify(recent));
+            localStorage.setItem(RECENT_TRACKS_KEY, JSON.stringify(recent));
             renderSpeedDial();
         }
 
-        // --- New Releases ---
         async function fetchNewReleases() {
             if (selectedArtists.length === 0) return;
             const artistToFetch = selectedArtists[0]; 
@@ -390,7 +389,6 @@
             }
         }
 
-        // --- Search ---
         async function handleSearch(event) {
             if (event.key === 'Enter') {
                 const query = document.getElementById('searchInput').value.trim();
@@ -432,7 +430,6 @@
             }
         }
 
-        // --- Player Logic ---
         function playTrack(index) {
             if (index < 0 || index >= currentPlaylist.length) return;
             currentIndex = index;
@@ -499,6 +496,13 @@
             const m = Math.floor(seconds / 60);
             const s = Math.floor(seconds % 60);
             return `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+        
+        // این دکمه هم برای مواقعی که خواستی سلیقه‌ات رو از اول بچینی
+        function resetProfile() {
+            localStorage.removeItem(FAV_ARTISTS_KEY);
+            localStorage.removeItem(RECENT_TRACKS_KEY);
+            window.location.reload();
         }
     </script>
 </body>
