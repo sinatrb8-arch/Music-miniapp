@@ -17,7 +17,7 @@
         }
         body {
             background-color: var(--bg-color); color: var(--text-color);
-            font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 90px;
+            font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 120px;
             overflow-x: hidden;
         }
         
@@ -28,8 +28,12 @@
         
         #obLoading { text-align: center; color: var(--accent); font-weight: 600; margin-top: 50px; font-size: 16px; }
         
-        .artist-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;}
-        .artist-card { display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative;}
+        .artist-grid { 
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;
+        }
+        .artist-card { 
+            display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative;
+        }
         .artist-img { 
             width: 90px; height: 90px; border-radius: 50%; object-fit: cover; margin-bottom: 8px;
             border: 3px solid transparent; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
@@ -37,6 +41,13 @@
         }
         .artist-card.selected .artist-img { border-color: var(--accent); opacity: 0.8; transform: scale(0.95);}
         .artist-name { font-size: 12px; font-weight: 600; text-align: center; }
+        
+        /* 🌟 انیمیشن جذاب برای اضافه شدن آرتیست‌های جدید زیر دستِ کاربر */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .new-arrival { animation: popIn 0.3s ease-out forwards; }
         
         .ob-btn-container { position: fixed; bottom: 20px; left: 20px; right: 20px; z-index: 100;}
         .ob-btn { 
@@ -78,6 +89,12 @@
         .track-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .track-artist { font-size: 13px; color: var(--hint-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         
+        .reset-btn { 
+            display: block; width: 100%; text-align: center; color: #ff4d4d; font-size: 14px; 
+            margin-top: 40px; padding: 15px; cursor: pointer; background: rgba(255, 77, 77, 0.1); 
+            border: 1px solid #ff4d4d; border-radius: 8px; font-weight: 600;
+        }
+        
         /* Players */
         .mini-player { position: fixed; bottom: 8px; left: 8px; right: 8px; background: #2a2a2a; border-radius: 8px; padding: 8px 12px; display: none; align-items: center; justify-content: space-between; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.5); cursor: pointer;}
         .mini-info { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden; }
@@ -116,9 +133,6 @@
         .fp-btn-play svg { fill: #000; width: 24px; height: 24px; }
         
         .loading-text { text-align: center; color: var(--hint-color); margin-top: 20px; font-size: 14px;}
-        
-        /* دکمه ریست برای مواقع ضروری */
-        .reset-btn { display: block; width: 100%; text-align: center; color: var(--hint-color); font-size: 12px; margin-top: 30px; cursor: pointer; background: none; border: none; text-decoration: underline;}
     </style>
 </head>
 <body>
@@ -162,8 +176,7 @@
             <div class="track-list" id="releasesList"></div>
         </div>
         
-        <!-- یک دکمه مخفی برای ریست کردن در صورت نیاز -->
-        <button class="reset-btn" onclick="resetProfile()">Reset My Profile</button>
+        <button class="reset-btn" onclick="forceResetAll()">🔄 Reset All My Data & Start Over</button>
     </div>
 
     <!-- Players (Mini & Full) -->
@@ -224,7 +237,6 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        // 🌟 استخراج آیدی کاربر تلگرام برای جداسازی پروفایل‌ها
         const userId = tg.initDataUnsafe?.user?.id || 'guest';
         const FAV_ARTISTS_KEY = 'fav_artists_' + userId;
         const RECENT_TRACKS_KEY = 'recent_tracks_' + userId;
@@ -244,7 +256,6 @@
 
         window.onload = async () => {
             const savedArtists = localStorage.getItem(FAV_ARTISTS_KEY);
-            
             if (!savedArtists) {
                 document.getElementById('onboarding-screen').style.display = 'block';
                 try {
@@ -256,7 +267,7 @@
                         if (a.image) addArtistToGrid(a.name, a.image);
                     });
                 } catch (e) {
-                    document.getElementById('obLoading').innerText = "خطا در برقراری ارتباط با سرور. لطفاً صفحه را رفرش کنید.";
+                    document.getElementById('obLoading').innerText = "خطا در ارتباط با سرور.";
                 }
             } else {
                 selectedArtists = JSON.parse(savedArtists);
@@ -293,8 +304,27 @@
                 try {
                     const res = await fetch(`${SERVER_URL}/api/get_related?name=${encodeURIComponent(artistName)}`);
                     const related = await res.json();
+                    
+                    // 🌟 جادوی جدید: وارد کردن آرتیست‌های پیشنهادی دقیقاً بعد از همین کارتی که کاربر روش کلیک کرده
+                    let insertReference = cardElement;
+                    
                     related.forEach(r => {
-                        if(r.image) addArtistToGrid(r.name, r.image);
+                        if (displayedArtists.has(r.name)) return;
+                        displayedArtists.add(r.name);
+                        
+                        const newCard = document.createElement('div');
+                        newCard.className = 'artist-card new-arrival'; 
+                        let hqImage = r.image ? r.image.replace(/=w\d+-h\d+.*/, "=w400-h400-l90-rj") : '';
+                        
+                        newCard.innerHTML = `
+                            <img class="artist-img" src="${hqImage}" alt="${r.name}">
+                            <div class="artist-name">${r.name}</div>
+                        `;
+                        newCard.onclick = () => toggleArtistSelection(newCard, r.name);
+                        
+                        // اینجا کارت دقیقاً زیر دست کاربر قرار می‌گیره!
+                        insertReference.insertAdjacentElement('afterend', newCard);
+                        insertReference = newCard; // برای اینکه کارت‌های بعدی پشت سر هم قرار بگیرن
                     });
                 } catch (e) { console.error("Error fetching related artists", e); }
             }
@@ -356,12 +386,20 @@
 
         async function fetchNewReleases() {
             if (selectedArtists.length === 0) return;
+            
+            // گرفتن جدیدترین‌های اولین خواننده‌ای که کاربر انتخاب کرده
             const artistToFetch = selectedArtists[0]; 
             
             try {
                 const response = await fetch(`${SERVER_URL}/api/releases?artist=${encodeURIComponent(artistToFetch)}`);
                 const data = await response.json();
                 document.getElementById('loadingReleases').style.display = 'none';
+                
+                if (data.length === 0) {
+                    document.getElementById('loadingReleases').style.display = 'block';
+                    document.getElementById('loadingReleases').innerText = 'No new releases found.';
+                    return;
+                }
                 
                 const container = document.getElementById('releasesList');
                 let tempPlaylist = data.map(track => {
@@ -498,10 +536,8 @@
             return `${m}:${s < 10 ? '0' : ''}${s}`;
         }
         
-        // این دکمه هم برای مواقعی که خواستی سلیقه‌ات رو از اول بچینی
-        function resetProfile() {
-            localStorage.removeItem(FAV_ARTISTS_KEY);
-            localStorage.removeItem(RECENT_TRACKS_KEY);
+        function forceResetAll() {
+            localStorage.clear();
             window.location.reload();
         }
     </script>
