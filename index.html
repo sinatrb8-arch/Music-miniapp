@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Music Player</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -12,136 +12,149 @@
             --bg-color: #121212;
             --text-color: #ffffff;
             --hint-color: #a7a7a7;
-            --button-color: #1db954;
             --secondary-bg: #282828;
-            --silver-btn: #ffffff;
+            --accent: #1db954;
         }
         body {
-            background-color: var(--bg-color); 
-            color: var(--text-color);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
-            margin: 0; 
-            padding: 15px; 
-            padding-bottom: 90px;
+            background-color: var(--bg-color); color: var(--text-color);
+            font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 90px;
+            overflow-x: hidden;
         }
         
-        .header-title { text-align: center; margin-bottom: 20px; font-weight: 700; font-size: 22px;}
-        
-        /* Search Box */
-        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
-        input {
-            flex: 1; padding: 15px; border: none; border-radius: 8px;
-            background-color: var(--secondary-bg); color: var(--text-color); outline: none;
-            font-family: 'Inter', sans-serif; font-size: 14px;
+        /* 1. Onboarding Screen */
+        #onboarding-screen { padding: 30px 20px; display: none; }
+        .ob-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+        .ob-subtitle { font-size: 14px; color: var(--hint-color); margin-bottom: 30px; }
+        .artist-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px;}
+        .artist-card { 
+            background: var(--secondary-bg); border-radius: 12px; padding: 20px 10px; text-align: center;
+            border: 2px solid transparent; cursor: pointer; transition: 0.2s;
         }
-        button.search-btn { background-color: var(--silver-btn); color: #000; border: none; padding: 0 20px; border-radius: 8px; cursor: pointer; font-weight: 700; }
-        
-        /* Track List */
-        .track-list { display: flex; flex-direction: column; gap: 10px; }
-        .track-item { display: flex; align-items: center; padding: 8px; border-radius: 8px; gap: 12px; transition: background 0.2s;}
-        .track-item:active { background: rgba(255,255,255,0.1); }
-        .track-item img { width: 50px; height: 50px; border-radius: 4px; object-fit: cover; }
-        .track-info { flex: 1; overflow: hidden; }
-        .track-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-color);}
-        .track-artist { font-size: 13px; color: var(--hint-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        .actions { display: flex; gap: 10px; align-items: center;}
-        .btn-dl { background: transparent; color: var(--hint-color); border: 1px solid var(--hint-color); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; }
-        
-        #loading { text-align: center; color: var(--hint-color); display: none; font-weight: 600; margin-top: 20px;}
+        .artist-card.selected { border-color: var(--accent); background: rgba(29, 185, 84, 0.1); }
+        .artist-name { font-weight: 600; font-size: 15px; }
+        .ob-btn { 
+            width: 100%; padding: 15px; background: var(--text-color); color: var(--bg-color); 
+            border: none; border-radius: 25px; font-weight: 700; font-size: 16px; cursor: pointer;
+            opacity: 0.5; pointer-events: none; transition: 0.3s;
+        }
+        .ob-btn.active { opacity: 1; pointer-events: auto; }
 
-        /* --- Mini Player --- */
-        .mini-player {
-            position: fixed; bottom: 8px; left: 8px; right: 8px; 
-            background: #2a2a2a; border-radius: 8px;
-            padding: 8px 12px; display: none;
-            align-items: center; justify-content: space-between; z-index: 1000; cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        /* 2. Home Screen */
+        #home-screen { padding: 20px; display: none; }
+        
+        /* Search Bar */
+        .search-container { position: relative; margin-bottom: 25px; }
+        .search-container input {
+            width: 100%; padding: 15px 15px 15px 45px; border: none; border-radius: 8px;
+            background-color: var(--secondary-bg); color: var(--text-color); outline: none;
+            font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;
         }
+        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 20px; fill: var(--hint-color); }
+        
+        /* Speed Dial (Recently Played) */
+        .section-title { font-size: 20px; font-weight: 700; margin-bottom: 15px; }
+        .speed-dial-container { 
+            display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 25px;
+            scroll-snap-type: x mandatory; scrollbar-width: none;
+        }
+        .speed-dial-container::-webkit-scrollbar { display: none; }
+        .sd-item { 
+            min-width: 110px; background: var(--secondary-bg); border-radius: 8px; padding: 10px;
+            text-align: center; cursor: pointer; scroll-snap-align: start;
+        }
+        .sd-cover { width: 90px; height: 90px; border-radius: 6px; object-fit: cover; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
+        .sd-title { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* Track Lists (Search & Releases) */
+        .track-list { display: flex; flex-direction: column; gap: 10px; }
+        .track-item { display: flex; align-items: center; padding: 8px; border-radius: 8px; gap: 12px; background: transparent; transition: background 0.2s;}
+        .track-item:active { background: rgba(255,255,255,0.1); }
+        .track-item img { width: 55px; height: 55px; border-radius: 4px; object-fit: cover; }
+        .track-info { flex: 1; overflow: hidden; }
+        .track-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .track-artist { font-size: 13px; color: var(--hint-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        
+        /* --- Shared Player Styles (Mini & Full) --- */
+        /* این استایل‌ها دقیقاً همون نسخه کامل و بی‌نقص قبلی هستن */
+        .mini-player { position: fixed; bottom: 8px; left: 8px; right: 8px; background: #2a2a2a; border-radius: 8px; padding: 8px 12px; display: none; align-items: center; justify-content: space-between; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.5); cursor: pointer;}
         .mini-info { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden; }
         .mini-cover { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; }
         .mini-text {display: flex; flex-direction: column;}
         .mini-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .mini-artist { font-size: 11px; color: var(--hint-color); }
-        .mini-play-btn { background: none; border: none; color: white; cursor: pointer; display: flex; align-items: center; padding: 5px;}
+        .mini-play-btn { background: none; border: none; color: white; cursor: pointer; padding: 5px;}
         .mini-play-btn svg { width: 20px; height: 20px; fill: #fff; }
 
-        /* --- Full Screen Player --- */
-        .full-player {
-            position: fixed; top: 100%; left: 0; right: 0; bottom: 0; 
-            background-color: var(--bg-color);
-            z-index: 2000; transition: top 0.3s cubic-bezier(0.17, 0.67, 0.3, 1);
-            display: flex; flex-direction: column; padding: 25px 25px; box-sizing: border-box;
-            overflow: hidden;
-        }
+        .full-player { position: fixed; top: 100%; left: 0; right: 0; bottom: 0; background-color: var(--bg-color); z-index: 2000; transition: top 0.3s; display: flex; flex-direction: column; padding: 25px; box-sizing: border-box; overflow: hidden;}
         .full-player.active { top: 0; }
-        
-        /* 🌟 بک‌گراند داینامیک بلور شده */
-        .bg-blur-container {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden;
-        }
-        .bg-blur-img {
-            width: 120%; height: 120%; object-fit: cover; 
-            position: absolute; top: -10%; left: -10%;
-            filter: blur(40px) brightness(0.6); transform: scale(1.1);
-        }
-        .bg-gradient-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: linear-gradient(to bottom, rgba(18,18,18,0.3) 0%, rgba(18,18,18,0.9) 70%, rgba(18,18,18,1) 100%);
-        }
-        
-        /* هدر پلیر */
+        .bg-blur-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden;}
+        .bg-blur-img { width: 120%; height: 120%; object-fit: cover; position: absolute; top: -10%; left: -10%; filter: blur(40px) brightness(0.6); transform: scale(1.1);}
+        .bg-gradient-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: linear-gradient(to bottom, rgba(18,18,18,0.3) 0%, rgba(18,18,18,0.9) 70%, rgba(18,18,18,1) 100%);}
         .fp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;}
         .fp-header svg { width: 24px; height: 24px; fill: #fff; cursor: pointer;}
         .fp-header-center { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;}
-        
-        /* کاور پلیر */
         .fp-cover-container { width: 100%; aspect-ratio: 1/1; margin-bottom: 40px; display: flex; justify-content: center; align-items: center;}
         .fp-cover { width: 100%; height: 100%; border-radius: 8px; object-fit: cover; box-shadow: 0 10px 40px rgba(0,0,0,0.5);}
-        
-        /* مشخصات آهنگ و آیکون‌ها */
         .fp-info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; width: 100%;}
         .fp-text { flex: 1; overflow: hidden; padding-right: 15px;}
         .fp-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .fp-artist { font-size: 16px; color: var(--hint-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        .fp-side-icons { display: flex; gap: 20px; align-items: center;}
-        .fp-side-icons svg { width: 24px; height: 24px; fill: #fff; opacity: 0.8;}
         
-        /* نوار زمان */
         .progress-container { width: 100%; display: flex; flex-direction: column; gap: 8px; margin-bottom: 30px;}
         .progress-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; cursor: pointer; position: relative;}
         .progress-fill { height: 100%; background: #fff; border-radius: 2px; width: 0%; pointer-events: none;}
-        .progress-dot { position: absolute; top: -4px; left: 0%; width: 12px; height: 12px; background-color: #fff; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.3); transform: translateX(-50%); pointer-events: none;}
+        .progress-dot { position: absolute; top: -4px; left: 0%; width: 12px; height: 12px; background-color: #fff; border-radius: 50%; transform: translateX(-50%); pointer-events: none;}
         .time-display { display: flex; justify-content: space-between; font-size: 12px; color: var(--hint-color); font-weight: 400;}
         
-        /* دکمه‌های کنترل پایین */
         .fp-controls { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 10px; box-sizing: border-box;}
-        .ctrl-btn { background: none; border: none; display: flex; justify-content: center; align-items: center; cursor: pointer; opacity: 0.7;}
-        .ctrl-btn:active { opacity: 1;}
-        .ctrl-btn svg { width: 24px; height: 24px; fill: #fff; }
-        
-        .ctrl-main-btn { background: none; border: none; display: flex; justify-content: center; align-items: center; cursor: pointer;}
+        .ctrl-main-btn { background: none; border: none; cursor: pointer;}
         .ctrl-main-btn svg { width: 32px; height: 32px; fill: #fff; }
-        
-        .fp-btn-play { 
-            background: #fff; border: none; border-radius: 50%; width: 64px; height: 64px; 
-            display: flex; justify-content: center; align-items: center; cursor: pointer; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
+        .fp-btn-play { background: #fff; border: none; border-radius: 50%; width: 64px; height: 64px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
         .fp-btn-play svg { fill: #000; width: 24px; height: 24px; }
         
+        .loading-text { text-align: center; color: var(--hint-color); margin-top: 20px; font-size: 14px;}
     </style>
 </head>
 <body>
 
-    <div class="header-title">Music Search</div>
-    
-    <div class="search-box">
-        <input type="text" id="searchInput" placeholder="What do you want to listen to?">
-        <button class="search-btn" onclick="searchMusic()">Search</button>
+    <!-- Onboarding Screen -->
+    <div id="onboarding-screen">
+        <div class="ob-title">What's your vibe?</div>
+        <div class="ob-subtitle">Choose 3 or more artists you like.</div>
+        <div class="artist-grid" id="onboardingGrid">
+            <!-- Artists injected via JS -->
+        </div>
+        <button class="ob-btn" id="obFinishBtn" onclick="finishOnboarding()">Continue</button>
     </div>
 
-    <div id="loading">Searching...</div>
-    <div class="track-list" id="trackList"></div>
+    <!-- Home Screen -->
+    <div id="home-screen">
+        <div class="search-container">
+            <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" id="searchInput" placeholder="Artists, songs, or podcasts" onkeypress="handleSearch(event)">
+        </div>
+        
+        <!-- Search Results Area -->
+        <div id="search-results-area" style="display: none;">
+            <div class="section-title">Search Results</div>
+            <div id="loadingSearch" class="loading-text" style="display: none;">Searching...</div>
+            <div class="track-list" id="searchResultsList"></div>
+            <hr style="border: 0; border-top: 1px solid #333; margin: 30px 0;">
+        </div>
+
+        <!-- Speed Dial -->
+        <div id="speed-dial-section" style="display: none;">
+            <div class="section-title">Recently Played</div>
+            <div class="speed-dial-container" id="speedDialList"></div>
+        </div>
+
+        <!-- New Releases -->
+        <div id="releases-section">
+            <div class="section-title">New Releases for You</div>
+            <div id="loadingReleases" class="loading-text">Curating your feed...</div>
+            <div class="track-list" id="releasesList"></div>
+        </div>
+    </div>
 
     <!-- Mini Player -->
     <div class="mini-player" id="miniPlayer" onclick="openFullPlayer()">
@@ -153,42 +166,30 @@
             </div>
         </div>
         <button class="mini-play-btn" id="miniPlayBtn" onclick="togglePlay(event)">
-            <!-- Play Icon -->
             <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         </button>
     </div>
 
     <!-- Full Screen Player -->
     <div class="full-player" id="fullPlayer">
-        <!-- داینامیک بک‌گراند بلور -->
         <div class="bg-blur-container">
             <img id="bgBlurImage" class="bg-blur-img" src="">
             <div class="bg-gradient-overlay"></div>
         </div>
-
         <div class="fp-header">
             <svg onclick="closeFullPlayer()" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
             <div class="fp-header-center">NOW PLAYING</div>
-            <div style="width: 24px;"></div> <!-- Spacer -->
+            <div style="width: 24px;"></div>
         </div>
-        
         <div class="fp-cover-container">
             <img id="fpCover" src="" class="fp-cover">
         </div>
-        
         <div class="fp-info-row">
             <div class="fp-text">
                 <div class="fp-title" id="fpTitle">Title</div>
                 <div class="fp-artist" id="fpArtist">Artist</div>
             </div>
-            <div class="fp-side-icons">
-                <!-- آیکون اضافه به لیست -->
-                <svg viewBox="0 0 24 24"><path d="M14 10H2v2h12v-2zm0-4H2v2h12V6zm4 8v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM2 16h8v-2H2v2z"/></svg>
-                <!-- آیکون قلب -->
-                <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-            </div>
         </div>
-        
         <div class="progress-container">
             <div class="progress-bg" id="progressBg" onclick="seek(event)">
                 <div class="progress-fill" id="progressFill"></div>
@@ -199,20 +200,14 @@
                 <span id="duration">0:00</span>
             </div>
         </div>
-        
         <div class="fp-controls">
-            <!-- Shuffle -->
-            <button class="ctrl-btn"><svg viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg></button>
-            <!-- Prev -->
+            <div style="width:32px;"></div>
             <button class="ctrl-main-btn" onclick="playPrev()"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
-            <!-- Play/Pause -->
             <button class="fp-btn-play" id="fpPlayBtn" onclick="togglePlay(event)">
-                <svg viewBox="0 0 24 24" id="playIconSvg"><path d="M8 5v14l11-7z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
             </button>
-            <!-- Next -->
             <button class="ctrl-main-btn" onclick="playNext()"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
-            <!-- Repeat -->
-            <button class="ctrl-btn"><svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg></button>
+            <div style="width:32px;"></div>
         </div>
     </div>
 
@@ -224,27 +219,121 @@
         let audio = new Audio();
         let currentPlaylist = [];
         let currentIndex = -1;
-
-        // SVG Icons
+        
         const iconPlayWhite = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
         const iconPauseWhite = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
         const iconPlayBlack = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
         const iconPauseBlack = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
 
-        async function searchMusic() {
-            const query = document.getElementById('searchInput').value.trim();
-            if (!query) return;
-            document.getElementById('trackList').innerHTML = '';
-            document.getElementById('loading').style.display = 'block';
+        // لیست آرتیست‌های اولیه برای Onboarding
+        const presetArtists = ["Travis Scott", "Drake", "The Weeknd", "Future", "Kendrick Lamar", "Post Malone", "Billie Eilish", "Taylor Swift"];
+        let selectedArtists = [];
 
+        // 1. منطق شروع اپلیکیشن
+        window.onload = () => {
+            const savedArtists = localStorage.getItem('fav_artists');
+            if (!savedArtists) {
+                renderOnboarding();
+            } else {
+                selectedArtists = JSON.parse(savedArtists);
+                showHome();
+            }
+        };
+
+        // --- Onboarding Logic ---
+        function renderOnboarding() {
+            document.getElementById('onboarding-screen').style.display = 'block';
+            const grid = document.getElementById('onboardingGrid');
+            presetArtists.forEach(artist => {
+                const card = document.createElement('div');
+                card.className = 'artist-card';
+                card.innerHTML = `<div class="artist-name">${artist}</div>`;
+                card.onclick = () => toggleArtistSelection(card, artist);
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleArtistSelection(cardElement, artistName) {
+            if (selectedArtists.includes(artistName)) {
+                selectedArtists = selectedArtists.filter(a => a !== artistName);
+                cardElement.classList.remove('selected');
+            } else {
+                selectedArtists.push(artistName);
+                cardElement.classList.add('selected');
+            }
+            const btn = document.getElementById('obFinishBtn');
+            if (selectedArtists.length >= 3) btn.classList.add('active');
+            else btn.classList.remove('active');
+        }
+
+        function finishOnboarding() {
+            if (selectedArtists.length < 3) return;
+            localStorage.setItem('fav_artists', JSON.stringify(selectedArtists));
+            document.getElementById('onboarding-screen').style.display = 'none';
+            showHome();
+        }
+
+        // --- Home Logic ---
+        function showHome() {
+            document.getElementById('home-screen').style.display = 'block';
+            renderSpeedDial();
+            fetchNewReleases();
+        }
+
+        // --- Speed Dial (Recently Played) ---
+        function renderSpeedDial() {
+            const recent = JSON.parse(localStorage.getItem('recent_tracks') || '[]');
+            const container = document.getElementById('speedDialList');
+            const section = document.getElementById('speed-dial-section');
+            
+            if (recent.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+            
+            section.style.display = 'block';
+            container.innerHTML = '';
+            
+            recent.forEach(track => {
+                const item = document.createElement('div');
+                item.className = 'sd-item';
+                item.onclick = () => {
+                    currentPlaylist = [track]; // پخش همون آهنگ
+                    playTrack(0);
+                };
+                item.innerHTML = `
+                    <img src="${track.hqCover}" class="sd-cover">
+                    <div class="sd-title">${track.title}</div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function addToSpeedDial(track) {
+            let recent = JSON.parse(localStorage.getItem('recent_tracks') || '[]');
+            // حذف آهنگ تکراری
+            recent = recent.filter(t => t.id !== track.id);
+            // اضافه به اول لیست
+            recent.unshift(track);
+            // نگه داشتن فقط 5 تای آخر
+            if (recent.length > 5) recent.pop();
+            
+            localStorage.setItem('recent_tracks', JSON.stringify(recent));
+            renderSpeedDial(); // آپدیت در لحظه
+        }
+
+        // --- New Releases ---
+        async function fetchNewReleases() {
+            if (selectedArtists.length === 0) return;
+            // گرفتن آهنگ از آرتیست اول و دوم انتخابی برای ساخت فید
+            const artistToFetch = selectedArtists[0]; 
+            
             try {
-                const response = await fetch(`${SERVER_URL}/search?q=${encodeURIComponent(query)}`);
+                const response = await fetch(`${SERVER_URL}/api/releases?artist=${encodeURIComponent(artistToFetch)}`);
                 const data = await response.json();
-                document.getElementById('loading').style.display = 'none';
-
-                if (data.length === 0) return document.getElementById('trackList').innerHTML = '<div style="text-align:center; color:#a7a7a7;">No results found</div>';
-
-                // ذخیره لیست برای دکمه‌های بعدی و قبلی
+                document.getElementById('loadingReleases').style.display = 'none';
+                
+                const container = document.getElementById('releasesList');
                 currentPlaylist = data.map(track => {
                     return { ...track, hqCover: track.cover ? track.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' };
                 });
@@ -252,28 +341,69 @@
                 currentPlaylist.forEach((track, index) => {
                     const item = document.createElement('div');
                     item.className = 'track-item';
+                    item.onclick = () => playTrack(index);
                     item.innerHTML = `
-                        <img src="${track.hqCover}" alt="cover" onclick="playTrack(${index})">
-                        <div class="track-info" onclick="playTrack(${index})">
+                        <img src="${track.hqCover}" alt="cover">
+                        <div class="track-info">
                             <div class="track-title">${track.title}</div>
                             <div class="track-artist">${track.artist}</div>
                         </div>
-                        <div class="actions">
-                            <button class="btn-dl" onclick="sendToBot('${track.id}', '${track.title.replace(/'/g, "\\'")}', '${track.artist.replace(/'/g, "\\'")}')">Download</button>
-                        </div>
                     `;
-                    document.getElementById('trackList').appendChild(item);
+                    container.appendChild(item);
                 });
             } catch (error) {
-                document.getElementById('loading').style.display = 'none';
-                tg.showAlert("Connection error!");
+                document.getElementById('loadingReleases').innerText = 'Failed to load releases.';
             }
         }
 
+        // --- Search Logic ---
+        async function handleSearch(event) {
+            if (event.key === 'Enter') {
+                const query = document.getElementById('searchInput').value.trim();
+                if (!query) return;
+                
+                document.getElementById('search-results-area').style.display = 'block';
+                document.getElementById('loadingSearch').style.display = 'block';
+                document.getElementById('searchResultsList').innerHTML = '';
+
+                try {
+                    const response = await fetch(`${SERVER_URL}/search?q=${encodeURIComponent(query)}`);
+                    const data = await response.json();
+                    document.getElementById('loadingSearch').style.display = 'none';
+
+                    // آپدیت پلی‌لیست برای دکمه‌های بعدی/قبلی
+                    currentPlaylist = data.map(track => {
+                        return { ...track, hqCover: track.cover ? track.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' };
+                    });
+
+                    currentPlaylist.forEach((track, index) => {
+                        const item = document.createElement('div');
+                        item.className = 'track-item';
+                        item.onclick = () => playTrack(index);
+                        item.innerHTML = `
+                            <img src="${track.hqCover}" alt="cover">
+                            <div class="track-info">
+                                <div class="track-title">${track.title}</div>
+                                <div class="track-artist">${track.artist}</div>
+                            </div>
+                        `;
+                        document.getElementById('searchResultsList').appendChild(item);
+                    });
+                } catch (error) {
+                    document.getElementById('loadingSearch').style.display = 'none';
+                    tg.showAlert("Connection error!");
+                }
+            }
+        }
+
+        // --- Player Logic ---
         function playTrack(index) {
             if (index < 0 || index >= currentPlaylist.length) return;
             currentIndex = index;
             const track = currentPlaylist[index];
+            
+            // اضافه کردن به Speed Dial
+            addToSpeedDial(track);
 
             document.getElementById('miniTitle').innerText = track.title;
             document.getElementById('miniArtist').innerText = track.artist;
@@ -281,7 +411,7 @@
             document.getElementById('miniPlayer').style.display = 'flex';
             
             document.getElementById('fpCover').src = track.hqCover;
-            document.getElementById('bgBlurImage').src = track.hqCover; // تنظیم داینامیک بک‌گراند
+            document.getElementById('bgBlurImage').src = track.hqCover; 
             document.getElementById('fpTitle').innerText = track.title;
             document.getElementById('fpArtist').innerText = track.artist;
 
@@ -290,18 +420,10 @@
             updatePlayBtn(true);
         }
 
-        function playNext() {
-            if (currentIndex < currentPlaylist.length - 1) {
-                playTrack(currentIndex + 1);
-            }
-        }
-
+        function playNext() { if (currentIndex < currentPlaylist.length - 1) playTrack(currentIndex + 1); }
         function playPrev() {
-            if (currentIndex > 0) {
-                playTrack(currentIndex - 1);
-            } else if (audio.currentTime > 3) {
-                audio.currentTime = 0; // اگر وسط آهنگ بود، برگرده اول آهنگ
-            }
+            if (currentIndex > 0) playTrack(currentIndex - 1);
+            else if (audio.currentTime > 3) audio.currentTime = 0; 
         }
 
         function openFullPlayer() { document.getElementById('fullPlayer').classList.add('active'); }
@@ -318,8 +440,7 @@
             document.getElementById('fpPlayBtn').innerHTML = isPlaying ? iconPauseBlack : iconPlayBlack;
         }
 
-        // وقتی آهنگ تموم شد، بره آهنگ بعدی
-        audio.onended = () => { playNext(); };
+        audio.onended = () => playNext();
 
         audio.ontimeupdate = () => {
             if (audio.duration) {
@@ -343,10 +464,6 @@
             const m = Math.floor(seconds / 60);
             const s = Math.floor(seconds % 60);
             return `${m}:${s < 10 ? '0' : ''}${s}`;
-        }
-
-        function sendToBot(id, title, artist) {
-            tg.sendData(`dl|${id}|${title}|${artist}`);
         }
     </script>
 </body>
