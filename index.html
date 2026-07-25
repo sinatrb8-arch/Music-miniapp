@@ -1,1 +1,90 @@
-mini app musick test
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موزیک یاب</title>
+    <!-- این خط مینی‌اپ رو به تلگرام متصل میکنه -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            font-family: Tahoma, Arial, sans-serif;
+            margin: 0;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+        h2 {
+            margin-top: 0;
+            color: var(--tg-theme-text-color);
+        }
+        input {
+            width: 100%;
+            max-width: 300px;
+            padding: 15px;
+            border: 1px solid var(--tg-theme-hint-color, #ccc);
+            border-radius: 12px;
+            background-color: var(--tg-theme-secondary-bg-color, #f4f4f5);
+            color: var(--tg-theme-text-color, #000);
+            margin-bottom: 20px;
+            font-size: 16px;
+            outline: none;
+        }
+        button {
+            background-color: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 332px;
+            font-weight: bold;
+        }
+        .note {
+            font-size: 13px;
+            color: var(--tg-theme-hint-color, #999);
+            margin-top: 25px;
+            text-align: center;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="icon">🎧</div>
+    <h2>جستجوی پیشرفته</h2>
+    
+    <input type="text" id="searchInput" placeholder="نام آهنگ یا خواننده را بنویسید...">
+    
+    <button onclick="sendToBot()">جستجو و دانلود</button>
+    
+    <p class="note">نام آهنگ را بنویسید و جستجو را بزنید تا ربات آن را برای شما ارسال کند.</p>
+
+    <script>
+        // راه‌اندازی مینی‌اپ
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // باز شدن اپلیکیشن به صورت تمام‌صفحه
+
+        // تابعی که وقتی کاربر دکمه رو میزنه اجرا میشه
+        function sendToBot() {
+            let query = document.getElementById("searchInput").value.trim();
+            
+            if (query === "") {
+                tg.showAlert("لطفاً نام یک آهنگ را بنویسید!");
+                return;
+            }
+            
+            // ارسال کلمه سرچ شده به پایتون و بستن مینی‌اپ
+            tg.sendData(query);
+        }
+    </script>
+</body>
+</html>
