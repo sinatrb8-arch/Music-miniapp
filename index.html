@@ -42,7 +42,6 @@
         .artist-card.selected .artist-img { border-color: var(--accent); opacity: 0.8; transform: scale(0.95);}
         .artist-name { font-size: 12px; font-weight: 600; text-align: center; }
         
-        /* 🌟 انیمیشن جذاب برای اضافه شدن آرتیست‌های جدید زیر دستِ کاربر */
         @keyframes popIn {
             0% { opacity: 0; transform: scale(0.8); }
             100% { opacity: 1; transform: scale(1); }
@@ -140,7 +139,7 @@
     <!-- Onboarding Screen -->
     <div id="onboarding-screen">
         <div class="ob-title">What's your vibe?</div>
-        <div class="ob-subtitle">Choose 3 or more artists you like.</div>
+        <div class="ob-subtitle">Choose your favorite artists.</div>
         
         <div id="obLoading">Loading artists from server...</div>
         <div class="artist-grid" id="onboardingGrid"></div>
@@ -305,7 +304,6 @@
                     const res = await fetch(`${SERVER_URL}/api/get_related?name=${encodeURIComponent(artistName)}`);
                     const related = await res.json();
                     
-                    // 🌟 جادوی جدید: وارد کردن آرتیست‌های پیشنهادی دقیقاً بعد از همین کارتی که کاربر روش کلیک کرده
                     let insertReference = cardElement;
                     
                     related.forEach(r => {
@@ -322,9 +320,8 @@
                         `;
                         newCard.onclick = () => toggleArtistSelection(newCard, r.name);
                         
-                        // اینجا کارت دقیقاً زیر دست کاربر قرار می‌گیره!
                         insertReference.insertAdjacentElement('afterend', newCard);
-                        insertReference = newCard; // برای اینکه کارت‌های بعدی پشت سر هم قرار بگیرن
+                        insertReference = newCard; 
                     });
                 } catch (e) { console.error("Error fetching related artists", e); }
             }
@@ -384,25 +381,39 @@
             renderSpeedDial();
         }
 
+        // 🌟 استخراج ترکیبی از همه آرتیست‌ها برای پر کردن صفحه با موزیک‌های جدید
         async function fetchNewReleases() {
             if (selectedArtists.length === 0) return;
             
-            // گرفتن جدیدترین‌های اولین خواننده‌ای که کاربر انتخاب کرده
-            const artistToFetch = selectedArtists[0]; 
-            
             try {
-                const response = await fetch(`${SERVER_URL}/api/releases?artist=${encodeURIComponent(artistToFetch)}`);
-                const data = await response.json();
+                // ارسال درخواست همزمان برای تمام خواننده‌های انتخابی
+                const promises = selectedArtists.map(artist =>
+                    fetch(`${SERVER_URL}/api/releases?artist=${encodeURIComponent(artist)}`).then(res => res.json())
+                );
+                
+                const results = await Promise.all(promises);
                 document.getElementById('loadingReleases').style.display = 'none';
                 
-                if (data.length === 0) {
+                let mixedFeed = [];
+                
+                // برداشتن حداکثر ۲ تک‌آهنگ از هر خواننده برای تنوع بالا
+                results.forEach(artistTracks => {
+                    if (artistTracks && artistTracks.length > 0) {
+                        mixedFeed.push(...artistTracks.slice(0, 2));
+                    }
+                });
+
+                if (mixedFeed.length === 0) {
                     document.getElementById('loadingReleases').style.display = 'block';
                     document.getElementById('loadingReleases').innerText = 'No new releases found.';
                     return;
                 }
                 
+                // بر زدن (Shuffle) لیست تا فید یکدست و رندوم بشه
+                mixedFeed = mixedFeed.sort(() => Math.random() - 0.5);
+
                 const container = document.getElementById('releasesList');
-                let tempPlaylist = data.map(track => {
+                let tempPlaylist = mixedFeed.map(track => {
                     return { ...track, hqCover: track.cover ? track.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' };
                 });
 
