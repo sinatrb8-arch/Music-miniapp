@@ -9,43 +9,31 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         
         :root {
-            --bg-color: #121212;
-            --text-color: #ffffff;
-            --hint-color: #a7a7a7;
-            --secondary-bg: #282828;
-            --accent: #1db954;
+            --bg-color: #121212; --text-color: #ffffff; --hint-color: #a7a7a7;
+            --secondary-bg: #282828; --accent: #1db954;
         }
         body {
             background-color: var(--bg-color); color: var(--text-color);
-            font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 120px;
-            overflow-x: hidden;
+            font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 120px; overflow-x: hidden;
         }
         
         /* 1. Onboarding Screen */
         #onboarding-screen { padding: 30px 20px; display: none; }
         .ob-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
         .ob-subtitle { font-size: 14px; color: var(--hint-color); margin-bottom: 30px; }
-        
         #obLoading { text-align: center; color: var(--accent); font-weight: 600; margin-top: 50px; font-size: 16px; }
         
-        .artist-grid { 
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;
-        }
-        .artist-card { 
-            display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative;
-        }
+        /* عکس‌های آرتیست‌ها دو ستونه و بزرگتر شدن */
+        .artist-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 30px;}
+        .artist-card { display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative;}
         .artist-img { 
-            width: 90px; height: 90px; border-radius: 50%; object-fit: cover; margin-bottom: 8px;
-            border: 3px solid transparent; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            background-color: var(--secondary-bg); 
+            width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 12px;
+            border: 3px solid transparent; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); background-color: var(--secondary-bg); 
         }
         .artist-card.selected .artist-img { border-color: var(--accent); opacity: 0.8; transform: scale(0.95);}
-        .artist-name { font-size: 12px; font-weight: 600; text-align: center; }
+        .artist-name { font-size: 14px; font-weight: 600; text-align: center; }
         
-        @keyframes popIn {
-            0% { opacity: 0; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1); }
-        }
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
         .new-arrival { animation: popIn 0.3s ease-out forwards; }
         
         .ob-btn-container { position: fixed; bottom: 20px; left: 20px; right: 20px; z-index: 100;}
@@ -58,7 +46,6 @@
 
         /* 2. Home Screen */
         #home-screen { padding: 20px; display: none; }
-        
         .search-container { position: relative; margin-bottom: 25px; }
         .search-container input {
             width: 100%; padding: 15px 15px 15px 45px; border: none; border-radius: 8px;
@@ -66,34 +53,47 @@
             font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;
         }
         .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 20px; fill: var(--hint-color); }
-        
         .section-title { font-size: 20px; font-weight: 700; margin-bottom: 15px; }
-        .speed-dial-container { 
+        
+        /* افقی شدن اسکرول‌ها (اخیرا پخش شده و آرتیست‌های محبوب) */
+        .horizontal-scroll { 
             display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 25px;
             scroll-snap-type: x mandatory; scrollbar-width: none;
         }
-        .speed-dial-container::-webkit-scrollbar { display: none; }
-        .sd-item { 
-            min-width: 110px; background: var(--secondary-bg); border-radius: 8px; padding: 10px;
-            text-align: center; cursor: pointer; scroll-snap-align: start;
-        }
-        .sd-cover { width: 90px; height: 90px; border-radius: 6px; object-fit: cover; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
-        .sd-title { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .horizontal-scroll::-webkit-scrollbar { display: none; }
+        .scroll-item { min-width: 110px; background: var(--secondary-bg); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; scroll-snap-align: start; }
+        .scroll-cover { width: 90px; height: 90px; border-radius: 6px; object-fit: cover; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
+        .scroll-cover.circle { border-radius: 50%; }
+        .scroll-title { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .track-list { display: flex; flex-direction: column; gap: 10px; }
-        .track-item { display: flex; align-items: center; padding: 8px; border-radius: 8px; gap: 12px; background: transparent; transition: background 0.2s;}
-        .track-item:active { background: rgba(255,255,255,0.1); }
+        /* New Releases افقی و دو ردیفه */
+        .releases-grid {
+            display: grid; grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; gap: 12px;
+            overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 15px; margin-bottom: 25px; scrollbar-width: none;
+        }
+        .releases-grid::-webkit-scrollbar { display: none; }
+        
+        .track-item { display: flex; align-items: center; padding: 8px; border-radius: 8px; gap: 12px; background: var(--secondary-bg); cursor:pointer;}
+        .releases-grid .track-item { width: 260px; scroll-snap-align: start; margin: 0; }
+        .track-item:active { opacity: 0.8; }
         .track-item img { width: 55px; height: 55px; border-radius: 4px; object-fit: cover; }
         .track-info { flex: 1; overflow: hidden; }
         .track-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .track-artist { font-size: 13px; color: var(--hint-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         
-        .reset-btn { 
-            display: block; width: 100%; text-align: center; color: #ff4d4d; font-size: 14px; 
-            margin-top: 40px; padding: 15px; cursor: pointer; background: rgba(255, 77, 77, 0.1); 
-            border: 1px solid #ff4d4d; border-radius: 8px; font-weight: 600;
-        }
-        
+        .reset-btn { display: block; width: 100%; text-align: center; color: #ff4d4d; font-size: 14px; margin-top: 40px; padding: 15px; cursor: pointer; background: rgba(255, 77, 77, 0.1); border: 1px solid #ff4d4d; border-radius: 8px; font-weight: 600;}
+        .loading-text { text-align: center; color: var(--hint-color); margin-top: 20px; font-size: 14px;}
+
+        /* 3. Artist Screen */
+        #artist-screen { display: none; padding-bottom: 100px; }
+        .artist-header { position: relative; width: 100%; height: 250px; overflow: hidden; margin-bottom: 20px;}
+        .artist-header-bg { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
+        .artist-header-info { position: absolute; bottom: 20px; left: 20px; display: flex; align-items: flex-end; gap: 15px;}
+        .artist-header-img { width: 80px; height: 80px; border-radius: 50%; border: 2px solid #fff; object-fit: cover;}
+        .artist-header-name { font-size: 32px; font-weight: 700; color: #fff; margin: 0; }
+        .back-btn { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.5); border-radius: 50%; padding: 8px; display:flex; justify-content:center; align-items:center; z-index: 10; cursor:pointer;}
+        .back-btn svg { width: 24px; height: 24px; fill: #fff; }
+
         /* Players */
         .mini-player { position: fixed; bottom: 8px; left: 8px; right: 8px; background: #2a2a2a; border-radius: 8px; padding: 8px 12px; display: none; align-items: center; justify-content: space-between; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.5); cursor: pointer;}
         .mini-info { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden; }
@@ -130,24 +130,18 @@
         .ctrl-main-btn svg { width: 32px; height: 32px; fill: #fff; }
         .fp-btn-play { background: #fff; border: none; border-radius: 50%; width: 64px; height: 64px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
         .fp-btn-play svg { fill: #000; width: 24px; height: 24px; }
-        
-        .loading-text { text-align: center; color: var(--hint-color); margin-top: 20px; font-size: 14px;}
     </style>
 </head>
 <body>
 
-    <!-- Onboarding Screen -->
+    <!-- Onboarding -->
     <div id="onboarding-screen">
         <div class="ob-title">What's your vibe?</div>
         <div class="ob-subtitle">Choose your favorite artists.</div>
-        
         <div id="obLoading">Loading artists from server...</div>
         <div class="artist-grid" id="onboardingGrid"></div>
         <div style="height: 80px;"></div> 
-
-        <div class="ob-btn-container">
-            <button class="ob-btn" id="obFinishBtn" onclick="finishOnboarding()">Continue</button>
-        </div>
+        <div class="ob-btn-container"><button class="ob-btn" id="obFinishBtn" onclick="finishOnboarding()">Continue</button></div>
     </div>
 
     <!-- Home Screen -->
@@ -160,25 +154,57 @@
         <div id="search-results-area" style="display: none;">
             <div class="section-title">Search Results</div>
             <div id="loadingSearch" class="loading-text" style="display: none;">Searching...</div>
-            <div class="track-list" id="searchResultsList"></div>
-            <hr style="border: 0; border-top: 1px solid #333; margin: 30px 0;">
+            <div class="track-list" id="searchResultsList" style="margin-bottom: 25px;"></div>
         </div>
 
         <div id="speed-dial-section" style="display: none;">
             <div class="section-title">Recently Played</div>
-            <div class="speed-dial-container" id="speedDialList"></div>
+            <div class="horizontal-scroll" id="speedDialList"></div>
+        </div>
+        
+        <!-- بخش جدید آرتیست‌های محبوب -->
+        <div id="fav-artists-section">
+            <div class="section-title">Your Favorite Artists</div>
+            <div class="horizontal-scroll" id="favArtistsList"></div>
         </div>
 
         <div id="releases-section">
             <div class="section-title">New Releases for You</div>
             <div id="loadingReleases" class="loading-text">Curating your feed...</div>
-            <div class="track-list" id="releasesList"></div>
+            <!-- اسکرول افقی دو ردیفه -->
+            <div class="releases-grid" id="releasesList"></div>
         </div>
         
-        <button class="reset-btn" onclick="forceResetAll()">🔄 Reset All My Data & Start Over</button>
+        <button class="reset-btn" onclick="forceResetAll()">🔄 Reset All My Data</button>
     </div>
 
-    <!-- Players (Mini & Full) -->
+    <!-- 🌟 Artist Screen (NEW) -->
+    <div id="artist-screen">
+        <div class="artist-header">
+            <div class="back-btn" onclick="closeArtistPage()"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
+            <img id="artistHeaderBg" class="artist-header-bg" src="">
+            <div class="artist-header-info">
+                <img id="artistHeaderImg" class="artist-header-img" src="">
+                <h1 id="artistHeaderName" class="artist-header-name">Artist</h1>
+            </div>
+        </div>
+        
+        <div style="padding: 0 20px;">
+            <div id="loadingArtist" class="loading-text">Loading discography...</div>
+            
+            <div id="artist-albums-section" style="display:none;">
+                <div class="section-title">Albums</div>
+                <div class="horizontal-scroll" id="artistAlbumsList"></div>
+            </div>
+            
+            <div id="artist-singles-section" style="display:none;">
+                <div class="section-title">Singles</div>
+                <div class="horizontal-scroll" id="artistSinglesList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Players -->
     <div class="mini-player" id="miniPlayer" onclick="openFullPlayer()">
         <div class="mini-info">
             <img id="miniCover" src="" class="mini-cover">
@@ -187,46 +213,27 @@
                 <div class="mini-artist" id="miniArtist">Artist</div>
             </div>
         </div>
-        <button class="mini-play-btn" id="miniPlayBtn" onclick="togglePlay(event)">
-            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        </button>
+        <button class="mini-play-btn" id="miniPlayBtn" onclick="togglePlay(event)"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
     </div>
 
     <div class="full-player" id="fullPlayer">
-        <div class="bg-blur-container">
-            <img id="bgBlurImage" class="bg-blur-img" src="">
-            <div class="bg-gradient-overlay"></div>
-        </div>
+        <div class="bg-blur-container"><img id="bgBlurImage" class="bg-blur-img" src=""><div class="bg-gradient-overlay"></div></div>
         <div class="fp-header">
             <svg onclick="closeFullPlayer()" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-            <div class="fp-header-center">NOW PLAYING</div>
-            <div style="width: 24px;"></div>
+            <div class="fp-header-center">NOW PLAYING</div><div style="width: 24px;"></div>
         </div>
-        <div class="fp-cover-container">
-            <img id="fpCover" src="" class="fp-cover">
-        </div>
+        <div class="fp-cover-container"><img id="fpCover" src="" class="fp-cover"></div>
         <div class="fp-info-row">
-            <div class="fp-text">
-                <div class="fp-title" id="fpTitle">Title</div>
-                <div class="fp-artist" id="fpArtist">Artist</div>
-            </div>
+            <div class="fp-text"><div class="fp-title" id="fpTitle">Title</div><div class="fp-artist" id="fpArtist">Artist</div></div>
         </div>
         <div class="progress-container">
-            <div class="progress-bg" id="progressBg" onclick="seek(event)">
-                <div class="progress-fill" id="progressFill"></div>
-                <div class="progress-dot" id="progressDot"></div>
-            </div>
-            <div class="time-display">
-                <span id="currentTime">0:00</span>
-                <span id="duration">0:00</span>
-            </div>
+            <div class="progress-bg" id="progressBg" onclick="seek(event)"><div class="progress-fill" id="progressFill"></div><div class="progress-dot" id="progressDot"></div></div>
+            <div class="time-display"><span id="currentTime">0:00</span><span id="duration">0:00</span></div>
         </div>
         <div class="fp-controls">
             <div style="width:32px;"></div>
             <button class="ctrl-main-btn" onclick="playPrev()"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
-            <button class="fp-btn-play" id="fpPlayBtn" onclick="togglePlay(event)">
-                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            </button>
+            <button class="fp-btn-play" id="fpPlayBtn" onclick="togglePlay(event)"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
             <button class="ctrl-main-btn" onclick="playNext()"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
             <div style="width:32px;"></div>
         </div>
@@ -235,22 +242,22 @@
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-
         const userId = tg.initDataUnsafe?.user?.id || 'guest';
         const FAV_ARTISTS_KEY = 'fav_artists_' + userId;
+        const FAV_ARTISTS_IMGS_KEY = 'fav_artists_imgs_' + userId;
         const RECENT_TRACKS_KEY = 'recent_tracks_' + userId;
-
         const SERVER_URL = "https://programmer-flags-brass-gba.trycloudflare.com";
+        
         let audio = new Audio();
         let currentPlaylist = [];
         let currentIndex = -1;
-        
         const iconPlayWhite = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
         const iconPauseWhite = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
         const iconPlayBlack = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
         const iconPauseBlack = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
         
         let selectedArtists = [];
+        let selectedArtistsData = []; // To store name + image
         let displayedArtists = new Set(); 
 
         window.onload = async () => {
@@ -261,15 +268,11 @@
                     const res = await fetch(`${SERVER_URL}/api/initial_artists`);
                     const initialArtists = await res.json();
                     document.getElementById('obLoading').style.display = 'none';
-                    
-                    initialArtists.forEach(a => {
-                        if (a.image) addArtistToGrid(a.name, a.image);
-                    });
-                } catch (e) {
-                    document.getElementById('obLoading').innerText = "خطا در ارتباط با سرور.";
-                }
+                    initialArtists.forEach(a => { if (a.image) addArtistToGrid(a.name, a.image); });
+                } catch (e) { document.getElementById('obLoading').innerText = "خطا در ارتباط."; }
             } else {
                 selectedArtists = JSON.parse(savedArtists);
+                selectedArtistsData = JSON.parse(localStorage.getItem(FAV_ARTISTS_IMGS_KEY) || '[]');
                 showHome();
             }
         };
@@ -277,63 +280,49 @@
         function addArtistToGrid(name, image) {
             if (displayedArtists.has(name)) return;
             displayedArtists.add(name);
-
             const grid = document.getElementById('onboardingGrid');
             const card = document.createElement('div');
             card.className = 'artist-card';
-            
-            let hqImage = image ? image.replace(/=w\d+-h\d+.*/, "=w400-h400-l90-rj") : '';
-            
-            card.innerHTML = `
-                <img class="artist-img" src="${hqImage}" alt="${name}">
-                <div class="artist-name">${name}</div>
-            `;
-            card.onclick = () => toggleArtistSelection(card, name);
+            let hqImage = image ? image.replace(/=w\d+-h\d+.*/, "=w500-h500-l90-rj") : '';
+            card.innerHTML = `<img class="artist-img" src="${hqImage}" alt="${name}"><div class="artist-name">${name}</div>`;
+            card.onclick = () => toggleArtistSelection(card, name, hqImage);
             grid.appendChild(card);
         }
 
-        async function toggleArtistSelection(cardElement, artistName) {
+        async function toggleArtistSelection(cardElement, artistName, imageUrl) {
             if (selectedArtists.includes(artistName)) {
                 selectedArtists = selectedArtists.filter(a => a !== artistName);
+                selectedArtistsData = selectedArtistsData.filter(a => a.name !== artistName);
                 cardElement.classList.remove('selected');
             } else {
                 selectedArtists.push(artistName);
+                selectedArtistsData.push({name: artistName, image: imageUrl});
                 cardElement.classList.add('selected');
-                
                 try {
                     const res = await fetch(`${SERVER_URL}/api/get_related?name=${encodeURIComponent(artistName)}`);
                     const related = await res.json();
-                    
                     let insertReference = cardElement;
-                    
                     related.forEach(r => {
                         if (displayedArtists.has(r.name)) return;
                         displayedArtists.add(r.name);
-                        
                         const newCard = document.createElement('div');
                         newCard.className = 'artist-card new-arrival'; 
-                        let hqImage = r.image ? r.image.replace(/=w\d+-h\d+.*/, "=w400-h400-l90-rj") : '';
-                        
-                        newCard.innerHTML = `
-                            <img class="artist-img" src="${hqImage}" alt="${r.name}">
-                            <div class="artist-name">${r.name}</div>
-                        `;
-                        newCard.onclick = () => toggleArtistSelection(newCard, r.name);
-                        
+                        let hqImage = r.image ? r.image.replace(/=w\d+-h\d+.*/, "=w500-h500-l90-rj") : '';
+                        newCard.innerHTML = `<img class="artist-img" src="${hqImage}" alt="${r.name}"><div class="artist-name">${r.name}</div>`;
+                        newCard.onclick = () => toggleArtistSelection(newCard, r.name, hqImage);
                         insertReference.insertAdjacentElement('afterend', newCard);
                         insertReference = newCard; 
                     });
-                } catch (e) { console.error("Error fetching related artists", e); }
+                } catch (e) {}
             }
-            
             const btn = document.getElementById('obFinishBtn');
-            if (selectedArtists.length >= 3) btn.classList.add('active');
-            else btn.classList.remove('active');
+            if (selectedArtists.length >= 3) btn.classList.add('active'); else btn.classList.remove('active');
         }
 
         function finishOnboarding() {
             if (selectedArtists.length < 3) return;
             localStorage.setItem(FAV_ARTISTS_KEY, JSON.stringify(selectedArtists));
+            localStorage.setItem(FAV_ARTISTS_IMGS_KEY, JSON.stringify(selectedArtistsData));
             document.getElementById('onboarding-screen').style.display = 'none';
             showHome();
         }
@@ -341,33 +330,33 @@
         function showHome() {
             document.getElementById('home-screen').style.display = 'block';
             renderSpeedDial();
+            renderFavArtists();
             fetchNewReleases();
+        }
+        
+        function renderFavArtists() {
+            const container = document.getElementById('favArtistsList');
+            container.innerHTML = '';
+            selectedArtistsData.forEach(artist => {
+                const item = document.createElement('div');
+                item.className = 'scroll-item';
+                item.onclick = () => openArtistPage(artist.name, artist.image);
+                item.innerHTML = `<img src="${artist.image}" class="scroll-cover circle"><div class="scroll-title">${artist.name}</div>`;
+                container.appendChild(item);
+            });
         }
 
         function renderSpeedDial() {
             const recent = JSON.parse(localStorage.getItem(RECENT_TRACKS_KEY) || '[]');
             const container = document.getElementById('speedDialList');
             const section = document.getElementById('speed-dial-section');
-            
-            if (recent.length === 0) {
-                section.style.display = 'none';
-                return;
-            }
-            
-            section.style.display = 'block';
-            container.innerHTML = '';
-            
+            if (recent.length === 0) { section.style.display = 'none'; return; }
+            section.style.display = 'block'; container.innerHTML = '';
             recent.forEach(track => {
                 const item = document.createElement('div');
-                item.className = 'sd-item';
-                item.onclick = () => {
-                    currentPlaylist = [track]; 
-                    playTrack(0);
-                };
-                item.innerHTML = `
-                    <img src="${track.hqCover}" class="sd-cover">
-                    <div class="sd-title">${track.title}</div>
-                `;
+                item.className = 'scroll-item';
+                item.onclick = () => { currentPlaylist = [track]; playTrack(0); };
+                item.innerHTML = `<img src="${track.hqCover}" class="scroll-cover"><div class="scroll-title">${track.title}</div>`;
                 container.appendChild(item);
             });
         }
@@ -381,176 +370,138 @@
             renderSpeedDial();
         }
 
-        // 🌟 استخراج ترکیبی از همه آرتیست‌ها برای پر کردن صفحه با موزیک‌های جدید
         async function fetchNewReleases() {
             if (selectedArtists.length === 0) return;
-            
             try {
-                // ارسال درخواست همزمان برای تمام خواننده‌های انتخابی
-                const promises = selectedArtists.map(artist =>
-                    fetch(`${SERVER_URL}/api/releases?artist=${encodeURIComponent(artist)}`).then(res => res.json())
-                );
-                
+                const promises = selectedArtists.map(artist => fetch(`${SERVER_URL}/api/releases?artist=${encodeURIComponent(artist)}`).then(res => res.json()));
                 const results = await Promise.all(promises);
                 document.getElementById('loadingReleases').style.display = 'none';
-                
                 let mixedFeed = [];
-                
-                // برداشتن حداکثر ۲ تک‌آهنگ از هر خواننده برای تنوع بالا
-                results.forEach(artistTracks => {
-                    if (artistTracks && artistTracks.length > 0) {
-                        mixedFeed.push(...artistTracks.slice(0, 2));
-                    }
-                });
-
-                if (mixedFeed.length === 0) {
-                    document.getElementById('loadingReleases').style.display = 'block';
-                    document.getElementById('loadingReleases').innerText = 'No new releases found.';
-                    return;
-                }
-                
-                // بر زدن (Shuffle) لیست تا فید یکدست و رندوم بشه
+                results.forEach(artistTracks => { if (artistTracks && artistTracks.length > 0) mixedFeed.push(...artistTracks.slice(0, 2)); });
+                if (mixedFeed.length === 0) { document.getElementById('loadingReleases').style.display = 'block'; document.getElementById('loadingReleases').innerText = 'No new releases found.'; return; }
                 mixedFeed = mixedFeed.sort(() => Math.random() - 0.5);
-
                 const container = document.getElementById('releasesList');
-                let tempPlaylist = mixedFeed.map(track => {
-                    return { ...track, hqCover: track.cover ? track.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' };
-                });
-
+                let tempPlaylist = mixedFeed.map(t => { return { ...t, hqCover: t.cover ? t.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' }; });
                 tempPlaylist.forEach((track, index) => {
                     const item = document.createElement('div');
                     item.className = 'track-item';
-                    item.onclick = () => {
-                        currentPlaylist = tempPlaylist;
-                        playTrack(index);
-                    };
-                    item.innerHTML = `
-                        <img src="${track.hqCover}" alt="cover">
-                        <div class="track-info">
-                            <div class="track-title">${track.title}</div>
-                            <div class="track-artist">${track.artist}</div>
-                        </div>
-                    `;
+                    item.onclick = () => { currentPlaylist = tempPlaylist; playTrack(index); };
+                    item.innerHTML = `<img src="${track.hqCover}" alt="cover"><div class="track-info"><div class="track-title">${track.title}</div><div class="track-artist">${track.artist}</div></div>`;
                     container.appendChild(item);
                 });
-            } catch (error) {
-                document.getElementById('loadingReleases').innerText = 'Failed to load releases.';
-            }
+            } catch (error) { document.getElementById('loadingReleases').innerText = 'Failed to load.'; }
+        }
+        
+        // 🌟 توابع مربوط به صفحه اختصاصی آرتیست
+        async function openArtistPage(name, image) {
+            document.getElementById('home-screen').style.display = 'none';
+            document.getElementById('artist-screen').style.display = 'block';
+            window.scrollTo(0, 0);
+            
+            document.getElementById('artistHeaderBg').src = image;
+            document.getElementById('artistHeaderImg').src = image;
+            document.getElementById('artistHeaderName').innerText = name;
+            
+            document.getElementById('loadingArtist').style.display = 'block';
+            document.getElementById('artist-albums-section').style.display = 'none';
+            document.getElementById('artist-singles-section').style.display = 'none';
+            
+            try {
+                const res = await fetch(`${SERVER_URL}/api/artist_details?name=${encodeURIComponent(name)}`);
+                const data = await res.json();
+                document.getElementById('loadingArtist').style.display = 'none';
+                
+                if(data.albums && data.albums.length > 0) {
+                    document.getElementById('artist-albums-section').style.display = 'block';
+                    const albList = document.getElementById('artistAlbumsList');
+                    albList.innerHTML = '';
+                    data.albums.forEach(a => {
+                        let hqCover = a.cover ? a.cover.replace(/=w\d+-h\d+.*/, "=w500-h500-l90-rj") : '';
+                        const item = document.createElement('div');
+                        item.className = 'scroll-item';
+                        item.onclick = () => playAlbum(a.id, name);
+                        item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${a.title}</div><div style="font-size:10px; color:#a7a7a7;">${a.year}</div>`;
+                        albList.appendChild(item);
+                    });
+                }
+                if(data.singles && data.singles.length > 0) {
+                    document.getElementById('artist-singles-section').style.display = 'block';
+                    const sngList = document.getElementById('artistSinglesList');
+                    sngList.innerHTML = '';
+                    data.singles.forEach(s => {
+                        let hqCover = s.cover ? s.cover.replace(/=w\d+-h\d+.*/, "=w500-h500-l90-rj") : '';
+                        const item = document.createElement('div');
+                        item.className = 'scroll-item';
+                        item.onclick = () => playAlbum(s.id, name);
+                        item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${s.title}</div><div style="font-size:10px; color:#a7a7a7;">${s.year}</div>`;
+                        sngList.appendChild(item);
+                    });
+                }
+            } catch (e) { document.getElementById('loadingArtist').innerText = 'Error loading discography.'; }
+        }
+        
+        function closeArtistPage() {
+            document.getElementById('artist-screen').style.display = 'none';
+            document.getElementById('home-screen').style.display = 'block';
+        }
+        
+        async function playAlbum(browseId, artistName) {
+            tg.showAlert("Loading album tracks...");
+            try {
+                const res = await fetch(`${SERVER_URL}/api/album_tracks?id=${browseId}&artist=${encodeURIComponent(artistName)}`);
+                const tracks = await res.json();
+                if(tracks.length > 0) {
+                    currentPlaylist = tracks.map(t => { return { ...t, hqCover: t.cover ? t.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' }; });
+                    playTrack(0);
+                } else { tg.showAlert("No playable tracks found."); }
+            } catch(e) { tg.showAlert("Error loading tracks."); }
         }
 
         async function handleSearch(event) {
             if (event.key === 'Enter') {
                 const query = document.getElementById('searchInput').value.trim();
                 if (!query) return;
-                
                 document.getElementById('search-results-area').style.display = 'block';
                 document.getElementById('loadingSearch').style.display = 'block';
                 document.getElementById('searchResultsList').innerHTML = '';
-
                 try {
                     const response = await fetch(`${SERVER_URL}/search?q=${encodeURIComponent(query)}`);
                     const data = await response.json();
                     document.getElementById('loadingSearch').style.display = 'none';
-
-                    let tempPlaylist = data.map(track => {
-                        return { ...track, hqCover: track.cover ? track.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' };
-                    });
-
+                    let tempPlaylist = data.map(track => { return { ...track, hqCover: track.cover ? track.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' }; });
                     tempPlaylist.forEach((track, index) => {
                         const item = document.createElement('div');
                         item.className = 'track-item';
-                        item.onclick = () => {
-                            currentPlaylist = tempPlaylist;
-                            playTrack(index);
-                        };
-                        item.innerHTML = `
-                            <img src="${track.hqCover}" alt="cover">
-                            <div class="track-info">
-                                <div class="track-title">${track.title}</div>
-                                <div class="track-artist">${track.artist}</div>
-                            </div>
-                        `;
+                        item.onclick = () => { currentPlaylist = tempPlaylist; playTrack(index); };
+                        item.innerHTML = `<img src="${track.hqCover}"><div class="track-info"><div class="track-title">${track.title}</div><div class="track-artist">${track.artist}</div></div>`;
                         document.getElementById('searchResultsList').appendChild(item);
                     });
-                } catch (error) {
-                    document.getElementById('loadingSearch').style.display = 'none';
-                    tg.showAlert("Connection error!");
-                }
+                } catch (error) { document.getElementById('loadingSearch').style.display = 'none'; tg.showAlert("Error!"); }
             }
         }
 
         function playTrack(index) {
             if (index < 0 || index >= currentPlaylist.length) return;
-            currentIndex = index;
-            const track = currentPlaylist[index];
-            
+            currentIndex = index; const track = currentPlaylist[index];
             addToSpeedDial(track);
-
-            document.getElementById('miniTitle').innerText = track.title;
-            document.getElementById('miniArtist').innerText = track.artist;
-            document.getElementById('miniCover').src = track.hqCover;
-            document.getElementById('miniPlayer').style.display = 'flex';
-            
-            document.getElementById('fpCover').src = track.hqCover;
-            document.getElementById('bgBlurImage').src = track.hqCover; 
-            document.getElementById('fpTitle').innerText = track.title;
-            document.getElementById('fpArtist').innerText = track.artist;
-
-            audio.src = `${SERVER_URL}/stream?id=${track.id}`;
-            audio.play();
-            updatePlayBtn(true);
+            document.getElementById('miniTitle').innerText = track.title; document.getElementById('miniArtist').innerText = track.artist;
+            document.getElementById('miniCover').src = track.hqCover; document.getElementById('miniPlayer').style.display = 'flex';
+            document.getElementById('fpCover').src = track.hqCover; document.getElementById('bgBlurImage').src = track.hqCover; 
+            document.getElementById('fpTitle').innerText = track.title; document.getElementById('fpArtist').innerText = track.artist;
+            audio.src = `${SERVER_URL}/stream?id=${track.id}`; audio.play(); updatePlayBtn(true);
         }
 
         function playNext() { if (currentIndex < currentPlaylist.length - 1) playTrack(currentIndex + 1); }
-        function playPrev() {
-            if (currentIndex > 0) playTrack(currentIndex - 1);
-            else if (audio.currentTime > 3) audio.currentTime = 0; 
-        }
-
+        function playPrev() { if (currentIndex > 0) playTrack(currentIndex - 1); else if (audio.currentTime > 3) audio.currentTime = 0; }
         function openFullPlayer() { document.getElementById('fullPlayer').classList.add('active'); }
         function closeFullPlayer() { document.getElementById('fullPlayer').classList.remove('active'); }
-
-        function togglePlay(e) {
-            e.stopPropagation();
-            if (audio.paused) { audio.play(); updatePlayBtn(true); } 
-            else { audio.pause(); updatePlayBtn(false); }
-        }
-
-        function updatePlayBtn(isPlaying) {
-            document.getElementById('miniPlayBtn').innerHTML = isPlaying ? iconPauseWhite : iconPlayWhite;
-            document.getElementById('fpPlayBtn').innerHTML = isPlaying ? iconPauseBlack : iconPlayBlack;
-        }
-
+        function togglePlay(e) { e.stopPropagation(); if (audio.paused) { audio.play(); updatePlayBtn(true); } else { audio.pause(); updatePlayBtn(false); } }
+        function updatePlayBtn(isPlaying) { document.getElementById('miniPlayBtn').innerHTML = isPlaying ? iconPauseWhite : iconPlayWhite; document.getElementById('fpPlayBtn').innerHTML = isPlaying ? iconPauseBlack : iconPlayBlack; }
         audio.onended = () => playNext();
-
-        audio.ontimeupdate = () => {
-            if (audio.duration) {
-                const progress = (audio.currentTime / audio.duration) * 100;
-                document.getElementById('progressFill').style.width = `${progress}%`;
-                document.getElementById('progressDot').style.left = `${progress}%`;
-                document.getElementById('currentTime').innerText = formatTime(audio.currentTime);
-                document.getElementById('duration').innerText = formatTime(audio.duration);
-            }
-        };
-
-        function seek(e) {
-            const bar = document.getElementById('progressBg');
-            const clickX = e.offsetX;
-            const width = bar.clientWidth;
-            audio.currentTime = (clickX / width) * audio.duration;
-        }
-
-        function formatTime(seconds) {
-            if (isNaN(seconds)) return "0:00";
-            const m = Math.floor(seconds / 60);
-            const s = Math.floor(seconds % 60);
-            return `${m}:${s < 10 ? '0' : ''}${s}`;
-        }
-        
-        function forceResetAll() {
-            localStorage.clear();
-            window.location.reload();
-        }
+        audio.ontimeupdate = () => { if (audio.duration) { const progress = (audio.currentTime / audio.duration) * 100; document.getElementById('progressFill').style.width = `${progress}%`; document.getElementById('progressDot').style.left = `${progress}%`; document.getElementById('currentTime').innerText = formatTime(audio.currentTime); document.getElementById('duration').innerText = formatTime(audio.duration); } };
+        function seek(e) { const bar = document.getElementById('progressBg'); audio.currentTime = (e.offsetX / bar.clientWidth) * audio.duration; }
+        function formatTime(seconds) { if (isNaN(seconds)) return "0:00"; const m = Math.floor(seconds / 60); const s = Math.floor(seconds % 60); return `${m}:${s < 10 ? '0' : ''}${s}`; }
+        function forceResetAll() { localStorage.clear(); window.location.reload(); }
     </script>
 </body>
 </html>
