@@ -23,7 +23,6 @@
         .ob-subtitle { font-size: 14px; color: var(--hint-color); margin-bottom: 30px; }
         #obLoading { text-align: center; color: var(--accent); font-weight: 600; margin-top: 50px; font-size: 16px; }
         
-        /* عکس‌های آرتیست‌ها دو ستونه و بزرگتر شدن */
         .artist-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 30px;}
         .artist-card { display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative;}
         .artist-img { 
@@ -55,7 +54,6 @@
         .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 20px; fill: var(--hint-color); }
         .section-title { font-size: 20px; font-weight: 700; margin-bottom: 15px; }
         
-        /* افقی شدن اسکرول‌ها (اخیرا پخش شده و آرتیست‌های محبوب) */
         .horizontal-scroll { 
             display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 25px;
             scroll-snap-type: x mandatory; scrollbar-width: none;
@@ -66,7 +64,6 @@
         .scroll-cover.circle { border-radius: 50%; }
         .scroll-title { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        /* New Releases افقی و دو ردیفه */
         .releases-grid {
             display: grid; grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; gap: 12px;
             overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 15px; margin-bottom: 25px; scrollbar-width: none;
@@ -93,6 +90,15 @@
         .artist-header-name { font-size: 32px; font-weight: 700; color: #fff; margin: 0; }
         .back-btn { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.5); border-radius: 50%; padding: 8px; display:flex; justify-content:center; align-items:center; z-index: 10; cursor:pointer;}
         .back-btn svg { width: 24px; height: 24px; fill: #fff; }
+
+        /* 4. Album Screen (NEW) */
+        #album-screen { display: none; padding-bottom: 100px; }
+        .album-header { position: relative; width: 100%; height: 250px; overflow: hidden; margin-bottom: 20px; display: flex; justify-content: center; align-items: center;}
+        .album-header-bg { width: 100%; height: 100%; object-fit: cover; filter: blur(20px) brightness(0.4); position: absolute; top:0; left:0; z-index:-1;}
+        .album-header-info { text-align: center; padding-top: 20px; }
+        .album-header-img { width: 140px; height: 140px; border-radius: 8px; object-fit: cover; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 15px;}
+        .album-header-name { font-size: 24px; font-weight: 700; color: #fff; margin: 0 15px; }
+        .album-header-artist { font-size: 14px; color: var(--hint-color); margin-top: 5px; }
 
         /* Players */
         .mini-player { position: fixed; bottom: 8px; left: 8px; right: 8px; background: #2a2a2a; border-radius: 8px; padding: 8px 12px; display: none; align-items: center; justify-content: space-between; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.5); cursor: pointer;}
@@ -162,7 +168,6 @@
             <div class="horizontal-scroll" id="speedDialList"></div>
         </div>
         
-        <!-- بخش جدید آرتیست‌های محبوب -->
         <div id="fav-artists-section">
             <div class="section-title">Your Favorite Artists</div>
             <div class="horizontal-scroll" id="favArtistsList"></div>
@@ -171,14 +176,13 @@
         <div id="releases-section">
             <div class="section-title">New Releases for You</div>
             <div id="loadingReleases" class="loading-text">Curating your feed...</div>
-            <!-- اسکرول افقی دو ردیفه -->
             <div class="releases-grid" id="releasesList"></div>
         </div>
         
         <button class="reset-btn" onclick="forceResetAll()">🔄 Reset All My Data</button>
     </div>
 
-    <!-- 🌟 Artist Screen (NEW) -->
+    <!-- Artist Screen -->
     <div id="artist-screen">
         <div class="artist-header">
             <div class="back-btn" onclick="closeArtistPage()"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
@@ -201,6 +205,24 @@
                 <div class="section-title">Singles</div>
                 <div class="horizontal-scroll" id="artistSinglesList"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- 🌟 Album Screen (NEW) -->
+    <div id="album-screen">
+        <div class="album-header">
+            <div class="back-btn" onclick="closeAlbumPage()"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
+            <img id="albumHeaderBg" class="album-header-bg" src="">
+            <div class="album-header-info">
+                <img id="albumHeaderImg" class="album-header-img" src="">
+                <h1 id="albumHeaderName" class="album-header-name">Album Name</h1>
+                <div id="albumHeaderArtist" class="album-header-artist">Artist</div>
+            </div>
+        </div>
+        
+        <div style="padding: 0 20px;">
+            <div id="loadingAlbum" class="loading-text">Loading tracks...</div>
+            <div class="track-list" id="albumTrackList"></div>
         </div>
     </div>
 
@@ -257,7 +279,7 @@
         const iconPauseBlack = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
         
         let selectedArtists = [];
-        let selectedArtistsData = []; // To store name + image
+        let selectedArtistsData = []; 
         let displayedArtists = new Set(); 
 
         window.onload = async () => {
@@ -392,7 +414,7 @@
             } catch (error) { document.getElementById('loadingReleases').innerText = 'Failed to load.'; }
         }
         
-        // 🌟 توابع مربوط به صفحه اختصاصی آرتیست
+        // --- توابع مربوط به صفحه آرتیست ---
         async function openArtistPage(name, image) {
             document.getElementById('home-screen').style.display = 'none';
             document.getElementById('artist-screen').style.display = 'block';
@@ -419,7 +441,8 @@
                         let hqCover = a.cover ? a.cover.replace(/=w\d+-h\d+.*/, "=w500-h500-l90-rj") : '';
                         const item = document.createElement('div');
                         item.className = 'scroll-item';
-                        item.onclick = () => playAlbum(a.id, name);
+                        // تغییر: حالا به جای پخش مستقیم، صفحه آلبوم باز میشه
+                        item.onclick = () => openAlbumPage(a.id, a.title, hqCover, name);
                         item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${a.title}</div><div style="font-size:10px; color:#a7a7a7;">${a.year}</div>`;
                         albList.appendChild(item);
                     });
@@ -432,7 +455,8 @@
                         let hqCover = s.cover ? s.cover.replace(/=w\d+-h\d+.*/, "=w500-h500-l90-rj") : '';
                         const item = document.createElement('div');
                         item.className = 'scroll-item';
-                        item.onclick = () => playAlbum(s.id, name);
+                        // سینگل‌ها هم دقیقاً مثل آلبوم باز میشن
+                        item.onclick = () => openAlbumPage(s.id, s.title, hqCover, name);
                         item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${s.title}</div><div style="font-size:10px; color:#a7a7a7;">${s.year}</div>`;
                         sngList.appendChild(item);
                     });
@@ -445,18 +469,62 @@
             document.getElementById('home-screen').style.display = 'block';
         }
         
-        async function playAlbum(browseId, artistName) {
-            tg.showAlert("Loading album tracks...");
+        // 🌟 توابع جدید صفحه آلبوم (بدون هیچ آلرتِ رو مخی)
+        async function openAlbumPage(browseId, albumTitle, coverUrl, artistName) {
+            document.getElementById('artist-screen').style.display = 'none';
+            document.getElementById('album-screen').style.display = 'block';
+            window.scrollTo(0, 0);
+
+            document.getElementById('albumHeaderBg').src = coverUrl;
+            document.getElementById('albumHeaderImg').src = coverUrl;
+            document.getElementById('albumHeaderName').innerText = albumTitle;
+            document.getElementById('albumHeaderArtist').innerText = artistName;
+
+            document.getElementById('loadingAlbum').style.display = 'block';
+            document.getElementById('albumTrackList').innerHTML = '';
+
             try {
                 const res = await fetch(`${SERVER_URL}/api/album_tracks?id=${browseId}&artist=${encodeURIComponent(artistName)}`);
                 const tracks = await res.json();
+                document.getElementById('loadingAlbum').style.display = 'none';
+
                 if(tracks.length > 0) {
-                    currentPlaylist = tracks.map(t => { return { ...t, hqCover: t.cover ? t.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' }; });
-                    playTrack(0);
-                } else { tg.showAlert("No playable tracks found."); }
-            } catch(e) { tg.showAlert("Error loading tracks."); }
+                    let tempPlaylist = tracks.map(t => { return { ...t, hqCover: t.cover ? t.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' }; });
+                    
+                    tempPlaylist.forEach((track, index) => {
+                        const trackEl = document.createElement('div');
+                        trackEl.className = 'track-item';
+                        trackEl.style.background = 'transparent'; // تمیزتر شدن ظاهر در لیست
+                        trackEl.onclick = () => {
+                            currentPlaylist = tempPlaylist;
+                            playTrack(index);
+                        };
+                        // طراحی مینیمال برای ترک‌های داخل آلبوم (با شماره)
+                        trackEl.innerHTML = `
+                            <div style="width: 30px; text-align: center; color: var(--hint-color); font-weight: 600;">${index + 1}</div>
+                            <div class="track-info">
+                                <div class="track-title">${track.title}</div>
+                                <div class="track-artist">${track.artist}</div>
+                            </div>
+                        `;
+                        document.getElementById('albumTrackList').appendChild(trackEl);
+                    });
+                } else {
+                    document.getElementById('loadingAlbum').style.display = 'block';
+                    document.getElementById('loadingAlbum').innerText = "No tracks found.";
+                }
+            } catch(e) {
+                document.getElementById('loadingAlbum').style.display = 'block';
+                document.getElementById('loadingAlbum').innerText = "Error loading tracks.";
+            }
         }
 
+        function closeAlbumPage() {
+            document.getElementById('album-screen').style.display = 'none';
+            document.getElementById('artist-screen').style.display = 'block';
+        }
+
+        // --- جستجو و پلیر ---
         async function handleSearch(event) {
             if (event.key === 'Enter') {
                 const query = document.getElementById('searchInput').value.trim();
@@ -476,7 +544,7 @@
                         item.innerHTML = `<img src="${track.hqCover}"><div class="track-info"><div class="track-title">${track.title}</div><div class="track-artist">${track.artist}</div></div>`;
                         document.getElementById('searchResultsList').appendChild(item);
                     });
-                } catch (error) { document.getElementById('loadingSearch').style.display = 'none'; tg.showAlert("Error!"); }
+                } catch (error) { document.getElementById('loadingSearch').style.display = 'none'; }
             }
         }
 
