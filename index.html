@@ -21,10 +21,12 @@
             overflow-x: hidden;
         }
         
-        /* 1. Onboarding Screen (Spotify Style) */
+        /* 1. Onboarding Screen */
         #onboarding-screen { padding: 30px 20px; display: none; }
         .ob-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
         .ob-subtitle { font-size: 14px; color: var(--hint-color); margin-bottom: 30px; }
+        
+        #obLoading { text-align: center; color: var(--accent); font-weight: 600; margin-top: 50px; font-size: 16px; }
         
         .artist-grid { 
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;
@@ -35,6 +37,7 @@
         .artist-img { 
             width: 90px; height: 90px; border-radius: 50%; object-fit: cover; margin-bottom: 8px;
             border: 3px solid transparent; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            background-color: var(--secondary-bg); /* Placeholder color if image takes a second */
         }
         .artist-card.selected .artist-img { border-color: var(--accent); opacity: 0.8; transform: scale(0.95);}
         .artist-name { font-size: 12px; font-weight: 600; text-align: center; }
@@ -79,7 +82,7 @@
         .track-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .track-artist { font-size: 13px; color: var(--hint-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         
-        /* --- Player Styles --- */
+        /* --- Players --- */
         .mini-player { position: fixed; bottom: 8px; left: 8px; right: 8px; background: #2a2a2a; border-radius: 8px; padding: 8px 12px; display: none; align-items: center; justify-content: space-between; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.5); cursor: pointer;}
         .mini-info { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden; }
         .mini-cover { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; }
@@ -126,11 +129,10 @@
         <div class="ob-title">What's your vibe?</div>
         <div class="ob-subtitle">Choose 3 or more artists you like.</div>
         
-        <div class="artist-grid" id="onboardingGrid">
-            <!-- Artists injected via JS -->
-        </div>
+        <div id="obLoading">Loading artists from server...</div>
         
-        <!-- فاصله برای اینکه دکمه روی آرتیست‌های پایین رو نگیره -->
+        <div class="artist-grid" id="onboardingGrid"></div>
+        
         <div style="height: 80px;"></div> 
 
         <div class="ob-btn-container">
@@ -231,26 +233,27 @@
         const iconPauseWhite = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
         const iconPlayBlack = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
         const iconPauseBlack = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
-
-        // لیست اولیه هنرمندان به همراه عکس‌های باکیفیت (Spotify CDN)
-        const initialArtists = [
-            { name: "Travis Scott", image: "https://i.scdn.co/image/ab6761610000e5eb19d45cb08447d6928eeb31a8" },
-            { name: "Drake", image: "https://i.scdn.co/image/ab6761610000e5eb4293385d324db8558179afd9" },
-            { name: "The Weeknd", image: "https://i.scdn.co/image/ab6761610000e5eb214f3cf1cbe7139c1e26ffbb" },
-            { name: "Future", image: "https://i.scdn.co/image/ab6761610000e5ebfc32822a1f8db1f3a22f300c" },
-            { name: "Kendrick Lamar", image: "https://i.scdn.co/image/ab6761610000e5eb437b9e2a82505b3d93ff1022" },
-            { name: "Post Malone", image: "https://i.scdn.co/image/ab6761610000e5eb6be070445b03e0b63147c2c1" }
-        ];
         
         let selectedArtists = [];
-        let displayedArtists = new Set(); // برای جلوگیری از اضافه شدن آرتیست تکراری
+        let displayedArtists = new Set(); 
 
-        // 1. Onboarding Logic
-        window.onload = () => {
+        // 1. Onboarding Logic (Now fetching directly from your Python Server!)
+        window.onload = async () => {
             const savedArtists = localStorage.getItem('fav_artists');
+            
             if (!savedArtists) {
                 document.getElementById('onboarding-screen').style.display = 'block';
-                initialArtists.forEach(a => addArtistToGrid(a.name, a.image));
+                try {
+                    const res = await fetch(`${SERVER_URL}/api/initial_artists`);
+                    const initialArtists = await res.json();
+                    document.getElementById('obLoading').style.display = 'none';
+                    
+                    initialArtists.forEach(a => {
+                        if (a.image) addArtistToGrid(a.name, a.image);
+                    });
+                } catch (e) {
+                    document.getElementById('obLoading').innerText = "خطا در برقراری ارتباط با سرور. لطفاً صفحه را رفرش کنید.";
+                }
             } else {
                 selectedArtists = JSON.parse(savedArtists);
                 showHome();
@@ -264,8 +267,12 @@
             const grid = document.getElementById('onboardingGrid');
             const card = document.createElement('div');
             card.className = 'artist-card';
+            
+            // رفع مشکل بی‌کیفیتی با درخواست عکس با وضوح بالا
+            let hqImage = image ? image.replace(/=w\d+-h\d+.*/, "=w400-h400-l90-rj") : '';
+            
             card.innerHTML = `
-                <img class="artist-img" src="${image}" alt="${name}">
+                <img class="artist-img" src="${hqImage}" alt="${name}">
                 <div class="artist-name">${name}</div>
             `;
             card.onclick = () => toggleArtistSelection(card, name);
@@ -274,15 +281,13 @@
 
         async function toggleArtistSelection(cardElement, artistName) {
             if (selectedArtists.includes(artistName)) {
-                // اگر قبلاً انتخاب شده بود، حالا حذف می‌شه
                 selectedArtists = selectedArtists.filter(a => a !== artistName);
                 cardElement.classList.remove('selected');
             } else {
-                // انتخاب جدید
                 selectedArtists.push(artistName);
                 cardElement.classList.add('selected');
                 
-                // 🌟 جادوی داینامیک: درخواست به سرور برای گرفتن آرتیست‌های مشابه همون لحظه!
+                // لود خواننده‌های مشابه همون لحظه
                 try {
                     const res = await fetch(`${SERVER_URL}/api/get_related?name=${encodeURIComponent(artistName)}`);
                     const related = await res.json();
@@ -292,7 +297,6 @@
                 } catch (e) { console.error("Error fetching related artists", e); }
             }
             
-            // باز شدن قفل دکمه Continue
             const btn = document.getElementById('obFinishBtn');
             if (selectedArtists.length >= 3) btn.classList.add('active');
             else btn.classList.remove('active');
@@ -312,7 +316,7 @@
             fetchNewReleases();
         }
 
-        // --- Speed Dial (Recently Played) ---
+        // --- Speed Dial ---
         function renderSpeedDial() {
             const recent = JSON.parse(localStorage.getItem('recent_tracks') || '[]');
             const container = document.getElementById('speedDialList');
@@ -345,7 +349,7 @@
             let recent = JSON.parse(localStorage.getItem('recent_tracks') || '[]');
             recent = recent.filter(t => t.id !== track.id);
             recent.unshift(track);
-            if (recent.length > 10) recent.pop(); // نگه‌داشتن ۱۰ آهنگ آخر
+            if (recent.length > 10) recent.pop(); 
             localStorage.setItem('recent_tracks', JSON.stringify(recent));
             renderSpeedDial();
         }
@@ -353,7 +357,7 @@
         // --- New Releases ---
         async function fetchNewReleases() {
             if (selectedArtists.length === 0) return;
-            const artistToFetch = selectedArtists[0]; // گرفتن آهنگ بر اساس اولین خواننده محبوب
+            const artistToFetch = selectedArtists[0]; 
             
             try {
                 const response = await fetch(`${SERVER_URL}/api/releases?artist=${encodeURIComponent(artistToFetch)}`);
@@ -386,7 +390,7 @@
             }
         }
 
-        // --- Search Logic ---
+        // --- Search ---
         async function handleSearch(event) {
             if (event.key === 'Enter') {
                 const query = document.getElementById('searchInput').value.trim();
