@@ -21,28 +21,35 @@
             overflow-x: hidden;
         }
         
-        /* 1. Onboarding Screen */
+        /* 1. Onboarding Screen (Spotify Style) */
         #onboarding-screen { padding: 30px 20px; display: none; }
         .ob-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
         .ob-subtitle { font-size: 14px; color: var(--hint-color); margin-bottom: 30px; }
-        .artist-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px;}
-        .artist-card { 
-            background: var(--secondary-bg); border-radius: 12px; padding: 20px 10px; text-align: center;
-            border: 2px solid transparent; cursor: pointer; transition: 0.2s;
+        
+        .artist-grid { 
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;
         }
-        .artist-card.selected { border-color: var(--accent); background: rgba(29, 185, 84, 0.1); }
-        .artist-name { font-weight: 600; font-size: 15px; }
+        .artist-card { 
+            display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative;
+        }
+        .artist-img { 
+            width: 90px; height: 90px; border-radius: 50%; object-fit: cover; margin-bottom: 8px;
+            border: 3px solid transparent; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .artist-card.selected .artist-img { border-color: var(--accent); opacity: 0.8; transform: scale(0.95);}
+        .artist-name { font-size: 12px; font-weight: 600; text-align: center; }
+        
+        .ob-btn-container { position: fixed; bottom: 20px; left: 20px; right: 20px; z-index: 100;}
         .ob-btn { 
             width: 100%; padding: 15px; background: var(--text-color); color: var(--bg-color); 
             border: none; border-radius: 25px; font-weight: 700; font-size: 16px; cursor: pointer;
-            opacity: 0.5; pointer-events: none; transition: 0.3s;
+            opacity: 0.5; pointer-events: none; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         .ob-btn.active { opacity: 1; pointer-events: auto; }
 
         /* 2. Home Screen */
         #home-screen { padding: 20px; display: none; }
         
-        /* Search Bar */
         .search-container { position: relative; margin-bottom: 25px; }
         .search-container input {
             width: 100%; padding: 15px 15px 15px 45px; border: none; border-radius: 8px;
@@ -51,7 +58,6 @@
         }
         .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 20px; fill: var(--hint-color); }
         
-        /* Speed Dial (Recently Played) */
         .section-title { font-size: 20px; font-weight: 700; margin-bottom: 15px; }
         .speed-dial-container { 
             display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 25px;
@@ -65,7 +71,6 @@
         .sd-cover { width: 90px; height: 90px; border-radius: 6px; object-fit: cover; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
         .sd-title { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        /* Track Lists (Search & Releases) */
         .track-list { display: flex; flex-direction: column; gap: 10px; }
         .track-item { display: flex; align-items: center; padding: 8px; border-radius: 8px; gap: 12px; background: transparent; transition: background 0.2s;}
         .track-item:active { background: rgba(255,255,255,0.1); }
@@ -74,8 +79,7 @@
         .track-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .track-artist { font-size: 13px; color: var(--hint-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         
-        /* --- Shared Player Styles (Mini & Full) --- */
-        /* این استایل‌ها دقیقاً همون نسخه کامل و بی‌نقص قبلی هستن */
+        /* --- Player Styles --- */
         .mini-player { position: fixed; bottom: 8px; left: 8px; right: 8px; background: #2a2a2a; border-radius: 8px; padding: 8px 12px; display: none; align-items: center; justify-content: space-between; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.5); cursor: pointer;}
         .mini-info { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden; }
         .mini-cover { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; }
@@ -121,10 +125,17 @@
     <div id="onboarding-screen">
         <div class="ob-title">What's your vibe?</div>
         <div class="ob-subtitle">Choose 3 or more artists you like.</div>
+        
         <div class="artist-grid" id="onboardingGrid">
             <!-- Artists injected via JS -->
         </div>
-        <button class="ob-btn" id="obFinishBtn" onclick="finishOnboarding()">Continue</button>
+        
+        <!-- فاصله برای اینکه دکمه روی آرتیست‌های پایین رو نگیره -->
+        <div style="height: 80px;"></div> 
+
+        <div class="ob-btn-container">
+            <button class="ob-btn" id="obFinishBtn" onclick="finishOnboarding()">Continue</button>
+        </div>
     </div>
 
     <!-- Home Screen -->
@@ -134,7 +145,6 @@
             <input type="text" id="searchInput" placeholder="Artists, songs, or podcasts" onkeypress="handleSearch(event)">
         </div>
         
-        <!-- Search Results Area -->
         <div id="search-results-area" style="display: none;">
             <div class="section-title">Search Results</div>
             <div id="loadingSearch" class="loading-text" style="display: none;">Searching...</div>
@@ -142,13 +152,11 @@
             <hr style="border: 0; border-top: 1px solid #333; margin: 30px 0;">
         </div>
 
-        <!-- Speed Dial -->
         <div id="speed-dial-section" style="display: none;">
             <div class="section-title">Recently Played</div>
             <div class="speed-dial-container" id="speedDialList"></div>
         </div>
 
-        <!-- New Releases -->
         <div id="releases-section">
             <div class="section-title">New Releases for You</div>
             <div id="loadingReleases" class="loading-text">Curating your feed...</div>
@@ -156,7 +164,7 @@
         </div>
     </div>
 
-    <!-- Mini Player -->
+    <!-- Players (Mini & Full) -->
     <div class="mini-player" id="miniPlayer" onclick="openFullPlayer()">
         <div class="mini-info">
             <img id="miniCover" src="" class="mini-cover">
@@ -170,7 +178,6 @@
         </button>
     </div>
 
-    <!-- Full Screen Player -->
     <div class="full-player" id="fullPlayer">
         <div class="bg-blur-container">
             <img id="bgBlurImage" class="bg-blur-img" src="">
@@ -225,42 +232,67 @@
         const iconPlayBlack = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
         const iconPauseBlack = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
 
-        // لیست آرتیست‌های اولیه برای Onboarding
-        const presetArtists = ["Travis Scott", "Drake", "The Weeknd", "Future", "Kendrick Lamar", "Post Malone", "Billie Eilish", "Taylor Swift"];
+        // لیست اولیه هنرمندان به همراه عکس‌های باکیفیت (Spotify CDN)
+        const initialArtists = [
+            { name: "Travis Scott", image: "https://i.scdn.co/image/ab6761610000e5eb19d45cb08447d6928eeb31a8" },
+            { name: "Drake", image: "https://i.scdn.co/image/ab6761610000e5eb4293385d324db8558179afd9" },
+            { name: "The Weeknd", image: "https://i.scdn.co/image/ab6761610000e5eb214f3cf1cbe7139c1e26ffbb" },
+            { name: "Future", image: "https://i.scdn.co/image/ab6761610000e5ebfc32822a1f8db1f3a22f300c" },
+            { name: "Kendrick Lamar", image: "https://i.scdn.co/image/ab6761610000e5eb437b9e2a82505b3d93ff1022" },
+            { name: "Post Malone", image: "https://i.scdn.co/image/ab6761610000e5eb6be070445b03e0b63147c2c1" }
+        ];
+        
         let selectedArtists = [];
+        let displayedArtists = new Set(); // برای جلوگیری از اضافه شدن آرتیست تکراری
 
-        // 1. منطق شروع اپلیکیشن
+        // 1. Onboarding Logic
         window.onload = () => {
             const savedArtists = localStorage.getItem('fav_artists');
             if (!savedArtists) {
-                renderOnboarding();
+                document.getElementById('onboarding-screen').style.display = 'block';
+                initialArtists.forEach(a => addArtistToGrid(a.name, a.image));
             } else {
                 selectedArtists = JSON.parse(savedArtists);
                 showHome();
             }
         };
 
-        // --- Onboarding Logic ---
-        function renderOnboarding() {
-            document.getElementById('onboarding-screen').style.display = 'block';
+        function addArtistToGrid(name, image) {
+            if (displayedArtists.has(name)) return;
+            displayedArtists.add(name);
+
             const grid = document.getElementById('onboardingGrid');
-            presetArtists.forEach(artist => {
-                const card = document.createElement('div');
-                card.className = 'artist-card';
-                card.innerHTML = `<div class="artist-name">${artist}</div>`;
-                card.onclick = () => toggleArtistSelection(card, artist);
-                grid.appendChild(card);
-            });
+            const card = document.createElement('div');
+            card.className = 'artist-card';
+            card.innerHTML = `
+                <img class="artist-img" src="${image}" alt="${name}">
+                <div class="artist-name">${name}</div>
+            `;
+            card.onclick = () => toggleArtistSelection(card, name);
+            grid.appendChild(card);
         }
 
-        function toggleArtistSelection(cardElement, artistName) {
+        async function toggleArtistSelection(cardElement, artistName) {
             if (selectedArtists.includes(artistName)) {
+                // اگر قبلاً انتخاب شده بود، حالا حذف می‌شه
                 selectedArtists = selectedArtists.filter(a => a !== artistName);
                 cardElement.classList.remove('selected');
             } else {
+                // انتخاب جدید
                 selectedArtists.push(artistName);
                 cardElement.classList.add('selected');
+                
+                // 🌟 جادوی داینامیک: درخواست به سرور برای گرفتن آرتیست‌های مشابه همون لحظه!
+                try {
+                    const res = await fetch(`${SERVER_URL}/api/get_related?name=${encodeURIComponent(artistName)}`);
+                    const related = await res.json();
+                    related.forEach(r => {
+                        if(r.image) addArtistToGrid(r.name, r.image);
+                    });
+                } catch (e) { console.error("Error fetching related artists", e); }
             }
+            
+            // باز شدن قفل دکمه Continue
             const btn = document.getElementById('obFinishBtn');
             if (selectedArtists.length >= 3) btn.classList.add('active');
             else btn.classList.remove('active');
@@ -298,7 +330,7 @@
                 const item = document.createElement('div');
                 item.className = 'sd-item';
                 item.onclick = () => {
-                    currentPlaylist = [track]; // پخش همون آهنگ
+                    currentPlaylist = [track]; 
                     playTrack(0);
                 };
                 item.innerHTML = `
@@ -311,22 +343,17 @@
 
         function addToSpeedDial(track) {
             let recent = JSON.parse(localStorage.getItem('recent_tracks') || '[]');
-            // حذف آهنگ تکراری
             recent = recent.filter(t => t.id !== track.id);
-            // اضافه به اول لیست
             recent.unshift(track);
-            // نگه داشتن فقط 5 تای آخر
-            if (recent.length > 5) recent.pop();
-            
+            if (recent.length > 10) recent.pop(); // نگه‌داشتن ۱۰ آهنگ آخر
             localStorage.setItem('recent_tracks', JSON.stringify(recent));
-            renderSpeedDial(); // آپدیت در لحظه
+            renderSpeedDial();
         }
 
         // --- New Releases ---
         async function fetchNewReleases() {
             if (selectedArtists.length === 0) return;
-            // گرفتن آهنگ از آرتیست اول و دوم انتخابی برای ساخت فید
-            const artistToFetch = selectedArtists[0]; 
+            const artistToFetch = selectedArtists[0]; // گرفتن آهنگ بر اساس اولین خواننده محبوب
             
             try {
                 const response = await fetch(`${SERVER_URL}/api/releases?artist=${encodeURIComponent(artistToFetch)}`);
@@ -334,14 +361,17 @@
                 document.getElementById('loadingReleases').style.display = 'none';
                 
                 const container = document.getElementById('releasesList');
-                currentPlaylist = data.map(track => {
+                let tempPlaylist = data.map(track => {
                     return { ...track, hqCover: track.cover ? track.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' };
                 });
 
-                currentPlaylist.forEach((track, index) => {
+                tempPlaylist.forEach((track, index) => {
                     const item = document.createElement('div');
                     item.className = 'track-item';
-                    item.onclick = () => playTrack(index);
+                    item.onclick = () => {
+                        currentPlaylist = tempPlaylist;
+                        playTrack(index);
+                    };
                     item.innerHTML = `
                         <img src="${track.hqCover}" alt="cover">
                         <div class="track-info">
@@ -371,15 +401,17 @@
                     const data = await response.json();
                     document.getElementById('loadingSearch').style.display = 'none';
 
-                    // آپدیت پلی‌لیست برای دکمه‌های بعدی/قبلی
-                    currentPlaylist = data.map(track => {
+                    let tempPlaylist = data.map(track => {
                         return { ...track, hqCover: track.cover ? track.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' };
                     });
 
-                    currentPlaylist.forEach((track, index) => {
+                    tempPlaylist.forEach((track, index) => {
                         const item = document.createElement('div');
                         item.className = 'track-item';
-                        item.onclick = () => playTrack(index);
+                        item.onclick = () => {
+                            currentPlaylist = tempPlaylist;
+                            playTrack(index);
+                        };
                         item.innerHTML = `
                             <img src="${track.hqCover}" alt="cover">
                             <div class="track-info">
@@ -402,7 +434,6 @@
             currentIndex = index;
             const track = currentPlaylist[index];
             
-            // اضافه کردن به Speed Dial
             addToSpeedDial(track);
 
             document.getElementById('miniTitle').innerText = track.title;
