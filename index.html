@@ -1,103 +1,141 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>موزیک پلیر پیشرفته</title>
+    <title>Music Player</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        /* ایمپورت فونت مدرن و استاندارد Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
         :root {
-            --bg-color: var(--tg-theme-bg-color, #1c1c1d);
-            --text-color: var(--tg-theme-text-color, #ffffff);
-            --hint-color: var(--tg-theme-hint-color, #999999);
-            --button-color: var(--tg-theme-button-color, #8a2be2);
-            --secondary-bg: var(--tg-theme-secondary-bg-color, #2c2c2e);
+            --bg-color: #1c1c1d;
+            --text-color: #ffffff;
+            --hint-color: #a0a0a0;
+            --button-color: #8a2be2;
+            --secondary-bg: #2c2c2e;
+            --silver-btn: #C0C0C0;
         }
         body {
-            background-color: var(--bg-color); color: var(--text-color);
-            font-family: Tahoma, Arial, sans-serif; margin: 0; padding: 15px; padding-bottom: 80px;
+            background-color: var(--bg-color); 
+            color: var(--text-color);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            margin: 0; 
+            padding: 15px; 
+            padding-bottom: 80px;
         }
-        .header { text-align: center; margin-bottom: 20px; font-weight: bold; font-size: 22px;}
+        .header { text-align: center; margin-bottom: 20px; font-weight: 700; font-size: 22px;}
+        
+        /* Search Box */
         .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
         input {
-            flex: 1; padding: 15px; border: 1px solid var(--hint-color); border-radius: 12px;
+            flex: 1; padding: 15px; border: 1px solid #444; border-radius: 12px;
             background-color: var(--secondary-bg); color: var(--text-color); outline: none;
+            font-family: 'Inter', sans-serif;
         }
-        button.search-btn { background-color: var(--button-color); color: white; border: none; padding: 0 20px; border-radius: 12px; cursor: pointer; font-weight: bold; }
+        button.search-btn { background-color: var(--button-color); color: white; border: none; padding: 0 20px; border-radius: 12px; cursor: pointer; font-weight: 600; }
+        
+        /* Track List */
         .track-list { display: flex; flex-direction: column; gap: 15px; }
         .track-item { display: flex; align-items: center; background: var(--secondary-bg); padding: 12px; border-radius: 15px; gap: 12px; }
-        .track-item img { width: 70px; height: 70px; border-radius: 10px; object-fit: cover; }
+        .track-item img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; }
         .track-info { flex: 1; overflow: hidden; }
-        .track-title { font-weight: bold; font-size: 15px; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .track-title { font-weight: 600; font-size: 15px; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .track-artist { font-size: 13px; color: var(--hint-color); }
         .actions { display: flex; flex-direction: column; gap: 8px; }
-        .btn-play { background: #1db954; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; }
-        .btn-dl { background: var(--button-color); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; }
-        #loading { text-align: center; color: var(--hint-color); display: none; font-weight: bold; margin-top: 20px;}
+        .btn-play { background: #1db954; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .btn-dl { background: var(--button-color); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        #loading { text-align: center; color: var(--hint-color); display: none; font-weight: 600; margin-top: 20px;}
 
-        /* --- استایل‌های مینی پلیر (نوار پایین) --- */
+        /* --- Mini Player --- */
         .mini-player {
-            position: fixed; bottom: 0; left: 0; right: 0; background: var(--secondary-bg);
+            position: fixed; bottom: 0; left: 0; right: 0; background: rgba(44, 44, 46, 0.95);
+            backdrop-filter: blur(10px);
             padding: 10px 15px; border-top: 1px solid rgba(255,255,255,0.1); display: none;
             align-items: center; justify-content: space-between; z-index: 1000; cursor: pointer;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
         }
         .mini-info { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden; }
         .mini-cover { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; }
-        .mini-title { font-size: 14px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mini-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .mini-play-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 0 10px;}
 
-        /* --- استایل‌های پلیر تمام صفحه (کشویی) --- */
+        /* --- Full Screen Player --- */
         .full-player {
             position: fixed; top: 100%; left: 0; right: 0; bottom: 0; background: var(--bg-color);
             z-index: 2000; transition: top 0.3s cubic-bezier(0.17, 0.67, 0.3, 1);
-            display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; align-items: center;
+            display: flex; flex-direction: column; padding: 25px 20px; box-sizing: border-box; align-items: center;
         }
         .full-player.active { top: 0; }
-        .fp-header { width: 100%; display: flex; justify-content: space-between; font-size: 24px; margin-bottom: 40px;}
-        .fp-cover { width: 260px; height: 260px; border-radius: 20px; object-fit: cover; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 30px;}
-        .fp-title { font-size: 22px; font-weight: bold; text-align: center; margin-bottom: 5px; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        .fp-artist { font-size: 16px; color: var(--hint-color); text-align: center; margin-bottom: 30px;}
         
-        .progress-container { width: 100%; display: flex; flex-direction: column; gap: 8px; margin-bottom: 30px;}
-        .progress-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 5px; cursor: pointer; position: relative;}
-        .progress-fill { height: 100%; background: var(--button-color); border-radius: 5px; width: 0%; pointer-events: none;}
-        .time-display { display: flex; justify-content: space-between; font-size: 13px; color: var(--hint-color); font-weight: bold;}
+        .fp-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px;}
+        .fp-header-left { font-size: 22px; color: var(--hint-color); cursor: pointer; width: 30px; font-weight: 400;}
+        .fp-header-center { font-size: 11px; font-weight: 600; letter-spacing: 1px; color: var(--text-color); text-transform: uppercase; flex: 1; text-align: center;}
+        .fp-header-right { width: 30px; } /* فضای خالی برای وسط‌چین ماندن دقیق متن */
         
-        .fp-controls { display: flex; align-items: center; justify-content: center; gap: 40px; width: 100%;}
-        .fp-btn-main { background: var(--button-color); color: white; border: none; border-radius: 50%; width: 70px; height: 70px; font-size: 28px; display: flex; justify-content: center; align-items: center; cursor: pointer;}
+        .fp-cover { width: 280px; height: 280px; border-radius: 12px; object-fit: cover; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 30px;}
+        
+        .fp-info { text-align: center; margin-bottom: 35px; width: 100%; }
+        .fp-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .fp-artist { font-size: 14px; color: var(--hint-color); }
+        
+        .progress-container { width: 100%; display: flex; flex-direction: column; gap: 8px; margin-bottom: 35px;}
+        .progress-bg { width: 100%; height: 5px; background: rgba(255,255,255,0.15); border-radius: 3px; cursor: pointer; position: relative;}
+        .progress-fill { height: 100%; background: var(--silver-btn); border-radius: 3px; width: 0%; pointer-events: none;}
+        .time-display { display: flex; justify-content: space-between; font-size: 11px; color: var(--hint-color); font-weight: 600;}
+        
+        .fp-controls { display: flex; align-items: center; justify-content: center; width: 100%;}
+        .fp-btn-main { 
+            background: var(--silver-btn); 
+            color: var(--bg-color); 
+            border: none; 
+            border-radius: 50%; 
+            width: 65px; 
+            height: 65px; 
+            font-size: 26px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            cursor: pointer; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
 
-    <div class="header">🎧 اپلیکیشن موزیک من</div>
+    <div class="header">Music App</div>
+    
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="نام آهنگ یا خواننده...">
-        <button class="search-btn" onclick="searchMusic()">جستجو</button>
+        <input type="text" id="searchInput" placeholder="Search for a song or artist...">
+        <button class="search-btn" onclick="searchMusic()">Search</button>
     </div>
-    <div id="loading">در حال جستجو... ⏳</div>
+
+    <div id="loading">Searching...</div>
     <div class="track-list" id="trackList"></div>
 
-    <!-- مینی پلیر (نوار پایین) -->
+    <!-- Mini Player -->
     <div class="mini-player" id="miniPlayer" onclick="openFullPlayer()">
         <div class="mini-info">
             <img id="miniCover" src="" class="mini-cover">
-            <div class="mini-title" id="miniTitle">در حال بارگذاری...</div>
+            <div class="mini-title" id="miniTitle">Loading...</div>
         </div>
         <button class="mini-play-btn" id="miniPlayBtn" onclick="togglePlay(event)">⏸</button>
     </div>
 
-    <!-- پلیر تمام صفحه (حالت باز شده) -->
+    <!-- Full Screen Player -->
     <div class="full-player" id="fullPlayer">
         <div class="fp-header">
-            <span onclick="closeFullPlayer()" style="cursor:pointer; color: #ff4757;">❌ بستن</span>
-            <span style="font-size: 16px; font-weight: bold;">در حال پخش</span>
-            <span style="width: 24px;"></span>
+            <div class="fp-header-left" onclick="closeFullPlayer()">✕</div>
+            <div class="fp-header-center">NOW PLAYING</div>
+            <div class="fp-header-right"></div>
         </div>
         
         <img id="fpCover" src="" class="fp-cover">
-        <div class="fp-title" id="fpTitle">Title</div>
-        <div class="fp-artist" id="fpArtist">Artist</div>
+        
+        <div class="fp-info">
+            <div class="fp-title" id="fpTitle">Title</div>
+            <div class="fp-artist" id="fpArtist">Artist</div>
+        </div>
         
         <div class="progress-container">
             <div class="progress-bg" id="progressBg" onclick="seek(event)">
@@ -118,6 +156,7 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
 
+        // 🟢 لینک سرور شما
         const SERVER_URL = "https://programmer-flags-brass-gba.trycloudflare.com";
         let audio = new Audio();
         let currentTrack = null;
@@ -133,31 +172,33 @@
                 const data = await response.json();
                 document.getElementById('loading').style.display = 'none';
 
-                if (data.length === 0) return document.getElementById('trackList').innerHTML = '<div style="text-align:center;">نتیجه‌ای یافت نشد 😔</div>';
+                if (data.length === 0) return document.getElementById('trackList').innerHTML = '<div style="text-align:center; color:#a0a0a0;">No results found</div>';
 
                 data.forEach(track => {
+                    // 🌟 ارتقای کیفیت کاور: اجبار سرور گوگل به ارائه عکس با کیفیت HD
+                    let hqCover = track.cover ? track.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '';
+                    
                     const item = document.createElement('div');
                     item.className = 'track-item';
                     item.innerHTML = `
-                        <img src="${track.cover}" alt="cover">
+                        <img src="${hqCover}" alt="cover">
                         <div class="track-info">
                             <div class="track-title">${track.title}</div>
                             <div class="track-artist">${track.artist}</div>
                         </div>
                         <div class="actions">
-                            <button class="btn-play" onclick="playFullTrack('${track.id}', '${track.title.replace(/'/g, "\\'")}', '${track.artist.replace(/'/g, "\\'")}', '${track.cover}')">▶️ پخش کامل</button>
-                            <button class="btn-dl" onclick="sendToBot('${track.id}', '${track.title.replace(/'/g, "\\'")}', '${track.artist.replace(/'/g, "\\'")}')">📥 دانلود</button>
+                            <button class="btn-play" onclick="playFullTrack('${track.id}', '${track.title.replace(/'/g, "\\'")}', '${track.artist.replace(/'/g, "\\'")}', '${hqCover}')">▶ Play</button>
+                            <button class="btn-dl" onclick="sendToBot('${track.id}', '${track.title.replace(/'/g, "\\'")}', '${track.artist.replace(/'/g, "\\'")}')">📥 Download</button>
                         </div>
                     `;
                     document.getElementById('trackList').appendChild(item);
                 });
             } catch (error) {
                 document.getElementById('loading').style.display = 'none';
-                tg.showAlert("خطا در ارتباط با سرور!");
+                tg.showAlert("Connection error!");
             }
         }
 
-        // روشن شدن پلیر اختصاصی
         function playFullTrack(id, title, artist, cover) {
             document.getElementById('miniTitle').innerText = title;
             document.getElementById('miniCover').src = cover;
@@ -182,7 +223,7 @@
         }
 
         function updatePlayBtn(isPlaying) {
-            const icon = isPlaying ? "⏸" : "▶️";
+            const icon = isPlaying ? "⏸" : "▶";
             document.getElementById('miniPlayBtn').innerText = icon;
             document.getElementById('fpPlayBtn').innerText = icon;
         }
