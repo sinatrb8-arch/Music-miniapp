@@ -81,16 +81,25 @@
         .artist-search-name { font-size: 18px; font-weight: 800;}
         .artist-search-label { font-size: 12px; color: var(--hint-color); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px;}
         
+        /* 🌟 حل باگ سایز عکس‌ها در لیست‌های افقی */
         .horizontal-scroll { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 25px; scroll-snap-type: x mandatory; scrollbar-width: none;}
         .horizontal-scroll::-webkit-scrollbar { display: none; }
+        
         .scroll-item { 
-            min-width: 100px; background: transparent; border-radius: 12px; padding: 0; 
+            width: 110px; min-width: 110px; max-width: 110px; /* 🌟 قفل کردن دقیق عرض در flexbox */
+            flex: 0 0 auto; /* 🌟 جلوگیری از کشیده شدن (stretching) */
+            background: transparent; border-radius: 12px; padding: 0; 
             text-align: center; cursor: pointer; scroll-snap-align: start; 
-            display: flex; flex-direction: column; align-items: center;
+            display: flex; flex-direction: column; align-items: center; overflow: visible;
         }
-        .scroll-cover { width: 100px; height: 100px; border-radius: 12px; object-fit: cover; object-position: center; margin-bottom: 8px; box-shadow: 0 6px 14px rgba(0,0,0,0.4);}
+        
+        .scroll-cover { 
+            width: 110px; height: 110px; min-width: 110px; min-height: 110px; /* 🌟 قفل کردن سایز خود عکس */
+            border-radius: 12px; object-fit: cover; object-position: center; 
+            margin-bottom: 8px; box-shadow: 0 6px 14px rgba(0,0,0,0.4); display: block;
+        }
         .scroll-cover.circle { border-radius: 50%; aspect-ratio: 1/1; }
-        .scroll-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;}
+        .scroll-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; width: 100%;}
         
         .track-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 25px; }
         
@@ -100,7 +109,7 @@
         .track-item { display: flex; align-items: center; padding: 8px; border-radius: 12px; gap: 14px; background: transparent; cursor:pointer; transition: background 0.2s;}
         .track-item:active { background: rgba(255,255,255,0.08); }
         .releases-grid .track-item { width: 260px; scroll-snap-align: start; margin: 0;}
-        .track-item img { width: 55px; height: 55px; border-radius: 8px; object-fit: cover; aspect-ratio: 1/1; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
+        .track-item img { width: 55px; height: 55px; min-width: 55px; border-radius: 8px; object-fit: cover; aspect-ratio: 1/1; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
         .track-info { flex: 1; overflow: hidden; }
         .track-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .track-artist { font-size: 13px; color: var(--hint-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
@@ -145,7 +154,7 @@
         .mini-progress-dot { position: absolute; top: 50%; left: 0%; width: 16px; height: 16px; background: linear-gradient(145deg, #ffffff, #e6e6e6); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; box-shadow: 0 2px 6px rgba(0,0,0,0.5), inset 0 -1px 2px rgba(0,0,0,0.2); }
         
         .mini-main-row { display: flex; width: 100%; align-items: center; height: 55px; }
-        .mini-cover { width: 55px; height: 55px; object-fit: cover; cursor: pointer; border-radius: 0 0 0 12px; }
+        .mini-cover { width: 55px; height: 55px; min-width: 55px; object-fit: cover; cursor: pointer; border-radius: 0 0 0 12px; }
         .mini-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; cursor: pointer; padding-left: 12px; }
         .mini-text {display: flex; flex-direction: column;}
         .mini-title { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -594,13 +603,28 @@
                 
                 if (newTracks.length > 0) {
                     currentPlaylist = currentPlaylist.concat(newTracks);
-                    
-                    // 🌟 پیش‌بارگذاری ۳ آهنگ آینده در بک‌گراند
-                    if (currentIndex + 1 < currentPlaylist.length) fetch(`${SERVER_URL}/api/preload?id=${currentPlaylist[currentIndex + 1].id}`).catch(()=>{});
-                    if (currentIndex + 2 < currentPlaylist.length) fetch(`${SERVER_URL}/api/preload?id=${currentPlaylist[currentIndex + 2].id}`).catch(()=>{});
-                    if (currentIndex + 3 < currentPlaylist.length) fetch(`${SERVER_URL}/api/preload?id=${currentPlaylist[currentIndex + 3].id}`).catch(()=>{});
+                    fetch(`${SERVER_URL}/api/preload?id=${currentPlaylist[currentIndex + 1].id}`).catch(()=>{});
                 }
             } catch(e) {}
+        }
+
+        function sendToBot() {
+            if(currentIndex === -1) return;
+            const activeChatId = tg.initDataUnsafe?.chat?.id || tg.initDataUnsafe?.user?.id;
+            
+            if(!activeChatId) {
+                tg.showAlert("❌ خطای ارتباط با تلگرام. لطفاً برنامه را مجدداً باز کنید.");
+                return;
+            }
+            
+            const track = currentPlaylist[currentIndex];
+            const btn = document.getElementById('dlBtn');
+            btn.style.opacity = '0.3';
+            setTimeout(() => btn.style.opacity = '1', 300);
+            
+            tg.showAlert("📥 آهنگ در حال ارسال به صفحه چت است...");
+            fetch(`${SERVER_URL}/api/send_audio?id=${track.id}&chat_id=${activeChatId}&title=${encodeURIComponent(track.title)}&artist=${encodeURIComponent(track.artist)}`)
+            .catch(()=>{});
         }
 
         let obSearchTimeout;
@@ -778,10 +802,12 @@
             const hqImage = getHqCover(image);
             const item = document.createElement('div'); item.className = 'scroll-item';
             item.onclick = onClick;
+            
+            // 🌟 راه حل نهایی برای جلوگیری از کشیده شدن عکس‌ها: استفاده از استایل قطعیِ flex:0 0 auto
             item.innerHTML = `
-                <div style="position:relative;">
-                    <img src="${hqImage}" class="scroll-cover" style="border-radius: 8px;">
-                    <div style="position:absolute; bottom:15px; left:5px; width:40px; height:4px; background:var(--accent); border-radius:2px;"></div>
+                <div style="position:relative; width: 110px; height: 110px; margin-bottom: 8px; flex: 0 0 auto;">
+                    <img src="${hqImage}" class="scroll-cover" style="margin-bottom: 0; width: 100%; height: 100%;">
+                    <div style="position:absolute; bottom:10px; left:8px; width:35px; height:4px; background:var(--accent); border-radius:2px; box-shadow: 0 2px 4px rgba(0,0,0,0.5);"></div>
                 </div>
                 <div class="scroll-title">${title}</div>
             `;
@@ -808,7 +834,7 @@
             recent.forEach(track => {
                 const item = document.createElement('div'); item.className = 'scroll-item';
                 item.onclick = () => { currentPlaylist = [track]; currentContext='single'; playTrack(0); };
-                item.innerHTML = `<img src="${track.hqCover}"><div class="scroll-title">${track.title}</div>`;
+                item.innerHTML = `<img src="${track.hqCover}" class="scroll-cover"><div class="scroll-title">${track.title}</div>`;
                 container.appendChild(item);
             });
         }
@@ -1045,6 +1071,7 @@
         function playTrack(index) {
             if (index < 0 || index >= currentPlaylist.length) return;
             
+            // صفر کردن آنی نوار زمان در هنگام تعویض موزیک
             audio.pause();
             audio.currentTime = 0;
             document.getElementById('progressFill').style.width = '0%';
@@ -1072,15 +1099,9 @@
             updatePlayBtn(true);
             fetchLyrics(track.id, track.title, track.artist);
             
-            // 🌟 پیش‌بارگذاری ۳ آهنگ آینده در بک‌گراند 🌟
             if (index + 1 < currentPlaylist.length) fetch(`${SERVER_URL}/api/preload?id=${currentPlaylist[index + 1].id}`).catch(()=>{});
             if (index + 2 < currentPlaylist.length) fetch(`${SERVER_URL}/api/preload?id=${currentPlaylist[index + 2].id}`).catch(()=>{});
             if (index + 3 < currentPlaylist.length) fetch(`${SERVER_URL}/api/preload?id=${currentPlaylist[index + 3].id}`).catch(()=>{});
-            
-            // 🌟 اگر به آخر لیست نزدیک شدیم (کمتر از ۴ آهنگ مونده)، بدون اینکه کاربر بفهمه آهنگ‌های جدید لود می‌شه!
-            if (currentPlaylist.length - index <= 4) {
-                silentFetchMoreTracks();
-            }
         }
 
         function toggleLyrics() { document.getElementById('lyrics-sheet').classList.toggle('active'); }
@@ -1126,36 +1147,28 @@
             } catch (e) { content.innerHTML = "Error loading lyrics."; }
         }
 
-        // 🌟 سیستم جدید: لودینگ نامرئی در پس‌زمینه (Infinite Queue)
-        let isFetchingMore = false;
-        async function silentFetchMoreTracks() {
-            if (isFetchingMore) return;
-            isFetchingMore = true;
+        async function fetchMoreTracksFromMode(mode) {
+            if (!currentPlaylist[currentIndex]) return;
             const seedTrack = currentPlaylist[currentIndex];
-            if (!seedTrack) { isFetchingMore = false; return; }
             try {
-                let url = autoPlayMode === 'radio' ? `${SERVER_URL}/api/track_radio?id=${seedTrack.id}` : `${SERVER_URL}/search?q=${encodeURIComponent(seedTrack.artist)}`;
+                let url = mode === 'radio' ? `${SERVER_URL}/api/track_radio?id=${seedTrack.id}` : `${SERVER_URL}/search?q=${encodeURIComponent(seedTrack.artist)}`;
                 const res = await fetch(url);
                 const data = await res.json();
-                let newTracks = autoPlayMode === 'radio' ? data : (data.tracks || []);
+                let newTracks = mode === 'radio' ? data : (data.tracks || []);
                 newTracks = newTracks.map(t => ({...t, hqCover: getHqCover(t.cover)}));
                 newTracks = newTracks.filter(nt => !currentPlaylist.find(ct => ct.id === nt.id));
                 if (newTracks.length > 0) {
                     currentPlaylist = currentPlaylist.concat(newTracks);
+                    playTrack(currentIndex + 1);
                 }
             } catch(e) {}
-            isFetchingMore = false;
         }
 
         function playNext() { 
             if (currentIndex < currentPlaylist.length - 1) {
                 playTrack(currentIndex + 1); 
             } else {
-                // اگر به هر دلیلی لیست خالی شد، به زور لود می‌کنیم
-                tg.showAlert("Loading next track...");
-                silentFetchMoreTracks().then(() => {
-                    if (currentIndex < currentPlaylist.length - 1) playTrack(currentIndex + 1);
-                });
+                fetchMoreTracksFromMode('radio'); 
             }
         }
         
@@ -1272,25 +1285,6 @@
                 document.getElementById('duration').innerText = formatTime(audio.duration); 
             } 
         };
-        
-        // 🌟 ارسال مستقیم به چتی که مینی‌اپ در آن باز است
-        function sendToBot() {
-            if(currentIndex === -1) return;
-            const activeChatId = tg.initDataUnsafe?.chat?.id || tg.initDataUnsafe?.user?.id;
-            
-            if(!activeChatId) {
-                tg.showAlert("❌ خطای ارتباط با تلگرام. لطفاً برنامه را مجدداً باز کنید.");
-                return;
-            }
-            
-            const track = currentPlaylist[currentIndex];
-            const btn = document.getElementById('dlBtn');
-            btn.style.opacity = '0.3';
-            setTimeout(() => btn.style.opacity = '1', 300);
-            
-            tg.showAlert("📥 آهنگ در حال ارسال به صفحه چت است...");
-            fetch(`${SERVER_URL}/api/send_audio?id=${track.id}&chat_id=${activeChatId}&title=${encodeURIComponent(track.title)}&artist=${encodeURIComponent(track.artist)}`).catch(()=>{});
-        }
         
         function formatTime(seconds) { if (isNaN(seconds)) return "0:00"; const m = Math.floor(seconds / 60); const s = Math.floor(seconds % 60); return `${m}:${s < 10 ? '0' : ''}${s}`; }
         function forceResetAll() { localStorage.clear(); window.location.reload(); }
