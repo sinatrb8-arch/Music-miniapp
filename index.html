@@ -78,21 +78,37 @@
         .artist-search-name { font-size: 18px; font-weight: 800;}
         .artist-search-label { font-size: 12px; color: var(--hint-color); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px;}
         
+        /* 🌟 کادرهای خاکستری (background) حذف شد تا تصاویر شناور و تمیز دیده بشن */
         .horizontal-scroll { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 25px; scroll-snap-type: x mandatory; scrollbar-width: none;}
         .horizontal-scroll::-webkit-scrollbar { display: none; }
-        .scroll-item { min-width: 110px; background: rgba(40,40,40,0.6); border-radius: 16px; padding: 12px; text-align: center; cursor: pointer; scroll-snap-align: start; backdrop-filter: blur(10px);}
-        .scroll-cover { width: 90px; height: 90px; border-radius: 12px; object-fit: cover; object-position: center; margin-bottom: 10px;}
+        .scroll-item { 
+            min-width: 100px; 
+            background: transparent; /* تغییر به ترنسپرنت */
+            border-radius: 12px; padding: 0; /* حذف پدینگ اضافی */
+            text-align: center; cursor: pointer; scroll-snap-align: start; 
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .scroll-cover { 
+            width: 100px; height: 100px; border-radius: 12px; 
+            object-fit: cover; object-position: center; margin-bottom: 8px; 
+            box-shadow: 0 6px 14px rgba(0,0,0,0.4); /* سایه جذاب‌تر برای حالت ترنسپرنت */
+        }
         .scroll-cover.circle { border-radius: 50%; aspect-ratio: 1/1; }
-        .scroll-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .scroll-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;}
         
-        .track-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; }
+        .track-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 25px; }
         
         .releases-grid { display: grid; grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 15px; margin-bottom: 25px; scrollbar-width: none;}
         .releases-grid::-webkit-scrollbar { display: none; }
         
-        .track-item { display: flex; align-items: center; padding: 10px; border-radius: 16px; gap: 14px; background: rgba(40,40,40,0.6); cursor:pointer; }
-        .releases-grid .track-item { width: 260px; scroll-snap-align: start; margin: 0; backdrop-filter: blur(10px);}
-        .track-item img { width: 55px; height: 55px; border-radius: 10px; object-fit: cover; aspect-ratio: 1/1; }
+        /* 🌟 پس‌زمینه ترک‌ها هم حذف شد و تو هاور/اکتیو یک افکت نرم دارن */
+        .track-item { 
+            display: flex; align-items: center; padding: 8px; border-radius: 12px; gap: 14px; 
+            background: transparent; cursor:pointer; transition: background 0.2s;
+        }
+        .track-item:active { background: rgba(255,255,255,0.08); }
+        .releases-grid .track-item { width: 260px; scroll-snap-align: start; margin: 0;}
+        .track-item img { width: 55px; height: 55px; border-radius: 8px; object-fit: cover; aspect-ratio: 1/1; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
         .track-info { flex: 1; overflow: hidden; }
         .track-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .track-artist { font-size: 13px; color: var(--hint-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
@@ -218,7 +234,8 @@
         }
         #lyrics-content::-webkit-scrollbar { display: none; }
         
-        .lyric-line { transition: all 0.3s ease; margin-bottom: 15px; cursor: pointer; padding: 10px 15px; border-radius: 12px; border: 1px solid transparent;}
+        /* 🌟 انیمیشن‌های لیریک سریع‌تر و نرم‌تر شد */
+        .lyric-line { transition: color 0.15s ease, transform 0.15s ease; margin-bottom: 15px; cursor: pointer; padding: 10px 15px; border-radius: 12px; border: 1px solid transparent;}
         .lyric-line.active { 
             color: #fff; transform: scale(1.05); background: rgba(255, 255, 255, 0.1); 
             backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 20px rgba(0,0,0,0.2);
@@ -329,7 +346,6 @@
                 <h1 id="albumHeaderName" class="album-header-name">List Name</h1>
                 <div id="albumHeaderArtist" class="album-header-artist" style="margin-bottom: 15px;">Subtitle</div>
             </div>
-            <!-- 🌟 دکمه پلی آلبوم در پایین سمت راست -->
             <button class="action-btn play" id="albumPlayBtn" style="position: absolute; bottom: 20px; right: 20px; width: 55px; height: 55px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: none; z-index: 10;">
                 <svg viewBox="0 0 24 24" style="width:28px;height:28px;"><path d="M8 5v14l11-7z"/></svg>
             </button>
@@ -925,7 +941,6 @@
             currentIndex = index; const track = currentPlaylist[index];
             addToSpeedDial(track);
             lastActiveIndex = -1; 
-            savePlayerState(); 
             
             document.getElementById('miniTitle').innerText = track.title; document.getElementById('miniArtist').innerText = track.artist;
             document.getElementById('miniCover').src = track.hqCover; document.getElementById('miniPlayer').style.display = 'flex';
@@ -940,7 +955,7 @@
             
             if (index + 1 < currentPlaylist.length) {
                 const nextTrack = currentPlaylist[index + 1];
-                fetch(`${SERVER_URL}/api/preload?id=${nextTrack.id}`).catch(()=>console.log('Preload queued'));
+                fetch(`${SERVER_URL}/api/preload?id=${nextTrack.id}`).catch(()=>console.log('Preloaded'));
             }
         }
 
@@ -1046,6 +1061,39 @@
             if(audio.duration) audio.currentTime = percentage * audio.duration;
         }
 
+        // 🌟 موتور رندر 60 فریم بر ثانیه برای لیریک!
+        function syncLyricsLoop() {
+            if (audio.duration && parsedLyrics.length > 0) {
+                let activeIdx = -1;
+                const currentTime = audio.currentTime + 0.1;
+                
+                if (parsedLyrics[0].time !== -1) {
+                    for(let i=0; i<parsedLyrics.length; i++) {
+                        if (currentTime >= parsedLyrics[i].time) activeIdx = i;
+                        else break;
+                    }
+                } else {
+                    activeIdx = Math.floor((currentTime / audio.duration) * parsedLyrics.length);
+                }
+                
+                if (activeIdx !== -1 && activeIdx !== lastActiveIndex) {
+                    parsedLyrics.forEach((lyric, i) => {
+                        if (i === activeIdx) {
+                            lyric.el.classList.add('active');
+                            if (document.getElementById('lyrics-sheet').classList.contains('active')) {
+                                lyric.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        } else {
+                            lyric.el.classList.remove('active');
+                        }
+                    });
+                    lastActiveIndex = activeIdx;
+                }
+            }
+            requestAnimationFrame(syncLyricsLoop);
+        }
+        requestAnimationFrame(syncLyricsLoop);
+
         let lastSaveTime = 0;
         audio.ontimeupdate = () => { 
             if (audio.duration) { 
@@ -1067,32 +1115,6 @@
                 
                 document.getElementById('currentTime').innerText = formatTime(audio.currentTime); 
                 document.getElementById('duration').innerText = formatTime(audio.duration); 
-                
-                if (parsedLyrics.length > 0) {
-                    let activeIdx = -1;
-                    if (parsedLyrics[0].time !== -1) {
-                        for(let i=0; i<parsedLyrics.length; i++) {
-                            if (audio.currentTime + 0.3 >= parsedLyrics[i].time) activeIdx = i;
-                            else break;
-                        }
-                    } else {
-                        activeIdx = Math.floor((audio.currentTime / audio.duration) * parsedLyrics.length);
-                    }
-                    
-                    if (activeIdx !== -1 && activeIdx !== lastActiveIndex) {
-                        parsedLyrics.forEach((lyric, i) => {
-                            if (i === activeIdx) {
-                                lyric.el.classList.add('active');
-                                if (document.getElementById('lyrics-sheet').classList.contains('active')) {
-                                    lyric.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                }
-                            } else {
-                                lyric.el.classList.remove('active');
-                            }
-                        });
-                        lastActiveIndex = activeIdx;
-                    }
-                }
             } 
         };
         
