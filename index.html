@@ -123,7 +123,7 @@
         .back-btn { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.5); border-radius: 50%; padding: 10px; display:flex; justify-content:center; align-items:center; z-index: 10; cursor:pointer;}
         .back-btn svg { width: 24px; height: 24px; fill: #fff; }
 
-        /* 4. Mini Player (🌟 کاملا چسبیده به چپ با نوار 3D و بزرگتر) */
+        /* 4. Mini Player */
         .mini-player { 
             position: fixed; bottom: 10px; left: 10px; right: 10px; 
             background: rgba(40,40,40,0.95); border-radius: 12px; 
@@ -131,7 +131,6 @@
             padding: 0; overflow: visible;
         }
         
-        /* 🌟 نوار پیشرفت باکلاس برای مینی پلیر */
         .mini-progress-area {
             position: relative; width: 100%; height: 20px; cursor: pointer; margin-top: -10px; z-index: 10;
         }
@@ -151,7 +150,7 @@
         }
         
         .mini-main-row { display: flex; width: 100%; align-items: center; height: 55px; }
-        .mini-cover { width: 55px; height: 55px; object-fit: cover; cursor: pointer; border-radius: 0 0 0 12px; } /* کاملا چسبیده */
+        .mini-cover { width: 55px; height: 55px; object-fit: cover; cursor: pointer; border-radius: 0 0 0 12px; }
         .mini-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; cursor: pointer; padding-left: 12px; }
         .mini-text {display: flex; flex-direction: column;}
         .mini-title { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -209,7 +208,8 @@
         }
         #lyrics-sheet.active { transform: translateY(0); }
         
-        .lyrics-handle-area { width: 100%; padding: 10px 0 20px 0; display: flex; justify-content: center; align-items: center;}
+        /* 🌟 رفع مشکل سوایپ لیریک با یک پدینگ بزرگ‌تر برای دستگیره */
+        .lyrics-handle-area { width: 100%; padding: 20px 0 30px 0; display: flex; justify-content: center; align-items: center;}
         .lyrics-handle { width: 50px; height: 6px; background: rgba(255,255,255,0.3); border-radius: 3px; cursor: pointer; }
         .lyrics-header-title { font-size: 24px; font-weight: 800; margin-bottom: 20px; text-align: center;}
         
@@ -264,7 +264,6 @@
             <div class="track-list" id="searchResultsList" style="margin-bottom: 25px;"></div>
         </div>
 
-        <!-- بخش‌ها به ترتیب جدید -->
         <div id="speed-dial-section" style="display: none;">
             <div class="section-title">Recently Played</div>
             <div class="horizontal-scroll" id="speedDialList"></div>
@@ -287,7 +286,7 @@
             <div class="horizontal-scroll" id="favArtistsList"></div>
         </div>
 
-        <!-- 🌟 بخش ترکیبی Made For You اومد پایین صفحه -->
+        <!-- 🌟 بخش ترکیبی Made For You در آخر صفحه -->
         <div id="made-for-you-section" style="display: none;">
             <div class="section-title">Made For You</div>
             <div class="horizontal-scroll" id="madeForYouList"></div>
@@ -322,15 +321,15 @@
         </div>
     </div>
 
-    <!-- Album Screen -->
+    <!-- Album / Playlist Screen -->
     <div id="album-screen">
         <div class="album-header">
             <div class="back-btn" onclick="closeAlbumPage()"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
             <img id="albumHeaderBg" class="album-header-bg" src="">
             <div class="album-header-info">
                 <img id="albumHeaderImg" class="album-header-img" src="">
-                <h1 id="albumHeaderName" class="album-header-name">Album Name</h1>
-                <div id="albumHeaderArtist" class="album-header-artist">Artist</div>
+                <h1 id="albumHeaderName" class="album-header-name">List Name</h1>
+                <div id="albumHeaderArtist" class="album-header-artist">Subtitle</div>
             </div>
         </div>
         <div style="padding: 0 20px;">
@@ -339,7 +338,7 @@
         </div>
     </div>
 
-    <!-- 🌟 Mini Player با نوار 3D و دکمه‌های کامل -->
+    <!-- Mini Player -->
     <div class="mini-player" id="miniPlayer">
         <div class="mini-progress-area" id="miniProgressBg">
             <div class="mini-progress-track">
@@ -369,7 +368,6 @@
         <div class="bg-gradient-overlay"></div>
         
         <div class="fp-header">
-            <!-- فلش رو به پایین -->
             <svg onclick="closeFullPlayer()" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
             <div class="fp-header-center">NOW PLAYING</div>
             <div class="lyrics-top-btn" onclick="toggleLyrics()">LYRICS</div>
@@ -430,6 +428,15 @@
         
         let selectedArtists = []; let selectedArtistsData = []; let displayedArtists = new Set(); 
 
+        // 🌟 تابع قدرتمند و یکپارچه برای دریافت عکس با بالاترین کیفیت
+        function getHqCover(url) {
+            if (!url) return '';
+            if (url.includes('=')) {
+                return url.split('=')[0] + '=w800-h800-l90-rj';
+            }
+            return url;
+        }
+
         window.onload = async () => {
             const savedArtists = localStorage.getItem(FAV_ARTISTS_KEY);
             if (!savedArtists) {
@@ -471,7 +478,7 @@
             card.className = 'artist-card';
             if (prepend) card.classList.add('new-arrival');
             
-            let hqImage = image ? image.replace(/=w\d+-h\d+.*/, "=w500-h500-l90-rj") : '';
+            let hqImage = getHqCover(image);
             card.innerHTML = `<img class="artist-img" src="${hqImage}" alt="${name}"><div class="artist-name">${name}</div>`;
             card.onclick = () => toggleArtistSelection(card, name, hqImage);
             
@@ -497,7 +504,7 @@
                         displayedArtists.add(r.name);
                         const newCard = document.createElement('div');
                         newCard.className = 'artist-card new-arrival'; 
-                        let hqImage = r.image ? r.image.replace(/=w\d+-h\d+.*/, "=w500-h500-l90-rj") : '';
+                        let hqImage = getHqCover(r.image);
                         newCard.innerHTML = `<img class="artist-img" src="${hqImage}" alt="${r.name}"><div class="artist-name">${r.name}</div>`;
                         newCard.onclick = () => toggleArtistSelection(newCard, r.name, hqImage);
                         insertReference.insertAdjacentElement('afterend', newCard);
@@ -522,7 +529,46 @@
             renderSpeedDial(); renderFavArtists(); fetchNewReleases(); renderMadeForYou();
         }
         
-        // 🌟 ساخت میکس‌ها بر اساس کل هنرمندان
+        // 🌟 سیستم هوشمند باز کردن لیست‌های میکس
+        async function openMixPage(title, coverUrl, fetchUrl) {
+            document.getElementById('home-screen').style.display = 'none';
+            document.getElementById('artist-screen').style.display = 'none';
+            document.getElementById('album-screen').style.display = 'block';
+            window.scrollTo(0, 0);
+
+            document.getElementById('albumHeaderBg').src = coverUrl;
+            document.getElementById('albumHeaderImg').src = coverUrl;
+            document.getElementById('albumHeaderName').innerText = title;
+            document.getElementById('albumHeaderArtist').innerText = "Made For You";
+
+            document.getElementById('loadingAlbum').style.display = 'block';
+            document.getElementById('albumTrackList').innerHTML = '';
+
+            try {
+                const res = await fetch(fetchUrl);
+                let tracks = await res.json();
+                
+                if(tracks.songs) tracks = tracks.songs; 
+
+                document.getElementById('loadingAlbum').style.display = 'none';
+                if(tracks.length > 0) {
+                    let tempPlaylist = tracks.map(t => { return { ...t, hqCover: getHqCover(t.cover) }; });
+                    tempPlaylist.forEach((track, index) => {
+                        const trackEl = document.createElement('div'); trackEl.className = 'track-item'; trackEl.style.background = 'transparent';
+                        trackEl.onclick = () => { currentPlaylist = tempPlaylist; playTrack(index); };
+                        trackEl.innerHTML = `<div style="width: 30px; text-align: center; color: var(--hint-color); font-weight: 600;">${index + 1}</div><div class="track-info"><div class="track-title">${track.title}</div><div class="track-artist">${track.artist}</div></div>`;
+                        document.getElementById('albumTrackList').appendChild(trackEl);
+                    });
+                } else {
+                    document.getElementById('loadingAlbum').style.display = 'block';
+                    document.getElementById('loadingAlbum').innerText = "No tracks found.";
+                }
+            } catch(e) {
+                document.getElementById('loadingAlbum').style.display = 'block';
+                document.getElementById('loadingAlbum').innerText = "Error loading mix.";
+            }
+        }
+
         function renderMadeForYou() {
             const container = document.getElementById('madeForYouList');
             container.innerHTML = '';
@@ -530,31 +576,37 @@
             
             document.getElementById('made-for-you-section').style.display = 'block';
             
-            // سوپرمیکس اصلی (ترکیبی)
-            createMixCard(container, "Ultimate Supermix", "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=500&h=500", async () => {
-                tg.showAlert("Generating Supermix...");
-                try {
-                    const artistsParam = encodeURIComponent(selectedArtists.join(','));
-                    const res = await fetch(`${SERVER_URL}/api/mix?artists=${artistsParam}`);
-                    const tracks = await res.json();
-                    if(tracks.length > 0) {
-                        currentPlaylist = tracks.map(t => ({ ...t, hqCover: t.cover ? t.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' }));
-                        playTrack(0);
-                    } else { tg.showAlert("Failed to create mix."); }
-                } catch(e) { tg.showAlert("Network Error."); }
+            // سوپرمیکس (کل آرتیست‌ها)
+            const artistsParam = encodeURIComponent(selectedArtists.join(','));
+            createMixCard(container, "Ultimate Supermix", "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=500&h=500", () => {
+                openMixPage("Ultimate Supermix", "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=500&h=500", `${SERVER_URL}/api/mix?artists=${artistsParam}`);
             });
             
-            // رادیوی آرتیست اول و دوم
+            // میکسِ ریتم و سبکِ آخرین آهنگ (Vibe Mix)
+            const recent = JSON.parse(localStorage.getItem(RECENT_TRACKS_KEY) || '[]');
+            if (recent.length > 0) {
+                const seedTrack = recent[0];
+                createMixCard(container, `${seedTrack.artist} Vibe Mix`, seedTrack.hqCover, () => {
+                    openMixPage(`Vibe Mix: ${seedTrack.artist}`, seedTrack.hqCover, `${SERVER_URL}/api/track_radio?id=${seedTrack.id}`);
+                });
+            }
+
+            // میکس خواننده‌های محبوب
             const favArtist = selectedArtistsData[0];
-            createMixCard(container, `${favArtist.name} Mix`, favArtist.image, async () => { await playArtistMix(favArtist.name); });
+            createMixCard(container, `${favArtist.name} Mix`, favArtist.image, () => { 
+                openMixPage(`${favArtist.name} Mix`, favArtist.image, `${SERVER_URL}/api/artist_details?name=${encodeURIComponent(favArtist.name)}`);
+            });
+            
             if (selectedArtistsData.length > 1) {
                 const secondArtist = selectedArtistsData[1];
-                createMixCard(container, `${secondArtist.name} Radio`, secondArtist.image, async () => { await playArtistMix(secondArtist.name); });
+                createMixCard(container, `${secondArtist.name} Mix`, secondArtist.image, () => { 
+                    openMixPage(`${secondArtist.name} Mix`, secondArtist.image, `${SERVER_URL}/api/artist_details?name=${encodeURIComponent(secondArtist.name)}`);
+                });
             }
         }
         
         function createMixCard(container, title, image, onClick) {
-            const hqImage = image ? image.replace(/=w\d+-h\d+.*/, "=w500-h500-l90-rj") : '';
+            const hqImage = getHqCover(image);
             const item = document.createElement('div'); item.className = 'scroll-item';
             item.onclick = onClick;
             item.innerHTML = `
@@ -565,18 +617,6 @@
                 <div class="scroll-title">${title}</div>
             `;
             container.appendChild(item);
-        }
-
-        async function playArtistMix(artistName) {
-            tg.showAlert("Generating Mix...");
-            try {
-                const res = await fetch(`${SERVER_URL}/api/artist_details?name=${encodeURIComponent(artistName)}`); 
-                const data = await res.json();
-                if (data.songs && data.songs.length > 0) {
-                    currentPlaylist = data.songs.map(t => ({ ...t, hqCover: t.cover ? t.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' })).sort(() => Math.random() - 0.5);
-                    playTrack(0);
-                } else { tg.showAlert("Mix failed."); }
-            } catch (e) { tg.showAlert("Error."); }
         }
 
         function renderFavArtists() {
@@ -613,7 +653,6 @@
             renderSpeedDial();
         }
 
-        // 🌟 تفکیک و مرتب‌سازی واقعی New Releases بر اساس سال
         async function fetchNewReleases() {
             if (selectedArtists.length === 0) return;
             try {
@@ -636,7 +675,7 @@
                     document.getElementById('new-albums-section').style.display = 'block';
                     const albumsContainer = document.getElementById('newAlbumsList');
                     newAlbums.forEach(album => {
-                        const hqCover = album.cover ? album.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '';
+                        const hqCover = getHqCover(album.cover);
                         const item = document.createElement('div'); item.className = 'scroll-item';
                         item.onclick = () => { openAlbumPage(album.id, album.title, hqCover, album.artist); };
                         item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${album.title}</div><div style="font-size:10px; color:#a7a7a7;">${album.artist} • ${album.year}</div>`;
@@ -648,17 +687,16 @@
                     document.getElementById('new-singles-section').style.display = 'block';
                     const singlesContainer = document.getElementById('newSinglesList');
                     newSingles.forEach(single => {
-                        const hqCover = single.cover ? single.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '';
+                        const hqCover = getHqCover(single.cover);
                         const item = document.createElement('div'); item.className = 'scroll-item';
-                        // 🌟 رفع باگ: کلیک روی سینگل = پخش مستقیم
-                        item.onclick = async (e) => { 
-                            const icon = e.currentTarget.querySelector('.scroll-cover');
+                        item.onclick = async () => { 
+                            const icon = item.querySelector('.scroll-cover');
                             icon.style.opacity = '0.4';
                             try {
-                                const res = await fetch(`${SERVER_URL}/api/album_tracks?id=${single.id}&artist=${encodeURIComponent(single.artist)}`); 
-                                const tracks = await res.json();
-                                if(tracks.length > 0) {
-                                    currentPlaylist = tracks.map(t => ({ ...t, hqCover: hqCover }));
+                                const res = await fetch(`${SERVER_URL}/search?q=${encodeURIComponent(single.title + " " + single.artist)}`); 
+                                const data = await res.json();
+                                if(data.tracks && data.tracks.length > 0) {
+                                    currentPlaylist = [data.tracks[0]].map(t => ({ ...t, hqCover: getHqCover(t.cover) }));
                                     playTrack(0);
                                 }
                             } catch(err) {}
@@ -718,7 +756,7 @@
                 if(data.albums && data.albums.length > 0) {
                     document.getElementById('artist-albums-section').style.display = 'block'; const albList = document.getElementById('artistAlbumsList'); albList.innerHTML = '';
                     data.albums.forEach(a => {
-                        let hqCover = a.cover ? a.cover.replace(/=w\d+-h\d+.*/, "=w500-h500-l90-rj") : '';
+                        let hqCover = getHqCover(a.cover);
                         const item = document.createElement('div'); item.className = 'scroll-item';
                         item.onclick = () => openAlbumPage(a.id, a.title, hqCover, name);
                         item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${a.title}</div><div style="font-size:10px; color:#a7a7a7;">${a.year}</div>`;
@@ -732,15 +770,19 @@
                     
                     if (data.singles) {
                         data.singles.forEach(s => {
-                            let hqCover = s.cover ? s.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '';
+                            let hqCover = getHqCover(s.cover);
                             const item = document.createElement('div'); item.className = 'track-item'; item.style.background = 'transparent'; 
-                            item.onclick = () => openAlbumPage(s.id, s.title, hqCover, name);
+                            item.onclick = async () => {
+                                const res = await fetch(`${SERVER_URL}/search?q=${encodeURIComponent(s.title + " " + name)}`); 
+                                const d = await res.json();
+                                if(d.tracks && d.tracks.length > 0) { currentPlaylist = [d.tracks[0]].map(t => ({...t, hqCover: getHqCover(t.cover)})); playTrack(0); }
+                            };
                             item.innerHTML = `<img src="${hqCover}"><div class="track-info"><div class="track-title">${s.title}</div><div class="track-artist">Single • ${s.year || ''}</div></div>`;
                             sngList.appendChild(item);
                         });
                     }
                     if (data.songs) {
-                        currentArtistSongsCache = data.songs.map(t => { return { ...t, hqCover: t.cover ? t.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' }; });
+                        currentArtistSongsCache = data.songs.map(t => { return { ...t, hqCover: getHqCover(t.cover) }; });
                         currentArtistSongsCache.forEach((track, index) => {
                             const item = document.createElement('div'); item.className = 'track-item'; item.style.background = 'transparent'; 
                             item.onclick = () => { currentPlaylist = currentArtistSongsCache; playTrack(index); };
@@ -762,7 +804,7 @@
                 const res = await fetch(`${SERVER_URL}/api/album_tracks?id=${browseId}&artist=${encodeURIComponent(artistName)}`); const tracks = await res.json();
                 document.getElementById('loadingAlbum').style.display = 'none';
                 if(tracks.length > 0) {
-                    let tempPlaylist = tracks.map(t => { return { ...t, hqCover: t.cover ? t.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' }; });
+                    let tempPlaylist = tracks.map(t => { return { ...t, hqCover: getHqCover(t.cover) }; });
                     tempPlaylist.forEach((track, index) => {
                         const trackEl = document.createElement('div'); trackEl.className = 'track-item'; trackEl.style.background = 'transparent';
                         trackEl.onclick = () => { currentPlaylist = tempPlaylist; playTrack(index); };
@@ -775,7 +817,6 @@
 
         function closeAlbumPage() { document.getElementById('album-screen').style.display = 'none'; document.getElementById('home-screen').style.display = 'block'; }
 
-        // 🌟 رفتن به صفحه آرتیست از داخل پلیر
         function goToArtistFromPlayer() {
             closeFullPlayer();
             const aName = document.getElementById('fpArtist').innerText;
@@ -795,7 +836,6 @@
             }
         }
         
-        // 🌟 بستن سرچ و بازگشت به هوم
         function closeSearch() {
             document.getElementById('searchInput').value = '';
             document.getElementById('search-results-area').style.display = 'none';
@@ -810,7 +850,7 @@
                 document.getElementById('loadingSearch').style.display = 'none';
                 
                 if (data.artist && data.artist.name) {
-                    const hqArtist = data.artist.image ? data.artist.image.replace(/=w\d+-h\d+.*/, "=w500-h500-l90-rj") : '';
+                    const hqArtist = getHqCover(data.artist.image);
                     document.getElementById('searchArtistResult').innerHTML = `
                         <div class="artist-search-card" onclick="openArtistPage('${data.artist.name}', '${hqArtist}')">
                             <img src="${hqArtist}"><div><div class="artist-search-name">${data.artist.name}</div><div class="artist-search-label">Artist</div></div>
@@ -818,7 +858,7 @@
                     `;
                 }
 
-                let tempPlaylist = data.tracks.map(track => { return { ...track, hqCover: track.cover ? track.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' }; });
+                let tempPlaylist = data.tracks.map(track => { return { ...track, hqCover: getHqCover(track.cover) }; });
                 tempPlaylist.forEach((track, index) => {
                     const item = document.createElement('div'); item.className = 'track-item';
                     item.onclick = () => { currentPlaylist = tempPlaylist; playTrack(index); };
@@ -848,24 +888,20 @@
 
         function toggleLyrics() { document.getElementById('lyrics-sheet').classList.toggle('active'); }
         
-        // 🌟 اسکرول بی‌نقص لیریک (از روی خود متن هم بکشی بسته میشه)
-        const sheet = document.getElementById('lyrics-sheet');
-        const content = document.getElementById('lyrics-content');
+        // 🌟 رفع کامل باگ بسته شدن لیریکس: الان فقط ناحیه بالای صفحه لیریک باعث بسته شدنش می‌شه (بدون تداخل با اسکرول کردن متن‌ها)
+        const handleArea = document.querySelector('.lyrics-handle-area');
         let sheetTouchStartY = 0;
         
-        sheet.addEventListener('touchstart', e => {
-            if (content.scrollTop <= 0) sheetTouchStartY = e.touches[0].clientY;
-            else sheetTouchStartY = 0;
-        }, {passive: true});
-        
-        sheet.addEventListener('touchmove', e => {
-            if (sheetTouchStartY && e.touches[0].clientY > sheetTouchStartY + 60) {
+        handleArea.addEventListener('touchstart', e => { sheetTouchStartY = e.touches[0].clientY; }, {passive: true});
+        handleArea.addEventListener('touchmove', e => {
+            if (sheetTouchStartY && e.touches[0].clientY > sheetTouchStartY + 20) {
                 document.getElementById('lyrics-sheet').classList.remove('active');
                 sheetTouchStartY = 0;
             }
         }, {passive: true});
 
         async function fetchLyrics(videoId, title, artist) {
+            const content = document.getElementById('lyrics-content');
             content.innerHTML = "Searching for lyrics...";
             parsedLyrics = [];
             try {
@@ -907,7 +943,6 @@
         }
         audio.onended = () => playNext();
         
-        // 🌟 درگ کردن روی مینی‌پلیر
         const miniProgressBg = document.getElementById('miniProgressBg');
         let isMiniDragging = false;
         
@@ -931,7 +966,6 @@
             if(audio.duration) audio.currentTime = percentage * audio.duration;
         }
 
-        // درگ کردن روی فول پلیر
         const progressBg = document.getElementById('progressBg');
         let isDragging = false;
         
