@@ -285,7 +285,6 @@
             <div class="horizontal-scroll" id="favArtistsList"></div>
         </div>
 
-        <!-- 🌟 بخش ترکیبی Made For You -->
         <div id="made-for-you-section" style="display: none;">
             <div class="section-title">Made For You</div>
             <div class="horizontal-scroll" id="madeForYouList"></div>
@@ -320,15 +319,19 @@
         </div>
     </div>
 
-    <!-- Album Screen / Mix Screen -->
+    <!-- Album / Playlist Screen -->
     <div id="album-screen">
         <div class="album-header">
             <div class="back-btn" onclick="closeAlbumPage()"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
             <img id="albumHeaderBg" class="album-header-bg" src="">
             <div class="album-header-info">
                 <img id="albumHeaderImg" class="album-header-img" src="">
-                <h1 id="albumHeaderName" class="album-header-name">Album Name</h1>
-                <div id="albumHeaderArtist" class="album-header-artist">Artist</div>
+                <h1 id="albumHeaderName" class="album-header-name">List Name</h1>
+                <div id="albumHeaderArtist" class="album-header-artist" style="margin-bottom: 15px;">Subtitle</div>
+                <!-- 🌟 اضافه شدن دکمه پلی برای آلبوم‌ها و پلی‌لیست‌ها -->
+                <div class="artist-actions" style="justify-content: center;">
+                    <button class="action-btn play" id="albumPlayBtn" style="margin: 0 auto; width: 55px; height: 55px;"><svg viewBox="0 0 24 24" style="width:28px;height:28px;"><path d="M8 5v14l11-7z"/></svg></button>
+                </div>
             </div>
         </div>
         <div style="padding: 0 20px;">
@@ -409,7 +412,7 @@
         const FAV_ARTISTS_KEY = 'fav_artists_' + userId;
         const FAV_ARTISTS_IMGS_KEY = 'fav_artists_imgs_' + userId;
         const RECENT_TRACKS_KEY = 'recent_tracks_' + userId;
-        const PLAYER_STATE_KEY = 'player_state_' + userId; // 🌟 کلید جدید برای ذخیره نشست کاربر
+        const PLAYER_STATE_KEY = 'player_state_' + userId; 
         const SERVER_URL = "https://programmer-flags-brass-gba.trycloudflare.com";
         
         let audio = new Audio();
@@ -434,9 +437,8 @@
             return url;
         }
 
-        // 🌟 ذخیره وضعیت پلیر در هر لحظه
         function savePlayerState() {
-            if (currentIndex === -1) return;
+            if (currentIndex === -1 || !audio.duration) return;
             const state = {
                 playlist: currentPlaylist,
                 index: currentIndex,
@@ -459,7 +461,7 @@
                 selectedArtistsData = JSON.parse(localStorage.getItem(FAV_ARTISTS_IMGS_KEY) || '[]');
                 showHome();
                 
-                // 🌟 بازیابی آخرین آهنگی که کاربر گوش می‌داد (بعد از بسته شدن تصادفی برنامه)
+                // 🌟 بازگشت دقیق به ثانیه‌ای که بسته شده
                 const savedState = localStorage.getItem(PLAYER_STATE_KEY);
                 if (savedState) {
                     try {
@@ -480,14 +482,18 @@
                             document.getElementById('dynamic-bg').style.backgroundImage = `url('${track.hqCover}')`;
                             
                             audio.src = `${SERVER_URL}/stream?id=${track.id}`;
-                            // صبر می‌کنیم متادیتا لود بشه بعد زمان رو ست می‌کنیم تا ارور نده
-                            audio.addEventListener('loadedmetadata', function onLoaded() {
-                                audio.currentTime = state.time || 0;
-                                audio.removeEventListener('loadedmetadata', onLoaded);
+                            
+                            // وقتی آهنگ آماده شد ثانیه رو تنظیم کن
+                            audio.addEventListener('canplay', function resumeHandler() {
+                                if (state.time > 0) {
+                                    audio.currentTime = state.time;
+                                    state.time = 0; // فقط یکبار اجرا بشه
+                                }
+                                audio.removeEventListener('canplay', resumeHandler);
                             });
                             
                             fetchLyrics(track.id, track.title, track.artist);
-                            updatePlayBtn(false); // در حالت متوقف شده بالا میاد
+                            updatePlayBtn(false);
                         }
                     } catch(e) {}
                 }
@@ -570,7 +576,6 @@
             renderSpeedDial(); renderFavArtists(); fetchNewReleases(); renderMadeForYou();
         }
         
-        // 🌟 سیستم هوشمند باز کردن لیست‌های میکس با کاور
         async function openMixPage(title, coverUrl, fetchUrl) {
             document.getElementById('home-screen').style.display = 'none';
             document.getElementById('artist-screen').style.display = 'none';
@@ -584,6 +589,7 @@
 
             document.getElementById('loadingAlbum').style.display = 'block';
             document.getElementById('albumTrackList').innerHTML = '';
+            document.getElementById('albumPlayBtn').style.display = 'none'; // مخفی تا لود بشه
 
             try {
                 const res = await fetch(fetchUrl);
@@ -594,10 +600,14 @@
                 document.getElementById('loadingAlbum').style.display = 'none';
                 if(tracks.length > 0) {
                     let tempPlaylist = tracks.map(t => { return { ...t, hqCover: getHqCover(t.cover) }; });
+                    
+                    // 🌟 فعال شدن دکمه پلی هدر
+                    document.getElementById('albumPlayBtn').style.display = 'flex';
+                    document.getElementById('albumPlayBtn').onclick = () => { currentPlaylist = tempPlaylist; playTrack(0); };
+
                     tempPlaylist.forEach((track, index) => {
                         const trackEl = document.createElement('div'); trackEl.className = 'track-item'; trackEl.style.background = 'transparent';
                         trackEl.onclick = () => { currentPlaylist = tempPlaylist; playTrack(index); };
-                        // 🌟 اضافه شدن عکس به جای شماره
                         trackEl.innerHTML = `<img src="${track.hqCover}"><div class="track-info"><div class="track-title">${track.title}</div><div class="track-artist">${track.artist}</div></div>`;
                         document.getElementById('albumTrackList').appendChild(trackEl);
                     });
@@ -839,15 +849,20 @@
             document.getElementById('artist-screen').style.display = 'none'; document.getElementById('home-screen').style.display = 'none'; document.getElementById('album-screen').style.display = 'block'; window.scrollTo(0, 0);
             document.getElementById('albumHeaderBg').src = coverUrl; document.getElementById('albumHeaderImg').src = coverUrl; document.getElementById('albumHeaderName').innerText = albumTitle; document.getElementById('albumHeaderArtist').innerText = artistName;
             document.getElementById('loadingAlbum').style.display = 'block'; document.getElementById('albumTrackList').innerHTML = '';
+            document.getElementById('albumPlayBtn').style.display = 'none';
+
             try {
                 const res = await fetch(`${SERVER_URL}/api/album_tracks?id=${browseId}&artist=${encodeURIComponent(artistName)}`); const tracks = await res.json();
                 document.getElementById('loadingAlbum').style.display = 'none';
                 if(tracks.length > 0) {
                     let tempPlaylist = tracks.map(t => { return { ...t, hqCover: getHqCover(t.cover) }; });
+                    
+                    document.getElementById('albumPlayBtn').style.display = 'flex';
+                    document.getElementById('albumPlayBtn').onclick = () => { currentPlaylist = tempPlaylist; playTrack(0); };
+
                     tempPlaylist.forEach((track, index) => {
                         const trackEl = document.createElement('div'); trackEl.className = 'track-item'; trackEl.style.background = 'transparent';
                         trackEl.onclick = () => { currentPlaylist = tempPlaylist; playTrack(index); };
-                        // 🌟 کاور آهنگ‌ها جایگزین شماره شد
                         trackEl.innerHTML = `<img src="${track.hqCover}"><div class="track-info"><div class="track-title">${track.title}</div><div class="track-artist">${track.artist}</div></div>`;
                         document.getElementById('albumTrackList').appendChild(trackEl);
                     });
@@ -913,7 +928,6 @@
             currentIndex = index; const track = currentPlaylist[index];
             addToSpeedDial(track);
             lastActiveIndex = -1; 
-            savePlayerState(); // ذخیره نشست کاربر
             
             document.getElementById('miniTitle').innerText = track.title; document.getElementById('miniArtist').innerText = track.artist;
             document.getElementById('miniCover').src = track.hqCover; document.getElementById('miniPlayer').style.display = 'flex';
@@ -925,6 +939,12 @@
             
             audio.src = `${SERVER_URL}/stream?id=${track.id}`; audio.play(); updatePlayBtn(true);
             fetchLyrics(track.id, track.title, track.artist);
+            
+            // 🌟 پیش‌بارگذاری آهنگ بعدی تو بک‌گراند (صفر ثانیه وقفه موقع Next)
+            if (index + 1 < currentPlaylist.length) {
+                const nextTrack = currentPlaylist[index + 1];
+                fetch(`${SERVER_URL}/api/preload?id=${nextTrack.id}`).catch(()=>console.log('Preload queued'));
+            }
         }
 
         function toggleLyrics() { document.getElementById('lyrics-sheet').classList.toggle('active'); }
@@ -1034,7 +1054,6 @@
             if (audio.duration) { 
                 const percentage = (audio.currentTime / audio.duration) * 100;
                 
-                // 🌟 ذخیره وضعیت در پس‌زمینه (هر 2 ثانیه یکبار تا منابع رو درگیر نکنه)
                 if (audio.currentTime - lastSaveTime > 2) {
                     savePlayerState();
                     lastSaveTime = audio.currentTime;
