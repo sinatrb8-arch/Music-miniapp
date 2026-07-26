@@ -60,7 +60,7 @@
 
         /* 2. Home Screen */
         #home-screen { padding: 20px; display: none; }
-        .search-container { position: relative; margin-bottom: 25px; }
+        .search-container { position: relative; margin-bottom: 0; flex: 1;}
         .search-container input {
             width: 100%; padding: 16px 16px 16px 45px; border: none; border-radius: 16px;
             background-color: rgba(40, 40, 40, 0.8); color: var(--text-color); outline: none;
@@ -69,6 +69,11 @@
         .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 20px; fill: var(--hint-color); }
         .section-title { font-size: 22px; font-weight: 800; margin-bottom: 15px; letter-spacing: -0.5px;}
         
+        /* 🌟 دکمه برگشت از سرچ */
+        .search-header-row { display: flex; align-items: center; gap: 12px; margin-bottom: 25px; }
+        #searchBackBtn { display: none; cursor: pointer; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 50%; backdrop-filter: blur(5px);}
+        #searchBackBtn svg { width: 24px; height: 24px; fill: #fff; }
+
         .artist-search-card { display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 16px; margin-bottom: 20px; cursor: pointer;}
         .artist-search-card img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover;}
         .artist-search-name { font-size: 18px; font-weight: 800;}
@@ -119,21 +124,24 @@
         .back-btn { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.5); border-radius: 50%; padding: 10px; display:flex; justify-content:center; align-items:center; z-index: 10; cursor:pointer;}
         .back-btn svg { width: 24px; height: 24px; fill: #fff; }
 
-        /* 4. Mini Player (پیشرفته همراه با کنترل‌ها و نوار) */
+        /* 4. Mini Player (🌟 کاملا چسبیده به چپ با نوار بزرگتر و نقطه) */
         .mini-player { 
             position: fixed; bottom: 10px; left: 10px; right: 10px; 
-            background: rgba(40,40,40,0.95); border-radius: 16px; 
-            display: none; flex-direction: column; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.6); backdrop-filter: blur(10px); overflow: hidden;
+            background: rgba(40,40,40,0.95); border-radius: 12px; 
+            display: none; flex-direction: column; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.6); backdrop-filter: blur(10px); 
+            overflow: hidden; padding: 0;
         }
-        .mini-progress-bg { width: 100%; height: 3px; background: rgba(255,255,255,0.1); cursor: pointer; }
+        .mini-progress-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.15); cursor: pointer; position: relative; z-index: 5;}
         .mini-progress-fill { height: 100%; background: var(--accent); width: 0%; pointer-events: none; }
-        .mini-main { display: flex; padding: 10px 15px; align-items: center; justify-content: space-between; }
-        .mini-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; cursor: pointer; }
-        .mini-cover { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; aspect-ratio: 1/1;}
+        .mini-progress-dot { position: absolute; top: -3px; left: 0%; width: 10px; height: 10px; background-color: #fff; border-radius: 50%; transform: translateX(-50%); pointer-events: none; box-shadow: 0 2px 5px rgba(0,0,0,0.5);}
+        
+        .mini-main-row { display: flex; width: 100%; align-items: center; height: 55px; }
+        .mini-cover { width: 55px; height: 55px; object-fit: cover; cursor: pointer; border-radius: 0; }
+        .mini-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; cursor: pointer; padding-left: 12px; }
         .mini-text {display: flex; flex-direction: column;}
         .mini-title { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .mini-artist { font-size: 12px; color: var(--hint-color); }
-        .mini-controls { display: flex; align-items: center; gap: 10px; }
+        .mini-controls { display: flex; align-items: center; padding-right: 12px; gap: 5px;}
         .mini-play-btn { background: none; border: none; color: white; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center;}
         .mini-play-btn svg { width: 24px; height: 24px; fill: #fff; }
 
@@ -177,7 +185,7 @@
         .fp-btn-play:active { transform: scale(0.95); }
         .fp-btn-play svg { fill: #000; width: 28px; height: 28px; }
 
-        /* 🌟 پنل لیریک با قابلیت اسکرول برای بستن */
+        /* 🌟 پنل لیریک کشویی */
         #lyrics-sheet {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(20, 20, 20, 0.95); 
@@ -197,7 +205,6 @@
         #lyrics-content::-webkit-scrollbar { display: none; }
         
         .lyric-line { transition: all 0.3s ease; margin-bottom: 15px; cursor: pointer; padding: 10px 15px; border-radius: 12px; border: 1px solid transparent;}
-        
         .lyric-line.active { 
             color: #fff; transform: scale(1.05); background: rgba(255, 255, 255, 0.1); 
             backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 20px rgba(0,0,0,0.2);
@@ -225,9 +232,15 @@
 
     <!-- Home Screen -->
     <div id="home-screen">
-        <div class="search-container">
-            <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            <input type="text" id="searchInput" placeholder="Artists, songs, or podcasts" oninput="handleSearchLive(event)">
+        <!-- 🌟 نوار جستجو با دکمه برگشت -->
+        <div class="search-header-row">
+            <div id="searchBackBtn" onclick="closeSearch()">
+                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </div>
+            <div class="search-container">
+                <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <input type="text" id="searchInput" placeholder="Artists, songs, or podcasts" oninput="handleSearchLive(event)">
+            </div>
         </div>
         
         <div id="search-results-area" style="display: none;">
@@ -235,6 +248,12 @@
             <div id="loadingSearch" class="loading-text" style="display: none;">Searching...</div>
             <div id="searchArtistResult"></div>
             <div class="track-list" id="searchResultsList" style="margin-bottom: 25px;"></div>
+        </div>
+
+        <!-- 🌟 بخش جدید Made For You -->
+        <div id="made-for-you-section" style="display: none;">
+            <div class="section-title">Made For You</div>
+            <div class="horizontal-scroll" id="madeForYouList"></div>
         </div>
 
         <div id="speed-dial-section" style="display: none;">
@@ -305,14 +324,15 @@
         </div>
     </div>
 
-    <!-- 🌟 Mini Player با کنترل‌های کامل -->
+    <!-- 🌟 Mini Player -->
     <div class="mini-player" id="miniPlayer">
-        <div class="mini-progress-bg" id="miniProgressBg" onclick="seekMini(event)">
+        <div class="mini-progress-bg" id="miniProgressBg">
             <div class="mini-progress-fill" id="miniProgressFill"></div>
+            <div class="mini-progress-dot" id="miniProgressDot"></div>
         </div>
-        <div style="display: flex; width: 100%; padding-top: 10px; align-items: center;">
+        <div class="mini-main-row">
+            <img id="miniCover" src="" class="mini-cover" onclick="openFullPlayer()">
             <div class="mini-info" onclick="openFullPlayer()">
-                <img id="miniCover" src="" class="mini-cover">
                 <div class="mini-text">
                     <div class="mini-title" id="miniTitle">Loading...</div>
                     <div class="mini-artist" id="miniArtist">Artist</div>
@@ -332,14 +352,13 @@
         <div class="bg-gradient-overlay"></div>
         
         <div class="fp-header">
-            <!-- فلش برگشت به پایین برای پلیر -->
+            <!-- 🌟 آیکون بستن پلیر تبدیل به فلش رو به پایین شد -->
             <svg onclick="closeFullPlayer()" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
             <div class="fp-header-center">NOW PLAYING</div>
             <div class="lyrics-top-btn" onclick="toggleLyrics()">LYRICS</div>
         </div>
         <div class="fp-cover-container"><img id="fpCover" src="" class="fp-cover"></div>
         <div class="fp-info-row">
-            <!-- کلیک روی خواننده برای رفتن به صفحه خواننده -->
             <div class="fp-text" onclick="goToArtistFromPlayer()">
                 <div class="fp-title" id="fpTitle">Title</div>
                 <div class="fp-artist" id="fpArtist">Artist</div>
@@ -483,9 +502,60 @@
 
         function showHome() {
             document.getElementById('home-screen').style.display = 'block';
-            renderSpeedDial(); renderFavArtists(); fetchNewReleases();
+            renderSpeedDial(); renderMadeForYou(); renderFavArtists(); fetchNewReleases();
         }
         
+        // 🌟 بخش جدید پلی‌لیست‌های اختصاصی کاربر
+        function renderMadeForYou() {
+            const container = document.getElementById('madeForYouList');
+            container.innerHTML = '';
+            if (selectedArtistsData.length === 0) return;
+            
+            document.getElementById('made-for-you-section').style.display = 'block';
+            
+            const favArtist = selectedArtistsData[0];
+            createMixCard(container, `${favArtist.name} Mix`, favArtist.image, async () => { await playArtistMix(favArtist.name); });
+            
+            if (selectedArtistsData.length > 1) {
+                const secondArtist = selectedArtistsData[1];
+                createMixCard(container, `${secondArtist.name} Radio`, secondArtist.image, async () => { await playArtistMix(secondArtist.name); });
+            }
+            
+            const recent = JSON.parse(localStorage.getItem(RECENT_TRACKS_KEY) || '[]');
+            if (recent.length > 0) {
+                createMixCard(container, "Your Supermix", recent[0].hqCover, () => {
+                    currentPlaylist = [...recent].sort(() => Math.random() - 0.5);
+                    playTrack(0);
+                });
+            }
+        }
+        
+        function createMixCard(container, title, image, onClick) {
+            const hqImage = image ? image.replace(/=w\d+-h\d+.*/, "=w500-h500-l90-rj") : '';
+            const item = document.createElement('div'); item.className = 'scroll-item';
+            item.onclick = onClick;
+            item.innerHTML = `
+                <div style="position:relative;">
+                    <img src="${hqImage}" class="scroll-cover" style="border-radius: 8px;">
+                    <div style="position:absolute; bottom:15px; left:5px; width:40px; height:4px; background:var(--accent); border-radius:2px;"></div>
+                </div>
+                <div class="scroll-title">${title}</div>
+            `;
+            container.appendChild(item);
+        }
+
+        async function playArtistMix(artistName) {
+            tg.showAlert("Generating Mix...");
+            try {
+                const res = await fetch(`${SERVER_URL}/api/artist_details?name=${encodeURIComponent(artistName)}`); 
+                const data = await res.json();
+                if (data.songs && data.songs.length > 0) {
+                    currentPlaylist = data.songs.map(t => ({ ...t, hqCover: t.cover ? t.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' })).sort(() => Math.random() - 0.5);
+                    playTrack(0);
+                } else { tg.showAlert("Mix failed."); }
+            } catch (e) { tg.showAlert("Error."); }
+        }
+
         function renderFavArtists() {
             const container = document.getElementById('favArtistsList');
             container.innerHTML = '';
@@ -533,7 +603,6 @@
                     if(res && res.singles) newSingles.push(...res.singles);
                 });
                 
-                // مرتب‌سازی بر اساس سال انتشار (نزولی)
                 newAlbums = newAlbums.sort((a, b) => parseInt(b.year || 0) - parseInt(a.year || 0));
                 newSingles = newSingles.sort((a, b) => parseInt(b.year || 0) - parseInt(a.year || 0));
                 
@@ -546,20 +615,30 @@
                         const hqCover = album.cover ? album.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '';
                         const item = document.createElement('div'); item.className = 'scroll-item';
                         item.onclick = () => { openAlbumPage(album.id, album.title, hqCover, album.artist); };
-                        item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${album.title}</div><div style="font-size:10px; color:#a7a7a7;">${album.artist} • ${album.year}</div>`;
+                        item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${album.title}</div><div style="font-size:10px; color:#a7a7a7;">${album.artist}</div>`;
                         albumsContainer.appendChild(item);
                     });
                 }
                 
-                // 🌟 کلیک روی سینگل جدید = پخش مستقیم همون ترک!
                 if (newSingles.length > 0) {
                     document.getElementById('new-singles-section').style.display = 'block';
                     const singlesContainer = document.getElementById('newSinglesList');
                     newSingles.forEach(single => {
                         const hqCover = single.cover ? single.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '';
                         const item = document.createElement('div'); item.className = 'scroll-item';
-                        item.onclick = () => { currentPlaylist = [single]; playTrack(0); };
-                        item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${single.title}</div><div style="font-size:10px; color:#a7a7a7;">${single.artist} • ${single.year}</div>`;
+                        // 🌟 کلیک روی سینگل = پخش مستقیم
+                        item.onclick = async () => { 
+                            tg.showAlert("Loading Single...");
+                            try {
+                                const res = await fetch(`${SERVER_URL}/api/album_tracks?id=${single.id}&artist=${encodeURIComponent(single.artist)}`); 
+                                const tracks = await res.json();
+                                if(tracks.length > 0) {
+                                    currentPlaylist = tracks.map(t => ({ ...t, hqCover: hqCover }));
+                                    playTrack(0);
+                                }
+                            } catch(e) {}
+                        };
+                        item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${single.title}</div><div style="font-size:10px; color:#a7a7a7;">${single.artist}</div>`;
                         singlesContainer.appendChild(item);
                     });
                 }
@@ -587,7 +666,7 @@
             }
             localStorage.setItem(FAV_ARTISTS_KEY, JSON.stringify(selectedArtists));
             localStorage.setItem(FAV_ARTISTS_IMGS_KEY, JSON.stringify(selectedArtistsData));
-            updateHeartIcon(); renderFavArtists();
+            updateHeartIcon(); renderFavArtists(); renderMadeForYou();
         }
         
         function shuffleArtistTracks() {
@@ -634,6 +713,7 @@
                             sngList.appendChild(item);
                         });
                     }
+                    
                     if (data.songs) {
                         currentArtistSongsCache = data.songs.map(t => { return { ...t, hqCover: t.cover ? t.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' }; });
                         currentArtistSongsCache.forEach((track, index) => {
@@ -670,7 +750,6 @@
 
         function closeAlbumPage() { document.getElementById('album-screen').style.display = 'none'; document.getElementById('home-screen').style.display = 'block'; }
 
-        // 🌟 کلیک روی اسم خواننده تو پلیر
         function goToArtistFromPlayer() {
             closeFullPlayer();
             const aName = document.getElementById('fpArtist').innerText;
@@ -683,10 +762,17 @@
             const query = event.target.value.trim();
             clearTimeout(mainSearchTimeout);
             if (query.length >= 3) {
+                document.getElementById('searchBackBtn').style.display = 'block';
                 mainSearchTimeout = setTimeout(() => { executeSearch(query); }, 500);
             } else if (query.length === 0) {
-                document.getElementById('search-results-area').style.display = 'none';
+                closeSearch();
             }
+        }
+        
+        function closeSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('search-results-area').style.display = 'none';
+            document.getElementById('searchBackBtn').style.display = 'none';
         }
 
         async function executeSearch(query) {
@@ -735,7 +821,7 @@
 
         function toggleLyrics() { document.getElementById('lyrics-sheet').classList.toggle('active'); }
         
-        // 🌟 اسکرول و سوایپ بی‌نقص لیریک (هرکجای صفحه بکشی پایین بسته میشه)
+        // 🌟 اسکرول بی‌نقص لیریک (بستن با پایین کشیدن کل صفحه لیریک)
         const sheet = document.getElementById('lyrics-sheet');
         const content = document.getElementById('lyrics-content');
         let sheetTouchStartY = 0;
@@ -786,6 +872,7 @@
         function openFullPlayer() { document.getElementById('fullPlayer').classList.add('active'); }
         function closeFullPlayer() { document.getElementById('fullPlayer').classList.remove('active'); document.getElementById('lyrics-sheet').classList.remove('active'); }
         function togglePlay(e) { e.stopPropagation(); if (audio.paused) { audio.play(); updatePlayBtn(true); } else { audio.pause(); updatePlayBtn(false); } }
+        
         function updatePlayBtn(isPlaying) { 
             const miniBtn = document.getElementById('miniPlayBtn');
             if(miniBtn) miniBtn.innerHTML = isPlaying ? iconPauseWhite : iconPlayWhite; 
@@ -793,16 +880,33 @@
         }
         audio.onended = () => playNext();
         
-        // 🌟 درگ کردن روی مینی‌پلیر و فول‌پلیر
-        const progressBg = document.getElementById('progressBg');
+        // 🌟 درگ کردن روی مینی‌پلیر
         const miniProgressBg = document.getElementById('miniProgressBg');
-        let isDragging = false;
+        let isMiniDragging = false;
         
-        function seekMini(e) {
-            e.stopPropagation();
-            const bar = document.getElementById('miniProgressBg');
-            if(audio.duration) audio.currentTime = (e.offsetX / bar.clientWidth) * audio.duration;
+        miniProgressBg.addEventListener('touchstart', (e) => { isMiniDragging = true; seekMiniFromTouch(e); }, {passive: true});
+        miniProgressBg.addEventListener('touchmove', (e) => { if(isMiniDragging) seekMiniFromTouch(e); }, {passive: true});
+        miniProgressBg.addEventListener('touchend', (e) => { if(isMiniDragging) { seekMiniFromTouch(e); isMiniDragging = false; } });
+        miniProgressBg.addEventListener('mousedown', (e) => { isMiniDragging = true; seekMiniFromTouch(e); });
+        document.addEventListener('mousemove', (e) => { if(isMiniDragging) seekMiniFromTouch(e); });
+        document.addEventListener('mouseup', (e) => { if(isMiniDragging) { isMiniDragging = false; } });
+
+        function seekMiniFromTouch(e) {
+            const rect = miniProgressBg.getBoundingClientRect();
+            let clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            if(!clientX && e.changedTouches) clientX = e.changedTouches[0].clientX;
+            let x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+            const percentage = x / rect.width;
+            
+            document.getElementById('miniProgressFill').style.width = `${percentage * 100}%`;
+            document.getElementById('miniProgressDot').style.left = `${percentage * 100}%`;
+            
+            if(audio.duration) audio.currentTime = percentage * audio.duration;
         }
+
+        // درگ کردن روی فول پلیر
+        const progressBg = document.getElementById('progressBg');
+        let isDragging = false;
         
         progressBg.addEventListener('touchstart', (e) => { isDragging = true; seekFromTouch(e); }, {passive: true});
         progressBg.addEventListener('touchmove', (e) => { if(isDragging) seekFromTouch(e); }, {passive: true});
@@ -832,9 +936,10 @@
                     document.getElementById('progressFill').style.width = `${percentage}%`; 
                     document.getElementById('progressDot').style.left = `${percentage}%`; 
                 }
-                
-                // آپدیت نوار مینی پلیر
-                document.getElementById('miniProgressFill').style.width = `${percentage}%`;
+                if (!isMiniDragging) {
+                    document.getElementById('miniProgressFill').style.width = `${percentage}%`;
+                    document.getElementById('miniProgressDot').style.left = `${percentage}%`;
+                }
                 
                 document.getElementById('currentTime').innerText = formatTime(audio.currentTime); 
                 document.getElementById('duration').innerText = formatTime(audio.duration); 
