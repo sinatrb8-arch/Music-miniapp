@@ -194,9 +194,8 @@
         .fp-btn-play:active { transform: scale(0.95); }
         .fp-btn-play svg { fill: #000; width: 28px; height: 28px; }
         
-        .play-mode-btn { background: none; border: none; cursor: pointer; padding: 5px; opacity: 0.7; transition: 0.3s;}
-        .play-mode-btn.active { opacity: 1; color: var(--accent);}
-        .play-mode-btn svg { width: 22px; height: 22px; fill: currentColor; }
+        .play-mode-btn { background: none; border: none; cursor: pointer; padding: 5px; transition: 0.3s;}
+        .play-mode-btn svg { width: 24px; height: 24px; fill: #fff; }
 
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -601,11 +600,15 @@
             } catch(e) {}
         }
 
-        // 🌟 سیستم جدید و بدون باگ برای ارسال موزیک به چت
+        // 🌟 سیستم ارسال قطعی به چتی که مینی‌اپ در آن باز است
         function sendToBot() {
             if(currentIndex === -1) return;
-            if(!userId || userId === 'guest') {
-                tg.showAlert("❌ برای استفاده از قابلیت دانلود، لطفا مینی‌اپ را مستقیماً از داخل ربات باز کنید.");
+            
+            // گرفتن دقیق آیدی چت 
+            const activeChatId = tg.initDataUnsafe?.chat?.id || tg.initDataUnsafe?.user?.id;
+            
+            if(!activeChatId) {
+                tg.showAlert("❌ خطای ارتباط با تلگرام. لطفاً برنامه را مجدداً باز کنید.");
                 return;
             }
             
@@ -614,9 +617,11 @@
             btn.style.opacity = '0.3';
             setTimeout(() => btn.style.opacity = '1', 300);
             
-            tg.showAlert("📥 آهنگ در حال ارسال به چت ربات است...");
+            // نمایش پیام به کاربر
+            tg.showAlert("📥 آهنگ در حال ارسال به صفحه چت است...");
             
-            fetch(`${SERVER_URL}/api/send_audio?id=${track.id}&uid=${userId}&title=${encodeURIComponent(track.title)}&artist=${encodeURIComponent(track.artist)}`)
+            // ارسال دستور به سرور پایتون برای دانلود و فرستادن
+            fetch(`${SERVER_URL}/api/send_audio?id=${track.id}&chat_id=${activeChatId}&title=${encodeURIComponent(track.title)}&artist=${encodeURIComponent(track.artist)}`)
             .catch(()=>{});
         }
 
@@ -976,7 +981,7 @@
                         });
                     }
                 }
-            } catch (e) { document.getElementById('loadingArtist').innerText = 'Error.'; }
+            } catch (e) {}
         }
         
         function closeArtistPage() { document.getElementById('artist-screen').style.display = 'none'; document.getElementById('home-screen').style.display = 'block'; }
@@ -1003,7 +1008,7 @@
                         document.getElementById('albumTrackList').appendChild(trackEl);
                     });
                 } else { document.getElementById('loadingAlbum').style.display = 'block'; document.getElementById('loadingAlbum').innerText = "No tracks."; }
-            } catch(e) { document.getElementById('loadingAlbum').style.display = 'block'; document.getElementById('loadingAlbum').innerText = "Error."; }
+            } catch(e) {}
         }
 
         function closeAlbumPage() { document.getElementById('album-screen').style.display = 'none'; document.getElementById('home-screen').style.display = 'block'; }
@@ -1138,28 +1143,19 @@
             } catch (e) { content.innerHTML = "Error loading lyrics."; }
         }
 
-        async function fetchMoreTracksFromMode(mode) {
-            if (!currentPlaylist[currentIndex]) return;
-            const seedTrack = currentPlaylist[currentIndex];
-            try {
-                let url = mode === 'radio' ? `${SERVER_URL}/api/track_radio?id=${seedTrack.id}` : `${SERVER_URL}/search?q=${encodeURIComponent(seedTrack.artist)}`;
-                const res = await fetch(url);
-                const data = await res.json();
-                let newTracks = mode === 'radio' ? data : (data.tracks || []);
-                newTracks = newTracks.map(t => ({...t, hqCover: getHqCover(t.cover)}));
-                newTracks = newTracks.filter(nt => !currentPlaylist.find(ct => ct.id === nt.id));
-                if (newTracks.length > 0) {
-                    currentPlaylist = currentPlaylist.concat(newTracks);
-                    playTrack(currentIndex + 1);
-                }
-            } catch(e) {}
-        }
-
         function playNext() { 
             if (currentIndex < currentPlaylist.length - 1) {
                 playTrack(currentIndex + 1); 
             } else {
-                fetchMoreTracksFromMode('radio'); 
+                // اگر آهنگ‌ها تمام شد، بر اساس تنظیمات پاپ‌آپ آهنگ جدید اضافه کن
+                const seedTrack = currentPlaylist[currentIndex];
+                let url = currentContext === 'artist' ? `${SERVER_URL}/search?q=${encodeURIComponent(seedTrack.artist)}` : `${SERVER_URL}/api/track_radio?id=${seedTrack.id}`;
+                fetch(url).then(r=>r.json()).then(data=>{
+                    let newTracks = currentContext === 'artist' ? (data.tracks || []) : data;
+                    newTracks = newTracks.map(t => ({...t, hqCover: getHqCover(t.cover)}));
+                    newTracks = newTracks.filter(nt => !currentPlaylist.find(ct => ct.id === nt.id));
+                    if(newTracks.length>0){ currentPlaylist=currentPlaylist.concat(newTracks); playTrack(currentIndex+1); }
+                }).catch(()=>{});
             }
         }
         
