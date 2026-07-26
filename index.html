@@ -61,7 +61,6 @@
         /* 2. Home Screen */
         #home-screen { padding: 20px; display: none; }
         
-        /* 🌟 هدر خوشامدگویی داینامیک */
         .greeting-title { font-size: 26px; font-weight: 800; margin-bottom: 20px; letter-spacing: -0.5px;}
 
         .search-container { position: relative; margin-bottom: 0; flex: 1;}
@@ -84,19 +83,24 @@
         
         .horizontal-scroll { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 25px; scroll-snap-type: x mandatory; scrollbar-width: none;}
         .horizontal-scroll::-webkit-scrollbar { display: none; }
-        .scroll-item { min-width: 110px; background: rgba(40,40,40,0.6); border-radius: 16px; padding: 12px; text-align: center; cursor: pointer; scroll-snap-align: start; backdrop-filter: blur(10px);}
-        .scroll-cover { width: 90px; height: 90px; border-radius: 12px; object-fit: cover; object-position: center; margin-bottom: 10px;}
+        .scroll-item { 
+            min-width: 100px; background: transparent; border-radius: 12px; padding: 0; 
+            text-align: center; cursor: pointer; scroll-snap-align: start; 
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .scroll-cover { width: 100px; height: 100px; border-radius: 12px; object-fit: cover; object-position: center; margin-bottom: 8px; box-shadow: 0 6px 14px rgba(0,0,0,0.4);}
         .scroll-cover.circle { border-radius: 50%; aspect-ratio: 1/1; }
-        .scroll-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .scroll-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;}
         
-        .track-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; }
+        .track-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 25px; }
         
         .releases-grid { display: grid; grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 15px; margin-bottom: 25px; scrollbar-width: none;}
         .releases-grid::-webkit-scrollbar { display: none; }
         
-        .track-item { display: flex; align-items: center; padding: 10px; border-radius: 16px; gap: 14px; background: rgba(40,40,40,0.6); cursor:pointer; }
-        .releases-grid .track-item { width: 260px; scroll-snap-align: start; margin: 0; backdrop-filter: blur(10px);}
-        .track-item img { width: 55px; height: 55px; border-radius: 10px; object-fit: cover; aspect-ratio: 1/1; }
+        .track-item { display: flex; align-items: center; padding: 8px; border-radius: 12px; gap: 14px; background: transparent; cursor:pointer; transition: background 0.2s;}
+        .track-item:active { background: rgba(255,255,255,0.08); }
+        .releases-grid .track-item { width: 260px; scroll-snap-align: start; margin: 0;}
+        .track-item img { width: 55px; height: 55px; border-radius: 8px; object-fit: cover; aspect-ratio: 1/1; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
         .track-info { flex: 1; overflow: hidden; }
         .track-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .track-artist { font-size: 13px; color: var(--hint-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
@@ -183,7 +187,6 @@
         .progress-dot { position: absolute; top: -3px; left: 0%; width: 12px; height: 12px; background-color: #fff; border-radius: 50%; transform: translateX(-50%); pointer-events: none; box-shadow: 0 2px 5px rgba(0,0,0,0.5);}
         .time-display { display: flex; justify-content: space-between; font-size: 13px; color: rgba(255,255,255,0.6); font-weight: 500;}
         
-        /* 🌟 کنترل‌های پلیر و دکمه جدید انتخاب مسیر (Mode Switch) */
         .fp-controls { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 10px; box-sizing: border-box;}
         .ctrl-main-btn { background: none; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center;}
         .ctrl-main-btn svg { width: 36px; height: 36px; fill: #fff; }
@@ -191,10 +194,30 @@
         .fp-btn-play:active { transform: scale(0.95); }
         .fp-btn-play svg { fill: #000; width: 28px; height: 28px; }
         
-        /* دکمه انتخاب مسیر (رادیو / آرتیست) */
-        .play-mode-btn { background: none; border: none; cursor: pointer; padding: 5px; opacity: 0.7; transition: 0.3s;}
-        .play-mode-btn.active { opacity: 1; color: var(--accent);}
-        .play-mode-btn svg { width: 22px; height: 22px; fill: currentColor; }
+        /* دکمه تنظیمات پخش در پلیر */
+        .play-mode-btn { background: none; border: none; cursor: pointer; padding: 5px; transition: 0.3s;}
+        .play-mode-btn svg { width: 24px; height: 24px; fill: #fff; }
+
+        /* 🌟 مدال (پاپ‌آپ) تنظیمات مسیر پخش */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
+            z-index: 3000; display: flex; flex-direction: column; justify-content: flex-end;
+            opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content {
+            background: var(--secondary-bg); border-radius: 24px 24px 0 0;
+            padding: 25px 20px 40px 20px; transform: translateY(100%); transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 3px; margin: 0 auto 20px auto;}
+        .opt-btn {
+            padding: 16px; margin-bottom: 12px; background: rgba(255,255,255,0.05);
+            border-radius: 14px; font-weight: 600; font-size: 16px; cursor: pointer;
+            display: flex; align-items: center; gap: 12px; transition: 0.2s; color: #fff;
+        }
+        .opt-btn:active { background: rgba(255,255,255,0.1); transform: scale(0.98); }
 
         /* پنل لیریک کشویی */
         #lyrics-sheet {
@@ -215,7 +238,7 @@
         }
         #lyrics-content::-webkit-scrollbar { display: none; }
         
-        .lyric-line { transition: all 0.3s ease; margin-bottom: 15px; cursor: pointer; padding: 10px 15px; border-radius: 12px; border: 1px solid transparent;}
+        .lyric-line { transition: color 0.15s ease, transform 0.15s ease; margin-bottom: 15px; cursor: pointer; padding: 10px 15px; border-radius: 12px; border: 1px solid transparent;}
         .lyric-line.active { 
             color: #fff; transform: scale(1.05); background: rgba(255, 255, 255, 0.1); 
             backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 20px rgba(0,0,0,0.2);
@@ -243,9 +266,6 @@
 
     <!-- Home Screen -->
     <div id="home-screen">
-        <!-- 🌟 پیام خوشامدگویی داینامیک -->
-        <div class="greeting-title" id="greetingTitle">Good Day</div>
-        
         <div class="search-header-row">
             <div id="searchBackBtn" onclick="closeSearch()">
                 <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
@@ -268,10 +288,10 @@
             <div class="horizontal-scroll" id="speedDialList"></div>
         </div>
         
-        <!-- 🌟 بخش پلی‌لیست‌های داینامیک بر اساس ساعت -->
-        <div id="mood-mix-section" style="display: none;">
-            <div class="section-title" id="moodTitle">Chill Mixes</div>
-            <div class="horizontal-scroll" id="moodMixList"></div>
+        <!-- 🌟 بخش جدید ژانرها (جایگزین Mood) -->
+        <div id="genre-mix-section" style="display: none;">
+            <div class="section-title">Explore Genres</div>
+            <div class="horizontal-scroll" id="genreMixList"></div>
         </div>
         
         <div id="releases-section">
@@ -291,6 +311,7 @@
             <div class="horizontal-scroll" id="favArtistsList"></div>
         </div>
 
+        <!-- بخش ترکیبی Made For You -->
         <div id="made-for-you-section" style="display: none;">
             <div class="section-title">Made For You</div>
             <div class="horizontal-scroll" id="madeForYouList"></div>
@@ -335,6 +356,7 @@
                 <h1 id="albumHeaderName" class="album-header-name">List Name</h1>
                 <div id="albumHeaderArtist" class="album-header-artist" style="margin-bottom: 15px;">Subtitle</div>
             </div>
+            <!-- دکمه پلی لیست‌ها -->
             <button class="action-btn play" id="albumPlayBtn" style="position: absolute; bottom: 20px; right: 20px; width: 55px; height: 55px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: none; z-index: 10;">
                 <svg viewBox="0 0 24 24" style="width:28px;height:28px;"><path d="M8 5v14l11-7z"/></svg>
             </button>
@@ -396,21 +418,39 @@
         </div>
         
         <div class="fp-controls">
-            <!-- 🌟 دکمه انتخاب مسیر پلی‌لیست (رادیو / آرتیست) -->
-            <button class="play-mode-btn active" id="playModeBtn" style="color: #fff;" onclick="togglePlayMode()">
-                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-5.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/></svg>
+            <!-- 🌟 دکمه منوی هوشمند انتخاب مسیر پخش -->
+            <button class="play-mode-btn" onclick="openPlaybackOptions()">
+                <svg viewBox="0 0 24 24"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>
             </button>
             
             <button class="ctrl-main-btn" onclick="playPrev()"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
             <button class="fp-btn-play" id="fpPlayBtn" onclick="togglePlay(event)"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
             <button class="ctrl-main-btn" onclick="playNext()"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
-            <div style="width:32px;"></div> <!-- Spacer for balance -->
+            <div style="width:32px;"></div>
         </div>
         
         <div id="lyrics-sheet">
             <div class="lyrics-handle-area"><div class="lyrics-handle"></div></div>
             <div class="lyrics-header-title">Lyrics</div>
             <div id="lyrics-content">Loading lyrics...</div>
+        </div>
+    </div>
+    
+    <!-- 🌟 پاپ‌آپ استراتژی پخش (انتخاب هوشمندانه آهنگ‌های بعدی) -->
+    <div id="playback-options-modal" class="modal-overlay" onclick="closePlaybackOptions()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-handle"></div>
+            <h3 style="margin-top:0; margin-bottom: 25px; text-align:center;">Up Next Strategy</h3>
+            
+            <div class="opt-btn" id="opt-play-album" onclick="setPlaybackMode('album')" style="display:none;">
+                <span style="font-size: 20px;">💿</span> Continue this Album/List
+            </div>
+            <div class="opt-btn" onclick="setPlaybackMode('artist')">
+                <span style="font-size: 20px;">👤</span> Play only this Artist
+            </div>
+            <div class="opt-btn" onclick="setPlaybackMode('radio')">
+                <span style="font-size: 20px;">📻</span> Play Similar Tracks (Mix)
+            </div>
         </div>
     </div>
 
@@ -433,17 +473,22 @@
         let currentArtistPageImage = "";
         let currentArtistSongsCache = []; 
         
-        // 🌟 متغیر ذخیره حالت پخش (رادیو بی‌نهایت یا هنرمند فعلی)
-        let autoPlayMode = 'radio'; 
+        let currentContext = 'single'; // 🌟 تشخیص نوع صفحه مبدا (تکی یا آلبوم)
         
         const iconPlayWhite = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
         const iconPauseWhite = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
         const iconPlayBlack = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
         const iconPauseBlack = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
         
-        // آیکون‌های مود پخش
-        const iconRadio = '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-5.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/></svg>';
-        const iconArtist = '<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+        // 🌟 ژانرهای جدید برای بخش Explore
+        const genres = [
+            { title: 'Hip-Hop Vibes', query: 'Hip Hop', cover: 'https://images.unsplash.com/photo-1542204165-65bf26472b9b?w=500&q=80' },
+            { title: 'Pop Hits', query: 'Pop', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&q=80' },
+            { title: 'R&B Essentials', query: 'R&B', cover: 'https://images.unsplash.com/photo-1493225457124-a1a2b5358a9e?w=500&q=80' },
+            { title: 'Electronic Dance', query: 'Electronic', cover: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=500&q=80' },
+            { title: 'Rock Anthems', query: 'Rock', cover: 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=500&q=80' },
+            { title: 'Chill & Relax', query: 'Chill', cover: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80' }
+        ];
         
         let selectedArtists = []; let selectedArtistsData = []; let displayedArtists = new Set(); 
 
@@ -455,27 +500,11 @@
 
         function savePlayerState() {
             if (currentIndex === -1 || !audio.duration) return;
-            const state = { playlist: currentPlaylist, index: currentIndex, time: audio.currentTime };
+            const state = { playlist: currentPlaylist, index: currentIndex, time: audio.currentTime, context: currentContext };
             localStorage.setItem(PLAYER_STATE_KEY, JSON.stringify(state));
         }
 
-        // تنظیم مودِ داینامیک صفحه اول
-        function setGreetingAndMood() {
-            const hour = new Date().getHours();
-            let greeting = "Good Evening";
-            let mood = "chill";
-            let moodTitle = "Evening Chill Mixes";
-            
-            if (hour >= 5 && hour < 12) { greeting = "Good Morning"; mood = "energetic"; moodTitle = "Morning Energy Mixes"; }
-            else if (hour >= 12 && hour < 18) { greeting = "Good Afternoon"; mood = "focus"; moodTitle = "Afternoon Focus Mixes"; }
-            
-            document.getElementById('greetingTitle').innerText = greeting;
-            document.getElementById('moodTitle').innerText = moodTitle;
-            return mood;
-        }
-
         window.onload = async () => {
-            const currentMood = setGreetingAndMood();
             const savedArtists = localStorage.getItem(FAV_ARTISTS_KEY);
             if (!savedArtists) {
                 document.getElementById('onboarding-screen').style.display = 'block';
@@ -488,7 +517,6 @@
                 selectedArtists = JSON.parse(savedArtists);
                 selectedArtistsData = JSON.parse(localStorage.getItem(FAV_ARTISTS_IMGS_KEY) || '[]');
                 showHome();
-                fetchMoodMixes(currentMood);
                 
                 const savedState = localStorage.getItem(PLAYER_STATE_KEY);
                 if (savedState) {
@@ -497,6 +525,7 @@
                         if (state.playlist && state.index >= 0 && state.playlist.length > state.index) {
                             currentPlaylist = state.playlist;
                             currentIndex = state.index;
+                            currentContext = state.context || 'single';
                             const track = currentPlaylist[currentIndex];
                             
                             document.getElementById('miniTitle').innerText = track.title; 
@@ -522,20 +551,56 @@
             }
         };
 
-        // تغییر استایل دکمه مسیر پخش
-        function togglePlayMode() {
-            const btn = document.getElementById('playModeBtn');
-            if (autoPlayMode === 'radio') {
-                autoPlayMode = 'artist';
-                btn.innerHTML = iconArtist;
-                btn.style.color = '#fff';
-                tg.showAlert("Auto-play: Only this artist");
+        // 🌟 باز کردن مدال استراتژی پخش
+        function openPlaybackOptions() {
+            const modal = document.getElementById('playback-options-modal');
+            const albumOpt = document.getElementById('opt-play-album');
+            
+            if (currentContext === 'album' && currentPlaylist.length > 1) {
+                albumOpt.style.display = 'flex';
             } else {
-                autoPlayMode = 'radio';
-                btn.innerHTML = iconRadio;
-                btn.style.color = 'var(--accent)';
-                tg.showAlert("Auto-play: Similar tracks (Radio)");
+                albumOpt.style.display = 'none';
             }
+            modal.classList.add('active');
+        }
+
+        function closePlaybackOptions() {
+            document.getElementById('playback-options-modal').classList.remove('active');
+        }
+
+        // 🌟 اعمال آنیِ تصمیم کاربر برای ترک‌های بعدی
+        async function setPlaybackMode(mode) {
+            closePlaybackOptions();
+            if (mode === 'album') {
+                tg.showAlert("Continuing current list.");
+                return;
+            }
+            
+            tg.showAlert(mode === 'artist' ? "Fetching Artist Tracks..." : "Fetching Similar Tracks...");
+            
+            // بُرش لیست تا همین آهنگی که پخش میشه و حذف بقیه
+            currentPlaylist = currentPlaylist.slice(0, currentIndex + 1);
+            currentContext = 'single'; // مود رو به سینگل تغییر میدیم چون دیگه تو آلبوم نیستیم
+            
+            const seedTrack = currentPlaylist[currentIndex];
+            let url = '';
+            if (mode === 'radio') url = `${SERVER_URL}/api/track_radio?id=${seedTrack.id}`;
+            else url = `${SERVER_URL}/search?q=${encodeURIComponent(seedTrack.artist)}`;
+            
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                let newTracks = mode === 'radio' ? data : (data.tracks || []);
+                newTracks = newTracks.map(t => ({...t, hqCover: getHqCover(t.cover)}));
+                newTracks = newTracks.filter(nt => !currentPlaylist.find(ct => ct.id === nt.id));
+                
+                if (newTracks.length > 0) {
+                    currentPlaylist = currentPlaylist.concat(newTracks);
+                    tg.showAlert("Queue updated successfully!");
+                    // پیش‌بارگذاری اولین آهنگ جدید
+                    fetch(`${SERVER_URL}/api/preload?id=${currentPlaylist[currentIndex + 1].id}`).catch(()=>{});
+                }
+            } catch(e) { tg.showAlert("Failed to update queue."); }
         }
 
         let obSearchTimeout;
@@ -611,26 +676,22 @@
 
         function showHome() {
             document.getElementById('home-screen').style.display = 'block';
-            renderSpeedDial(); renderFavArtists(); fetchNewReleases(); renderMadeForYou();
+            renderSpeedDial(); renderFavArtists(); fetchNewReleases(); renderMadeForYou(); renderGenreMixes();
         }
         
-        async function fetchMoodMixes(mood) {
-            try {
-                document.getElementById('mood-mix-section').style.display = 'block';
-                const container = document.getElementById('moodMixList');
-                container.innerHTML = 'Loading...';
-                const res = await fetch(`${SERVER_URL}/api/mood_mix?mood=${mood}`);
-                const tracks = await res.json();
-                container.innerHTML = '';
-                if(tracks.length > 0) {
-                    createMixCard(container, `${mood.charAt(0).toUpperCase() + mood.slice(1)} Playlist`, getHqCover(tracks[0].cover), () => {
-                        currentPlaylist = tracks.map(t => ({...t, hqCover: getHqCover(t.cover)}));
-                        playTrack(0);
-                    });
-                }
-            } catch(e) {}
-        }
+        // 🌟 رندر بخش جدید ژانرها
+        function renderGenreMixes() {
+            const container = document.getElementById('genreMixList');
+            container.innerHTML = '';
+            document.getElementById('genre-mix-section').style.display = 'block';
 
+            genres.forEach(g => {
+                createMixCard(container, g.title, g.cover, () => {
+                    openMixPage(g.title, g.cover, `${SERVER_URL}/api/genre_mix?genre=${encodeURIComponent(g.query)}`);
+                });
+            });
+        }
+        
         async function openMixPage(title, coverUrl, fetchUrl) {
             document.getElementById('home-screen').style.display = 'none';
             document.getElementById('artist-screen').style.display = 'none';
@@ -654,12 +715,17 @@
                 document.getElementById('loadingAlbum').style.display = 'none';
                 if(tracks.length > 0) {
                     let tempPlaylist = tracks.map(t => { return { ...t, hqCover: getHqCover(t.cover) }; });
+                    
                     document.getElementById('albumPlayBtn').style.display = 'flex';
-                    document.getElementById('albumPlayBtn').onclick = () => { currentPlaylist = tempPlaylist; playTrack(0); };
+                    document.getElementById('albumPlayBtn').onclick = () => { 
+                        currentPlaylist = tempPlaylist; 
+                        currentContext = 'album'; 
+                        playTrack(0); 
+                    };
 
                     tempPlaylist.forEach((track, index) => {
                         const trackEl = document.createElement('div'); trackEl.className = 'track-item'; trackEl.style.background = 'transparent';
-                        trackEl.onclick = () => { currentPlaylist = tempPlaylist; playTrack(index); };
+                        trackEl.onclick = () => { currentPlaylist = tempPlaylist; currentContext = 'album'; playTrack(index); };
                         trackEl.innerHTML = `<img src="${track.hqCover}"><div class="track-info"><div class="track-title">${track.title}</div><div class="track-artist">${track.artist}</div></div>`;
                         document.getElementById('albumTrackList').appendChild(trackEl);
                     });
@@ -672,19 +738,17 @@
             }
         }
 
-        // 🌟 آپدیت زنده (Live UI Update)
-        async function liveUpdateMadeForYou(seedTrack) {
+        // 🌟 آپدیت زنده لیست وایب در همون صفحه
+        function liveUpdateMadeForYou(seedTrack) {
             const container = document.getElementById('madeForYouList');
             if(!container) return;
             
-            // اضافه کردن Vibe Mix جدید به ابتدای لیست
             const tempDiv = document.createElement('div');
             createMixCard(tempDiv, `${seedTrack.artist} Vibe Mix`, seedTrack.hqCover, () => {
                 openMixPage(`Vibe Mix: ${seedTrack.artist}`, seedTrack.hqCover, `${SERVER_URL}/api/track_radio?id=${seedTrack.id}`);
             });
-            container.insertBefore(tempDiv.firstChild, container.firstChild);
+            container.insertBefore(tempDiv.firstChild, container.children[1] || container.firstChild);
             
-            // پاک کردن اضافه ها برای شلوغ نشدن
             if (container.children.length > 5) container.removeChild(container.lastChild);
         }
 
@@ -747,7 +811,7 @@
             section.style.display = 'block'; container.innerHTML = '';
             recent.forEach(track => {
                 const item = document.createElement('div'); item.className = 'scroll-item';
-                item.onclick = () => { currentPlaylist = [track]; playTrack(0); };
+                item.onclick = () => { currentPlaylist = [track]; currentContext='single'; playTrack(0); };
                 item.innerHTML = `<img src="${track.hqCover}" class="scroll-cover"><div class="scroll-title">${track.title}</div>`;
                 container.appendChild(item);
             });
@@ -760,7 +824,7 @@
             if (recent.length > 10) recent.pop(); 
             localStorage.setItem(RECENT_TRACKS_KEY, JSON.stringify(recent));
             renderSpeedDial();
-            liveUpdateMadeForYou(track); // 🌟 آپدیت زنده لیست پیشنهادی
+            liveUpdateMadeForYou(track); 
         }
 
         async function fetchNewReleases() {
@@ -804,6 +868,7 @@
                                 const data = await res.json();
                                 if(data.tracks && data.tracks.length > 0) {
                                     currentPlaylist = [data.tracks[0]].map(t => ({ ...t, hqCover: getHqCover(t.cover) }));
+                                    currentContext = 'single';
                                     playTrack(0);
                                 }
                             } catch(err) {}
@@ -836,14 +901,15 @@
             }
             localStorage.setItem(FAV_ARTISTS_KEY, JSON.stringify(selectedArtists));
             localStorage.setItem(FAV_ARTISTS_IMGS_KEY, JSON.stringify(selectedArtistsData));
-            updateHeartIcon(); renderFavArtists();
+            updateHeartIcon(); renderFavArtists(); renderMadeForYou();
         }
         
         function shuffleArtistTracks() {
             if (currentArtistSongsCache.length > 0) {
                 currentPlaylist = [...currentArtistSongsCache].sort(() => Math.random() - 0.5);
+                currentContext = 'album';
                 playTrack(0);
-            } else { tg.showAlert("Loading tracks..."); }
+            } else { tg.showAlert("Loading tracks... please wait."); }
         }
 
         async function openArtistPage(name, image) {
@@ -881,7 +947,7 @@
                             item.onclick = async () => {
                                 const res = await fetch(`${SERVER_URL}/search?q=${encodeURIComponent(s.title + " " + name)}`); 
                                 const d = await res.json();
-                                if(d.tracks && d.tracks.length > 0) { currentPlaylist = [d.tracks[0]].map(t => ({...t, hqCover: getHqCover(t.cover)})); playTrack(0); }
+                                if(d.tracks && d.tracks.length > 0) { currentPlaylist = [d.tracks[0]].map(t => ({...t, hqCover: getHqCover(t.cover)})); currentContext='single'; playTrack(0); }
                             };
                             item.innerHTML = `<img src="${hqCover}"><div class="track-info"><div class="track-title">${s.title}</div><div class="track-artist">Single • ${s.year || ''}</div></div>`;
                             sngList.appendChild(item);
@@ -891,7 +957,7 @@
                         currentArtistSongsCache = data.songs.map(t => { return { ...t, hqCover: getHqCover(t.cover) }; });
                         currentArtistSongsCache.forEach((track, index) => {
                             const item = document.createElement('div'); item.className = 'track-item'; item.style.background = 'transparent'; 
-                            item.onclick = () => { currentPlaylist = currentArtistSongsCache; playTrack(index); };
+                            item.onclick = () => { currentPlaylist = currentArtistSongsCache; currentContext='album'; playTrack(index); };
                             item.innerHTML = `<img src="${track.hqCover}"><div class="track-info"><div class="track-title">${track.title}</div><div class="track-artist">${track.artist}</div></div>`;
                             sngList.appendChild(item);
                         });
@@ -915,11 +981,11 @@
                     let tempPlaylist = tracks.map(t => { return { ...t, hqCover: getHqCover(t.cover) }; });
                     
                     document.getElementById('albumPlayBtn').style.display = 'flex';
-                    document.getElementById('albumPlayBtn').onclick = () => { currentPlaylist = tempPlaylist; playTrack(0); };
+                    document.getElementById('albumPlayBtn').onclick = () => { currentPlaylist = tempPlaylist; currentContext='album'; playTrack(0); };
 
                     tempPlaylist.forEach((track, index) => {
                         const trackEl = document.createElement('div'); trackEl.className = 'track-item'; trackEl.style.background = 'transparent';
-                        trackEl.onclick = () => { currentPlaylist = tempPlaylist; playTrack(index); };
+                        trackEl.onclick = () => { currentPlaylist = tempPlaylist; currentContext='album'; playTrack(index); };
                         trackEl.innerHTML = `<img src="${track.hqCover}"><div class="track-info"><div class="track-title">${track.title}</div><div class="track-artist">${track.artist}</div></div>`;
                         document.getElementById('albumTrackList').appendChild(trackEl);
                     });
@@ -973,7 +1039,7 @@
                 let tempPlaylist = data.tracks.map(track => { return { ...track, hqCover: getHqCover(track.cover) }; });
                 tempPlaylist.forEach((track, index) => {
                     const item = document.createElement('div'); item.className = 'track-item';
-                    item.onclick = () => { currentPlaylist = tempPlaylist; playTrack(index); };
+                    item.onclick = () => { currentPlaylist = tempPlaylist; currentContext='single'; playTrack(index); };
                     item.innerHTML = `<img src="${track.hqCover}"><div class="track-info"><div class="track-title">${track.title}</div><div class="track-artist">${track.artist}</div></div>`;
                     document.getElementById('searchResultsList').appendChild(item);
                 });
@@ -1047,30 +1113,20 @@
             } catch (e) { content.innerHTML = "Error loading lyrics."; }
         }
 
-        // 🌟 سیستم هوشمند اضافه کردن ترک به صف بر اساس مود پخش
-        async function fetchMoreTracks() {
+        // اگر آهنگ‌ها تموم شد، منتظر تصمیم کاربر نمی‌مونیم؛ خودمون بر اساس مود آخرین انتخابش آهنگ اضافه می‌کنیم!
+        async function fetchMoreTracksFromMode(mode) {
             if (!currentPlaylist[currentIndex]) return;
             const seedTrack = currentPlaylist[currentIndex];
             try {
-                let url = '';
-                if (autoPlayMode === 'radio') url = `${SERVER_URL}/api/track_radio?id=${seedTrack.id}`;
-                else url = `${SERVER_URL}/search?q=${encodeURIComponent(seedTrack.artist)}`;
-                
+                let url = mode === 'radio' ? `${SERVER_URL}/api/track_radio?id=${seedTrack.id}` : `${SERVER_URL}/search?q=${encodeURIComponent(seedTrack.artist)}`;
                 const res = await fetch(url);
                 const data = await res.json();
-                let newTracks = [];
-                if (autoPlayMode === 'radio') { newTracks = data; } 
-                else { newTracks = data.tracks || []; }
-                
+                let newTracks = mode === 'radio' ? data : (data.tracks || []);
                 newTracks = newTracks.map(t => ({...t, hqCover: getHqCover(t.cover)}));
-                
-                // فیلتر کردن ترک‌های تکراری
                 newTracks = newTracks.filter(nt => !currentPlaylist.find(ct => ct.id === nt.id));
                 if (newTracks.length > 0) {
                     currentPlaylist = currentPlaylist.concat(newTracks);
                     playTrack(currentIndex + 1);
-                } else {
-                    tg.showAlert("No more tracks found.");
                 }
             } catch(e) {}
         }
@@ -1079,8 +1135,8 @@
             if (currentIndex < currentPlaylist.length - 1) {
                 playTrack(currentIndex + 1); 
             } else {
-                tg.showAlert("Fetching more tracks...");
-                fetchMoreTracks();
+                tg.showAlert("Fetching continuous mix...");
+                fetchMoreTracksFromMode('radio'); // پیش‌فرض اگه تموم شد رادیوش رو بیاره
             }
         }
         
@@ -1142,7 +1198,6 @@
             if(audio.duration) audio.currentTime = percentage * audio.duration;
         }
 
-        // انیمیشن 60 فریم لیریک
         function syncLyricsLoop() {
             if (audio.duration && parsedLyrics.length > 0) {
                 let activeIdx = -1;
