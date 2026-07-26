@@ -328,11 +328,11 @@
                 <img id="albumHeaderImg" class="album-header-img" src="">
                 <h1 id="albumHeaderName" class="album-header-name">List Name</h1>
                 <div id="albumHeaderArtist" class="album-header-artist" style="margin-bottom: 15px;">Subtitle</div>
-                <!-- 🌟 اضافه شدن دکمه پلی برای آلبوم‌ها و پلی‌لیست‌ها -->
-                <div class="artist-actions" style="justify-content: center;">
-                    <button class="action-btn play" id="albumPlayBtn" style="margin: 0 auto; width: 55px; height: 55px;"><svg viewBox="0 0 24 24" style="width:28px;height:28px;"><path d="M8 5v14l11-7z"/></svg></button>
-                </div>
             </div>
+            <!-- 🌟 دکمه پلی آلبوم در پایین سمت راست -->
+            <button class="action-btn play" id="albumPlayBtn" style="position: absolute; bottom: 20px; right: 20px; width: 55px; height: 55px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: none; z-index: 10;">
+                <svg viewBox="0 0 24 24" style="width:28px;height:28px;"><path d="M8 5v14l11-7z"/></svg>
+            </button>
         </div>
         <div style="padding: 0 20px;">
             <div id="loadingAlbum" class="loading-text">Loading tracks...</div>
@@ -461,7 +461,6 @@
                 selectedArtistsData = JSON.parse(localStorage.getItem(FAV_ARTISTS_IMGS_KEY) || '[]');
                 showHome();
                 
-                // 🌟 بازگشت دقیق به ثانیه‌ای که بسته شده
                 const savedState = localStorage.getItem(PLAYER_STATE_KEY);
                 if (savedState) {
                     try {
@@ -483,11 +482,10 @@
                             
                             audio.src = `${SERVER_URL}/stream?id=${track.id}`;
                             
-                            // وقتی آهنگ آماده شد ثانیه رو تنظیم کن
                             audio.addEventListener('canplay', function resumeHandler() {
                                 if (state.time > 0) {
                                     audio.currentTime = state.time;
-                                    state.time = 0; // فقط یکبار اجرا بشه
+                                    state.time = 0; 
                                 }
                                 audio.removeEventListener('canplay', resumeHandler);
                             });
@@ -589,7 +587,7 @@
 
             document.getElementById('loadingAlbum').style.display = 'block';
             document.getElementById('albumTrackList').innerHTML = '';
-            document.getElementById('albumPlayBtn').style.display = 'none'; // مخفی تا لود بشه
+            document.getElementById('albumPlayBtn').style.display = 'none';
 
             try {
                 const res = await fetch(fetchUrl);
@@ -601,7 +599,6 @@
                 if(tracks.length > 0) {
                     let tempPlaylist = tracks.map(t => { return { ...t, hqCover: getHqCover(t.cover) }; });
                     
-                    // 🌟 فعال شدن دکمه پلی هدر
                     document.getElementById('albumPlayBtn').style.display = 'flex';
                     document.getElementById('albumPlayBtn').onclick = () => { currentPlaylist = tempPlaylist; playTrack(0); };
 
@@ -928,6 +925,7 @@
             currentIndex = index; const track = currentPlaylist[index];
             addToSpeedDial(track);
             lastActiveIndex = -1; 
+            savePlayerState(); 
             
             document.getElementById('miniTitle').innerText = track.title; document.getElementById('miniArtist').innerText = track.artist;
             document.getElementById('miniCover').src = track.hqCover; document.getElementById('miniPlayer').style.display = 'flex';
@@ -940,7 +938,6 @@
             audio.src = `${SERVER_URL}/stream?id=${track.id}`; audio.play(); updatePlayBtn(true);
             fetchLyrics(track.id, track.title, track.artist);
             
-            // 🌟 پیش‌بارگذاری آهنگ بعدی تو بک‌گراند (صفر ثانیه وقفه موقع Next)
             if (index + 1 < currentPlaylist.length) {
                 const nextTrack = currentPlaylist[index + 1];
                 fetch(`${SERVER_URL}/api/preload?id=${nextTrack.id}`).catch(()=>console.log('Preload queued'));
