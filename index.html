@@ -92,7 +92,7 @@
         .scroll-cover.circle { border-radius: 50%; aspect-ratio: 1/1; }
         .scroll-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;}
         
-        .track-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; }
+        .track-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 25px; }
         
         .releases-grid { display: grid; grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 15px; margin-bottom: 25px; scrollbar-width: none;}
         .releases-grid::-webkit-scrollbar { display: none; }
@@ -424,7 +424,7 @@
             <button class="fp-btn-play" id="fpPlayBtn" onclick="togglePlay(event)"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
             <button class="ctrl-main-btn" onclick="playNext()"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
             
-            <!-- 🌟 دکمه دانلود (ارسال به ربات) اضافه شد بدون پاپ‌آپ -->
+            <!-- 🌟 دکمه دانلود رفع باگ شده -->
             <button class="ctrl-main-btn" id="dlBtn" onclick="sendToBot()" style="width:32px; padding:0; display:flex; justify-content:center;">
                 <svg viewBox="0 0 24 24" style="width:24px; height:24px;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
             </button>
@@ -480,9 +480,6 @@
         const iconPauseWhite = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
         const iconPlayBlack = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
         const iconPauseBlack = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
-        
-        const iconRadio = '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-5.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/></svg>';
-        const iconArtist = '<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
         
         const genres = [
             { title: 'Hip-Hop Vibes', query: 'Hip Hop', cover: 'https://images.unsplash.com/photo-1542204165-65bf26472b9b?w=500&q=80' },
@@ -604,15 +601,23 @@
             } catch(e) {}
         }
 
-        // 🌟 سیستم ارسال به ربات (دانلود بدون پاپ‌آپ)
+        // 🌟 سیستم جدید و بدون باگ برای ارسال موزیک به چت
         function sendToBot() {
-            if(currentIndex === -1 || !userId || userId === 'guest') return;
+            if(currentIndex === -1) return;
+            if(!userId || userId === 'guest') {
+                tg.showAlert("❌ برای استفاده از قابلیت دانلود، لطفا مینی‌اپ را مستقیماً از داخل ربات باز کنید.");
+                return;
+            }
+            
             const track = currentPlaylist[currentIndex];
             const btn = document.getElementById('dlBtn');
             btn.style.opacity = '0.3';
             setTimeout(() => btn.style.opacity = '1', 300);
             
-            fetch(`${SERVER_URL}/api/send_audio?id=${track.id}&uid=${userId}&title=${encodeURIComponent(track.title)}&artist=${encodeURIComponent(track.artist)}`).catch(()=>{});
+            tg.showAlert("📥 آهنگ در حال ارسال به چت ربات است...");
+            
+            fetch(`${SERVER_URL}/api/send_audio?id=${track.id}&uid=${userId}&title=${encodeURIComponent(track.title)}&artist=${encodeURIComponent(track.artist)}`)
+            .catch(()=>{});
         }
 
         let obSearchTimeout;
@@ -1057,7 +1062,6 @@
         function playTrack(index) {
             if (index < 0 || index >= currentPlaylist.length) return;
             
-            // 🌟 ریست کردن آنی نوار پیشرفت برای جلوگیری از باگ‌های بصری 🌟
             audio.pause();
             audio.currentTime = 0;
             document.getElementById('progressFill').style.width = '0%';
@@ -1081,7 +1085,7 @@
             document.getElementById('dynamic-bg').style.backgroundImage = `url('${track.hqCover}')`;
             
             audio.src = `${SERVER_URL}/stream?id=${track.id}`; 
-            audio.play().catch(e => console.log('Playback failed until user interaction')); 
+            audio.play().catch(e => console.log('Wait for user interaction')); 
             updatePlayBtn(true);
             fetchLyrics(track.id, track.title, track.artist);
             
