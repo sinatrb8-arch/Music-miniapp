@@ -18,17 +18,27 @@
             transition: background-color 1s ease;
         }
         
-        /* بک‌گراند داینامیک */
         #dynamic-bg {
             position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
             z-index: -5; filter: blur(80px) brightness(0.6); pointer-events: none;
             transition: background-image 1s ease-in-out; background-size: cover; background-position: center;
         }
         
+        /* 1. Onboarding Screen */
         #onboarding-screen { padding: 30px 20px; display: none; }
         .ob-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
-        .ob-subtitle { font-size: 14px; color: var(--hint-color); margin-bottom: 30px; }
-        #obLoading { text-align: center; color: var(--accent); font-weight: 600; margin-top: 50px; font-size: 16px; }
+        .ob-subtitle { font-size: 14px; color: var(--hint-color); margin-bottom: 20px; }
+        
+        /* 🌟 بخش جستجوی خواننده در صفحه اول */
+        .ob-search-container { position: relative; margin-bottom: 25px; }
+        .ob-search-container input {
+            width: 100%; padding: 14px 14px 14px 45px; border: none; border-radius: 12px;
+            background-color: rgba(255, 255, 255, 0.1); color: var(--text-color); outline: none;
+            font-family: 'Inter', sans-serif; font-size: 14px; box-sizing: border-box; backdrop-filter: blur(10px);
+        }
+        .ob-search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 20px; fill: var(--hint-color); }
+        
+        #obLoading { text-align: center; color: var(--accent); font-weight: 600; margin-top: 20px; font-size: 16px; }
         
         .artist-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 30px;}
         .artist-card { display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative;}
@@ -44,12 +54,10 @@
         .new-arrival { animation: popIn 0.3s ease-out forwards; }
         
         .ob-btn-container { position: fixed; bottom: 20px; left: 20px; right: 20px; z-index: 100;}
-        .ob-btn { 
-            width: 100%; padding: 18px; background: var(--text-color); color: var(--bg-color); 
-            border: none; border-radius: 30px; font-weight: 700; font-size: 16px; cursor: pointer; opacity: 0.5;
-        }
-        .ob-btn.active { opacity: 1; pointer-events: auto; }
+        .ob-btn { width: 100%; padding: 18px; background: var(--text-color); color: var(--bg-color); border: none; border-radius: 30px; font-weight: 700; font-size: 16px; cursor: pointer; opacity: 0.5; transition: 0.2s;}
+        .ob-btn.active { opacity: 1; pointer-events: auto; transform: translateY(-3px);}
 
+        /* 2. Home Screen */
         #home-screen { padding: 20px; display: none; }
         .search-container { position: relative; margin-bottom: 25px; }
         .search-container input {
@@ -60,27 +68,18 @@
         .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 20px; fill: var(--hint-color); }
         .section-title { font-size: 22px; font-weight: 700; margin-bottom: 15px; letter-spacing: -0.5px;}
         
-        .horizontal-scroll { 
-            display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 25px;
-            scroll-snap-type: x mandatory; scrollbar-width: none;
-        }
+        .horizontal-scroll { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 25px; scroll-snap-type: x mandatory; scrollbar-width: none;}
         .horizontal-scroll::-webkit-scrollbar { display: none; }
-        .scroll-item { 
-            min-width: 110px; background: rgba(40,40,40,0.6); border-radius: 16px; padding: 12px;
-            text-align: center; cursor: pointer; scroll-snap-align: start;
-        }
+        .scroll-item { min-width: 110px; background: rgba(40,40,40,0.6); border-radius: 16px; padding: 12px; text-align: center; cursor: pointer; scroll-snap-align: start; backdrop-filter: blur(10px);}
         .scroll-cover { width: 90px; height: 90px; border-radius: 12px; object-fit: cover; object-position: center; margin-bottom: 10px;}
         .scroll-cover.circle { border-radius: 50%; aspect-ratio: 1/1; }
         .scroll-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .releases-grid {
-            display: grid; grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; gap: 12px;
-            overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 15px; margin-bottom: 25px; scrollbar-width: none;
-        }
+        .releases-grid { display: grid; grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 15px; margin-bottom: 25px; scrollbar-width: none;}
         .releases-grid::-webkit-scrollbar { display: none; }
         
         .track-item { display: flex; align-items: center; padding: 10px; border-radius: 16px; gap: 14px; background: rgba(40,40,40,0.6); cursor:pointer; }
-        .releases-grid .track-item { width: 260px; scroll-snap-align: start; margin: 0; }
+        .releases-grid .track-item { width: 260px; scroll-snap-align: start; margin: 0; backdrop-filter: blur(10px);}
         .track-item img { width: 55px; height: 55px; border-radius: 10px; object-fit: cover; aspect-ratio: 1/1; }
         .track-info { flex: 1; overflow: hidden; }
         .track-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
@@ -89,11 +88,9 @@
         .reset-btn { display: block; width: 100%; text-align: center; color: #ff4d4d; font-size: 14px; margin-top: 40px; padding: 15px; cursor: pointer; background: rgba(255, 77, 77, 0.1); border: 1px solid #ff4d4d; border-radius: 16px; font-weight: 600;}
         .loading-text { text-align: center; color: var(--hint-color); margin-top: 20px; font-size: 14px;}
 
-        /* 3. Artist & Album Screens (تصویر شفاف و بدون بلور) */
+        /* 3. Artist & Album Screens */
         #artist-screen, #album-screen { display: none; padding-bottom: 100px; }
         .artist-header, .album-header { position: relative; width: 100%; height: 280px; overflow: hidden; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; border-radius: 0 0 30px 30px;}
-        
-        /* برداشتن بلور از کاور آرتیست */
         .artist-header-bg { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); position: absolute; top:0; left:0; z-index:-1;}
         .album-header-bg { width: 100%; height: 100%; object-fit: cover; filter: blur(20px) brightness(0.4); position: absolute; top:0; left:0; z-index:-1;}
         
@@ -109,7 +106,7 @@
         .back-btn svg { width: 24px; height: 24px; fill: #fff; }
 
         /* 4. Players */
-        .mini-player { position: fixed; bottom: 10px; left: 10px; right: 10px; background: rgba(40,40,40,0.95); border-radius: 16px; padding: 10px 15px; display: none; align-items: center; justify-content: space-between; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.6); cursor: pointer;}
+        .mini-player { position: fixed; bottom: 10px; left: 10px; right: 10px; background: rgba(40,40,40,0.95); border-radius: 16px; padding: 10px 15px; display: none; align-items: center; justify-content: space-between; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.6); cursor: pointer; backdrop-filter: blur(10px);}
         .mini-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; }
         .mini-cover { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; aspect-ratio: 1/1;}
         .mini-text {display: flex; flex-direction: column;}
@@ -118,10 +115,10 @@
         .mini-play-btn { background: none; border: none; color: white; cursor: pointer; padding: 8px;}
         .mini-play-btn svg { width: 24px; height: 24px; fill: #fff; }
 
-        /* 🌟 فول پلیر با پس‌زمینه سالید و بدون تداخل با صفحات زیرین */
+        /* 🌟 فول پلیر کاملاً ایزوله شده (پس زمینه سالید تا چیزی از زیرش معلوم نباشه) */
         .full-player { 
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
-            background-color: var(--bg-color); /* مشکل دیده شدن محیط قبلی حل شد */
+            background-color: var(--bg-color); /* بک‌گراند سالید */
             z-index: 2000; display: flex; flex-direction: column; padding: 25px; box-sizing: border-box; 
             overflow: hidden; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
@@ -144,7 +141,6 @@
         .fp-title { font-size: 26px; font-weight: 800; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.5px;}
         .fp-artist { font-size: 18px; color: rgba(255,255,255,0.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         
-        /* 🌟 نوار پیشرفت لمسی و درگ‌دار */
         .progress-container { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px;}
         .progress-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; cursor: pointer; position: relative;}
         .progress-fill { height: 100%; background: #fff; border-radius: 3px; width: 0%; pointer-events: none;}
@@ -155,9 +151,10 @@
         .ctrl-main-btn { background: none; border: none; cursor: pointer;}
         .ctrl-main-btn svg { width: 36px; height: 36px; fill: #fff; }
         .fp-btn-play { background: #fff; border: none; border-radius: 50%; width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; cursor: pointer;}
+        .fp-btn-play:active { transform: scale(0.95); }
         .fp-btn-play svg { fill: #000; width: 28px; height: 28px; }
 
-        /* 🌟 پنل لیریک کشویی بهینه‌شده */
+        /* 🌟 پنل لیریک کشویی بهینه‌شده و رفع باگ بسته شدن */
         #lyrics-sheet {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(20, 20, 20, 0.95); 
@@ -166,15 +163,19 @@
         }
         #lyrics-sheet.active { transform: translateY(0); }
         
+        /* این قسمت تشخیص میده کاربر میخواد صفحه لیریک رو ببنده */
         .lyrics-handle-area { width: 100%; padding: 10px 0 20px 0; display: flex; justify-content: center; align-items: center;}
         .lyrics-handle { width: 50px; height: 6px; background: rgba(255,255,255,0.3); border-radius: 3px; cursor: pointer; }
         .lyrics-header-title { font-size: 24px; font-weight: 800; margin-bottom: 20px;}
+        
         #lyrics-content { 
             flex: 1; overflow-y: auto; font-size: 24px; font-weight: 700; line-height: 1.6; 
             color: rgba(255,255,255,0.5); padding-bottom: 50px; scroll-behavior: smooth;
         }
         #lyrics-content::-webkit-scrollbar { display: none; }
-        .lyric-line { transition: color 0.3s, transform 0.3s; margin-bottom: 15px;}
+        
+        /* 🌟 لیریک‌های لمسی و تعاملی */
+        .lyric-line { transition: color 0.3s, transform 0.3s; margin-bottom: 15px; cursor: pointer;}
         .lyric-line.active { color: #fff; transform: scale(1.05); transform-origin: left center;}
     </style>
 </head>
@@ -185,6 +186,13 @@
     <div id="onboarding-screen">
         <div class="ob-title">What's your vibe?</div>
         <div class="ob-subtitle">Choose your favorite artists.</div>
+        
+        <!-- 🌟 فرم جستجوی جدید آرتیست در صفحه ورود -->
+        <div class="ob-search-container">
+            <svg class="ob-search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" id="obSearchInput" placeholder="Search for your favorite artist..." onkeypress="handleObSearch(event)">
+        </div>
+
         <div id="obLoading">Loading artists from server...</div>
         <div class="artist-grid" id="onboardingGrid"></div>
         <div style="height: 80px;"></div> 
@@ -276,6 +284,7 @@
         <button class="mini-play-btn" id="miniPlayBtn" onclick="togglePlay(event)"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
     </div>
 
+    <!-- 🌟 Full Player -->
     <div class="full-player" id="fullPlayer">
         <div class="bg-blur-container"><img id="bgBlurImage" class="bg-blur-img" src=""></div>
         <div class="bg-gradient-overlay"></div>
@@ -306,6 +315,7 @@
             <div style="width:32px;"></div>
         </div>
         
+        <!-- 🌟 صفحه لیریک -->
         <div id="lyrics-sheet">
             <div class="lyrics-handle-area" onclick="toggleLyrics()"><div class="lyrics-handle"></div></div>
             <div class="lyrics-header-title">Lyrics</div>
@@ -326,9 +336,10 @@
         let currentPlaylist = [];
         let currentIndex = -1;
         
-        // 🌟 سیستم فوق هوشمند لیریک
+        // 🌟 سیستم لیریک و همگام‌سازی
         let parsedLyrics = []; 
         let lastActiveIndex = -1; 
+        let lyricOffset = 0.3; // آفست برای تنظیم دقیق‌تر ثانیه
         
         const iconPlayWhite = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
         const iconPauseWhite = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
@@ -354,6 +365,21 @@
             }
         };
 
+        // 🌟 جستجوی خواننده در صفحه Onboarding
+        async function handleObSearch(event) {
+            if (event.key === 'Enter') {
+                const query = document.getElementById('obSearchInput').value.trim(); if (!query) return;
+                document.getElementById('obLoading').style.display = 'block';
+                document.getElementById('obLoading').innerText = 'Searching...';
+                try {
+                    const res = await fetch(`${SERVER_URL}/api/search_artist?q=${encodeURIComponent(query)}`);
+                    const artists = await res.json();
+                    document.getElementById('obLoading').style.display = 'none';
+                    artists.forEach(a => { if (a.image) addArtistToGrid(a.name, a.image); });
+                } catch (error) { document.getElementById('obLoading').style.display = 'none'; }
+            }
+        }
+
         function addArtistToGrid(name, image) {
             if (displayedArtists.has(name)) return;
             displayedArtists.add(name);
@@ -363,7 +389,7 @@
             let hqImage = image ? image.replace(/=w\d+-h\d+.*/, "=w500-h500-l90-rj") : '';
             card.innerHTML = `<img class="artist-img" src="${hqImage}" alt="${name}"><div class="artist-name">${name}</div>`;
             card.onclick = () => toggleArtistSelection(card, name, hqImage);
-            grid.appendChild(card);
+            grid.appendChild(card); // میره به آخر لیست تا چیدمان رو بهم نریزه
         }
 
         async function toggleArtistSelection(cardElement, artistName, imageUrl) {
@@ -539,7 +565,7 @@
             if (index < 0 || index >= currentPlaylist.length) return;
             currentIndex = index; const track = currentPlaylist[index];
             addToSpeedDial(track);
-            lastActiveIndex = -1; // Reset lyrics scroll
+            lastActiveIndex = -1; // Reset lyrics
             
             document.getElementById('miniTitle').innerText = track.title; document.getElementById('miniArtist').innerText = track.artist;
             document.getElementById('miniCover').src = track.hqCover; document.getElementById('miniPlayer').style.display = 'flex';
@@ -549,20 +575,22 @@
             
             document.getElementById('dynamic-bg').style.backgroundImage = `url('${track.hqCover}')`;
             
+            // ⚡ پخش آنی (به لطف ریدایرکت سمت سرور)
             audio.src = `${SERVER_URL}/stream?id=${track.id}`; audio.play(); updatePlayBtn(true);
             fetchLyrics(track.id, track.title, track.artist);
         }
 
         function toggleLyrics() { document.getElementById('lyrics-sheet').classList.toggle('active'); }
         
-        // 🌟 سیستم درگ و سوایپ برای لیریک
+        // 🌟 رفع باگ بسته شدن ناخواسته لیریک
+        const handleArea = document.querySelector('.lyrics-handle-area');
         let touchStartY = 0;
-        document.getElementById('lyrics-sheet').addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, {passive: true});
-        document.getElementById('lyrics-sheet').addEventListener('touchend', e => {
-            if (e.changedTouches[0].clientY - touchStartY > 60) toggleLyrics(); 
+        handleArea.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, {passive: true});
+        handleArea.addEventListener('touchend', e => {
+            if (e.changedTouches[0].clientY - touchStartY > 40) toggleLyrics(); 
         });
 
-        // 🌟 سیستم فوق هوشمند پردازش فایل لیریک (پشتیبانی از فرمت سینک شده [00:15.22])
+        // 🌟 دریافت هوشمند لیریک و قابلیت کلیک روی متن
         async function fetchLyrics(videoId, title, artist) {
             const content = document.getElementById('lyrics-content');
             content.innerHTML = "Searching for lyrics...";
@@ -575,21 +603,27 @@
                     content.innerHTML = '';
                     
                     lines.forEach((line) => {
-                        // تشخیص زمان در فایل لیریک: [01:23.45] متن آهنگ
                         const match = line.match(/^\[(\d{2}):(\d{2}\.\d{2})\](.*)/);
                         let time = -1;
                         let text = line;
                         
                         if(match) {
-                            const m = parseInt(match[1]);
-                            const s = parseFloat(match[2]);
-                            time = (m * 60) + s;
+                            time = (parseInt(match[1]) * 60) + parseFloat(match[2]);
                             text = match[3].trim() || "♪"; 
                         }
                         
                         const p = document.createElement('div'); 
                         p.className = 'lyric-line'; 
                         p.innerText = text;
+                        
+                        // 🌟 رفتن به همون ثانیه با کلیک روی متن!
+                        if (time !== -1) {
+                            p.onclick = () => { 
+                                audio.currentTime = time; 
+                                if(audio.paused) { audio.play(); updatePlayBtn(true); }
+                            };
+                        }
+                        
                         content.appendChild(p); 
                         parsedLyrics.push({ time: time, el: p });
                     });
@@ -605,7 +639,7 @@
         function updatePlayBtn(isPlaying) { document.getElementById('miniPlayBtn').innerHTML = isPlaying ? iconPauseWhite : iconPlayWhite; document.getElementById('fpPlayBtn').innerHTML = isPlaying ? iconPauseBlack : iconPlayBlack; }
         audio.onended = () => playNext();
         
-        // 🌟 سیستم کاملاً لمسی برای نوار پیشرفت (Seekbar Dragging)
+        // 🌟 سیستم نوار لمسی بهینه (Draggable Seekbar)
         const progressBg = document.getElementById('progressBg');
         let isDragging = false;
         
@@ -641,18 +675,15 @@
                 document.getElementById('currentTime').innerText = formatTime(audio.currentTime); 
                 document.getElementById('duration').innerText = formatTime(audio.duration); 
                 
-                // 🌟 اسکرول کاملاً بی‌نقص و واقعیِ لیریک
+                // 🌟 اسکرول لیریک بدون لگ (با آفست زمانی 0.3 ثانیه برای همگام‌سازی کامل)
                 if (parsedLyrics.length > 0) {
                     let activeIdx = -1;
-                    
                     if (parsedLyrics[0].time !== -1) {
-                        // حالت سینک شده با زمان واقعی
                         for(let i=0; i<parsedLyrics.length; i++) {
-                            if (audio.currentTime >= parsedLyrics[i].time) activeIdx = i;
+                            if (audio.currentTime + lyricOffset >= parsedLyrics[i].time) activeIdx = i;
                             else break;
                         }
                     } else {
-                        // حالت معمولی (متن ساده)
                         activeIdx = Math.floor((audio.currentTime / audio.duration) * parsedLyrics.length);
                     }
                     
