@@ -69,7 +69,6 @@
         .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 20px; fill: var(--hint-color); }
         .section-title { font-size: 22px; font-weight: 800; margin-bottom: 15px; letter-spacing: -0.5px;}
         
-        /* 🌟 کارت اختصاصی خواننده در بخش سرچ */
         .artist-search-card { display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 16px; margin-bottom: 20px; cursor: pointer;}
         .artist-search-card img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover;}
         .artist-search-name { font-size: 18px; font-weight: 800;}
@@ -101,12 +100,10 @@
         #artist-screen, #album-screen { display: none; padding-bottom: 100px; }
         .artist-header, .album-header { position: relative; width: 100%; height: 320px; overflow: hidden; margin-bottom: 20px; display: flex; justify-content: center; align-items: center;}
         
-        /* 🌟 هدر آرتیست: فقط عکس خواننده به صورت شفاف با اسم روش */
         .artist-header-bg { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); position: absolute; top:0; left:0; z-index:-1; border-radius: 0 0 30px 30px;}
         .artist-header-info { position: absolute; bottom: 25px; left: 25px; right: 25px; display: flex; justify-content: space-between; align-items: flex-end;}
         .artist-header-name { font-size: 44px; font-weight: 800; color: #fff; margin: 0; letter-spacing: -1.5px; text-shadow: 0 4px 20px rgba(0,0,0,0.8);}
         
-        /* 🌟 دکمه‌های هدر آرتیست (پلی و قلب) */
         .artist-actions { display: flex; gap: 15px; align-items: center;}
         .action-btn { background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); border: none; border-radius: 50%; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s;}
         .action-btn:active { transform: scale(0.9);}
@@ -122,16 +119,25 @@
         .back-btn { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.5); border-radius: 50%; padding: 10px; display:flex; justify-content:center; align-items:center; z-index: 10; cursor:pointer;}
         .back-btn svg { width: 24px; height: 24px; fill: #fff; }
 
-        /* 4. Players */
-        .mini-player { position: fixed; bottom: 10px; left: 10px; right: 10px; background: rgba(40,40,40,0.95); border-radius: 16px; padding: 10px 15px; display: none; align-items: center; justify-content: space-between; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.6); cursor: pointer; backdrop-filter: blur(10px);}
-        .mini-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; }
+        /* 4. Mini Player (پیشرفته همراه با کنترل‌ها و نوار) */
+        .mini-player { 
+            position: fixed; bottom: 10px; left: 10px; right: 10px; 
+            background: rgba(40,40,40,0.95); border-radius: 16px; 
+            display: none; flex-direction: column; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.6); backdrop-filter: blur(10px); overflow: hidden;
+        }
+        .mini-progress-bg { width: 100%; height: 3px; background: rgba(255,255,255,0.1); cursor: pointer; }
+        .mini-progress-fill { height: 100%; background: var(--accent); width: 0%; pointer-events: none; }
+        .mini-main { display: flex; padding: 10px 15px; align-items: center; justify-content: space-between; }
+        .mini-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; cursor: pointer; }
         .mini-cover { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; aspect-ratio: 1/1;}
         .mini-text {display: flex; flex-direction: column;}
         .mini-title { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .mini-artist { font-size: 12px; color: var(--hint-color); }
-        .mini-play-btn { background: none; border: none; color: white; cursor: pointer; padding: 8px;}
+        .mini-controls { display: flex; align-items: center; gap: 10px; }
+        .mini-play-btn { background: none; border: none; color: white; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center;}
         .mini-play-btn svg { width: 24px; height: 24px; fill: #fff; }
 
+        /* Full Player */
         .full-player { 
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
             background-color: var(--bg-color);
@@ -153,9 +159,10 @@
         .fp-cover-container { width: 100%; aspect-ratio: 1/1; margin-bottom: 40px; display: flex; justify-content: center; align-items: center;}
         .fp-cover { width: 100%; height: 100%; border-radius: 16px; object-fit: cover; aspect-ratio: 1/1; box-shadow: 0 20px 50px rgba(0,0,0,0.6);}
         .fp-info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; width: 100%;}
-        .fp-text { flex: 1; overflow: hidden; padding-right: 15px;}
+        .fp-text { flex: 1; overflow: hidden; padding-right: 15px; cursor: pointer;}
         .fp-title { font-size: 26px; font-weight: 800; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.5px;}
-        .fp-artist { font-size: 18px; color: rgba(255,255,255,0.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .fp-artist { font-size: 18px; color: rgba(255,255,255,0.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: underline; text-decoration-color: transparent; transition: 0.3s;}
+        .fp-artist:active { text-decoration-color: rgba(255,255,255,0.7); }
         
         .progress-container { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px;}
         .progress-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; cursor: pointer; position: relative;}
@@ -170,7 +177,7 @@
         .fp-btn-play:active { transform: scale(0.95); }
         .fp-btn-play svg { fill: #000; width: 28px; height: 28px; }
 
-        /* 🌟 صفحه لیریک بهینه‌شده */
+        /* 🌟 پنل لیریک با قابلیت اسکرول برای بستن */
         #lyrics-sheet {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(20, 20, 20, 0.95); 
@@ -185,20 +192,15 @@
         
         #lyrics-content { 
             flex: 1; overflow-y: auto; font-size: 20px; font-weight: 700; line-height: 1.6; 
-            color: rgba(255,255,255,0.4); padding-bottom: 150px; scroll-behavior: smooth;
-            text-align: center;
+            color: rgba(255,255,255,0.4); padding-bottom: 150px; scroll-behavior: smooth; text-align: center;
         }
         #lyrics-content::-webkit-scrollbar { display: none; }
         
         .lyric-line { transition: all 0.3s ease; margin-bottom: 15px; cursor: pointer; padding: 10px 15px; border-radius: 12px; border: 1px solid transparent;}
         
         .lyric-line.active { 
-            color: #fff; 
-            transform: scale(1.05); 
-            background: rgba(255, 255, 255, 0.1); 
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            color: #fff; transform: scale(1.05); background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
     </style>
 </head>
@@ -210,7 +212,6 @@
         <div class="ob-title">What's your vibe?</div>
         <div class="ob-subtitle">Choose your favorite artists.</div>
         
-        <!-- جستجوی آنی (Live Search) -->
         <div class="ob-search-container">
             <svg class="ob-search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             <input type="text" id="obSearchInput" placeholder="Search for your favorite artist..." oninput="handleObSearchLive(event)">
@@ -232,7 +233,7 @@
         <div id="search-results-area" style="display: none;">
             <div class="section-title">Search Results</div>
             <div id="loadingSearch" class="loading-text" style="display: none;">Searching...</div>
-            <div id="searchArtistResult"></div> <!-- کارت خواننده -->
+            <div id="searchArtistResult"></div>
             <div class="track-list" id="searchResultsList" style="margin-bottom: 25px;"></div>
         </div>
 
@@ -246,15 +247,12 @@
             <div class="horizontal-scroll" id="favArtistsList"></div>
         </div>
 
-        <!-- 🌟 New Releases به دو بخش Albums و Singles تقسیم شد -->
         <div id="releases-section">
             <div id="loadingReleases" class="loading-text">Curating your feed...</div>
-            
             <div id="new-albums-section" style="display:none;">
                 <div class="section-title">New Album Releases</div>
                 <div class="horizontal-scroll" id="newAlbumsList"></div>
             </div>
-            
             <div id="new-singles-section" style="display:none;">
                 <div class="section-title">New Single Releases</div>
                 <div class="horizontal-scroll" id="newSinglesList"></div>
@@ -277,16 +275,12 @@
                 </div>
             </div>
         </div>
-        
         <div style="padding: 0 20px;">
             <div id="loadingArtist" class="loading-text">Loading discography...</div>
-            
             <div id="artist-albums-section" style="display:none;">
                 <div class="section-title">Albums</div>
                 <div class="horizontal-scroll" id="artistAlbumsList"></div>
             </div>
-            
-            <!-- 🌟 ترک‌ها و سینگل‌ها با هم در یک لیست نامحدود عمودی -->
             <div id="artist-singles-section" style="display:none; margin-top:20px;">
                 <div class="section-title">Singles & Tracks</div>
                 <div class="track-list" id="artistSinglesList"></div>
@@ -311,30 +305,45 @@
         </div>
     </div>
 
-    <!-- Players -->
-    <div class="mini-player" id="miniPlayer" onclick="openFullPlayer()">
-        <div class="mini-info">
-            <img id="miniCover" src="" class="mini-cover">
-            <div class="mini-text">
-                <div class="mini-title" id="miniTitle">Loading...</div>
-                <div class="mini-artist" id="miniArtist">Artist</div>
+    <!-- 🌟 Mini Player با کنترل‌های کامل -->
+    <div class="mini-player" id="miniPlayer">
+        <div class="mini-progress-bg" id="miniProgressBg" onclick="seekMini(event)">
+            <div class="mini-progress-fill" id="miniProgressFill"></div>
+        </div>
+        <div style="display: flex; width: 100%; padding-top: 10px; align-items: center;">
+            <div class="mini-info" onclick="openFullPlayer()">
+                <img id="miniCover" src="" class="mini-cover">
+                <div class="mini-text">
+                    <div class="mini-title" id="miniTitle">Loading...</div>
+                    <div class="mini-artist" id="miniArtist">Artist</div>
+                </div>
+            </div>
+            <div class="mini-controls" onclick="event.stopPropagation()">
+                <button class="mini-play-btn" onclick="playPrev()"><svg viewBox="0 0 24 24" style="width:20px;height:20px;"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+                <button class="mini-play-btn" id="miniPlayBtn" onclick="togglePlay(event)"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+                <button class="mini-play-btn" onclick="playNext()"><svg viewBox="0 0 24 24" style="width:20px;height:20px;"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
             </div>
         </div>
-        <button class="mini-play-btn" id="miniPlayBtn" onclick="togglePlay(event)"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
     </div>
 
+    <!-- Full Player -->
     <div class="full-player" id="fullPlayer">
         <div class="bg-blur-container"><img id="bgBlurImage" class="bg-blur-img" src=""></div>
         <div class="bg-gradient-overlay"></div>
         
         <div class="fp-header">
-            <svg onclick="closeFullPlayer()" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            <!-- فلش برگشت به پایین برای پلیر -->
+            <svg onclick="closeFullPlayer()" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
             <div class="fp-header-center">NOW PLAYING</div>
             <div class="lyrics-top-btn" onclick="toggleLyrics()">LYRICS</div>
         </div>
         <div class="fp-cover-container"><img id="fpCover" src="" class="fp-cover"></div>
         <div class="fp-info-row">
-            <div class="fp-text"><div class="fp-title" id="fpTitle">Title</div><div class="fp-artist" id="fpArtist">Artist</div></div>
+            <!-- کلیک روی خواننده برای رفتن به صفحه خواننده -->
+            <div class="fp-text" onclick="goToArtistFromPlayer()">
+                <div class="fp-title" id="fpTitle">Title</div>
+                <div class="fp-artist" id="fpArtist">Artist</div>
+            </div>
         </div>
         
         <div class="progress-container">
@@ -354,7 +363,7 @@
         </div>
         
         <div id="lyrics-sheet">
-            <div class="lyrics-handle-area" onclick="toggleLyrics()"><div class="lyrics-handle"></div></div>
+            <div class="lyrics-handle-area"><div class="lyrics-handle"></div></div>
             <div class="lyrics-header-title">Lyrics</div>
             <div id="lyrics-content">Loading lyrics...</div>
         </div>
@@ -374,11 +383,9 @@
         let currentIndex = -1;
         let parsedLyrics = []; 
         let lastActiveIndex = -1; 
-        
-        // متغیرهای صفحه آرتیست
         let currentArtistPageName = "";
         let currentArtistPageImage = "";
-        let currentArtistSongsCache = []; // برای شافل کردن آهنگ‌ها
+        let currentArtistSongsCache = []; 
         
         const iconPlayWhite = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
         const iconPauseWhite = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
@@ -403,14 +410,11 @@
             }
         };
 
-        // 🌟 سیستم جستجوی زنده (Live Search)
         let obSearchTimeout;
         function handleObSearchLive(event) {
             const query = event.target.value.trim();
             clearTimeout(obSearchTimeout);
-            if (query.length >= 3) {
-                obSearchTimeout = setTimeout(() => { executeObSearch(query); }, 500);
-            }
+            if (query.length >= 3) obSearchTimeout = setTimeout(() => { executeObSearch(query); }, 500);
         }
         
         async function executeObSearch(query) {
@@ -516,7 +520,6 @@
             renderSpeedDial();
         }
 
-        // 🌟 تفکیک آلبوم و سینگل در New Releases
         async function fetchNewReleases() {
             if (selectedArtists.length === 0) return;
             try {
@@ -524,16 +527,15 @@
                 const results = await Promise.all(promises);
                 document.getElementById('loadingReleases').style.display = 'none';
                 
-                let newAlbums = [];
-                let newSingles = [];
-                
+                let newAlbums = []; let newSingles = [];
                 results.forEach(res => {
                     if(res && res.albums) newAlbums.push(...res.albums);
                     if(res && res.singles) newSingles.push(...res.singles);
                 });
                 
-                newAlbums = newAlbums.sort(() => Math.random() - 0.5);
-                newSingles = newSingles.sort(() => Math.random() - 0.5);
+                // مرتب‌سازی بر اساس سال انتشار (نزولی)
+                newAlbums = newAlbums.sort((a, b) => parseInt(b.year || 0) - parseInt(a.year || 0));
+                newSingles = newSingles.sort((a, b) => parseInt(b.year || 0) - parseInt(a.year || 0));
                 
                 if (newAlbums.length === 0 && newSingles.length === 0) { document.getElementById('loadingReleases').style.display = 'block'; document.getElementById('loadingReleases').innerText = 'No new releases.'; return; }
                 
@@ -544,19 +546,20 @@
                         const hqCover = album.cover ? album.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '';
                         const item = document.createElement('div'); item.className = 'scroll-item';
                         item.onclick = () => { openAlbumPage(album.id, album.title, hqCover, album.artist); };
-                        item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${album.title}</div><div style="font-size:10px; color:#a7a7a7;">${album.artist}</div>`;
+                        item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${album.title}</div><div style="font-size:10px; color:#a7a7a7;">${album.artist} • ${album.year}</div>`;
                         albumsContainer.appendChild(item);
                     });
                 }
                 
+                // 🌟 کلیک روی سینگل جدید = پخش مستقیم همون ترک!
                 if (newSingles.length > 0) {
                     document.getElementById('new-singles-section').style.display = 'block';
                     const singlesContainer = document.getElementById('newSinglesList');
                     newSingles.forEach(single => {
                         const hqCover = single.cover ? single.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '';
                         const item = document.createElement('div'); item.className = 'scroll-item';
-                        item.onclick = () => { openAlbumPage(single.id, single.title, hqCover, single.artist); };
-                        item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${single.title}</div><div style="font-size:10px; color:#a7a7a7;">${single.artist}</div>`;
+                        item.onclick = () => { currentPlaylist = [single]; playTrack(0); };
+                        item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${single.title}</div><div style="font-size:10px; color:#a7a7a7;">${single.artist} • ${single.year}</div>`;
                         singlesContainer.appendChild(item);
                     });
                 }
@@ -564,7 +567,6 @@
             } catch (error) { document.getElementById('loadingReleases').innerText = 'Failed.'; }
         }
         
-        // 🌟 آپدیت دکمه قلب در صفحه آرتیست
         function updateHeartIcon() {
             const isFav = selectedArtists.includes(currentArtistPageName);
             const btn = document.getElementById('artistFavBtn');
@@ -585,29 +587,21 @@
             }
             localStorage.setItem(FAV_ARTISTS_KEY, JSON.stringify(selectedArtists));
             localStorage.setItem(FAV_ARTISTS_IMGS_KEY, JSON.stringify(selectedArtistsData));
-            updateHeartIcon();
-            renderFavArtists();
+            updateHeartIcon(); renderFavArtists();
         }
         
-        // 🌟 شافل کردن کل ترک‌های آرتیست
         function shuffleArtistTracks() {
             if (currentArtistSongsCache.length > 0) {
                 currentPlaylist = [...currentArtistSongsCache].sort(() => Math.random() - 0.5);
                 playTrack(0);
-            } else {
-                tg.showAlert("Loading tracks... please wait.");
-            }
+            } else { tg.showAlert("Loading tracks... please wait."); }
         }
 
         async function openArtistPage(name, image) {
-            document.getElementById('home-screen').style.display = 'none'; document.getElementById('artist-screen').style.display = 'block'; window.scrollTo(0, 0);
+            document.getElementById('home-screen').style.display = 'none'; document.getElementById('fullPlayer').classList.remove('active'); document.getElementById('artist-screen').style.display = 'block'; window.scrollTo(0, 0);
             
-            currentArtistPageName = name;
-            currentArtistPageImage = image;
-            updateHeartIcon();
-            
-            document.getElementById('artistHeaderBg').src = image; 
-            document.getElementById('artistHeaderName').innerText = name;
+            currentArtistPageName = name; currentArtistPageImage = image; updateHeartIcon();
+            document.getElementById('artistHeaderBg').src = image; document.getElementById('artistHeaderName').innerText = name;
             
             document.getElementById('loadingArtist').style.display = 'block'; document.getElementById('artist-albums-section').style.display = 'none'; document.getElementById('artist-singles-section').style.display = 'none';
             currentArtistSongsCache = [];
@@ -627,7 +621,6 @@
                     });
                 }
                 
-                // 🌟 ترکیب سینگل‌ها و آهنگ‌ها در لیست عمودی
                 if((data.singles && data.singles.length > 0) || (data.songs && data.songs.length > 0)) {
                     document.getElementById('artist-singles-section').style.display = 'block'; 
                     const sngList = document.getElementById('artistSinglesList'); sngList.innerHTML = '';
@@ -641,7 +634,6 @@
                             sngList.appendChild(item);
                         });
                     }
-                    
                     if (data.songs) {
                         currentArtistSongsCache = data.songs.map(t => { return { ...t, hqCover: t.cover ? t.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' }; });
                         currentArtistSongsCache.forEach((track, index) => {
@@ -678,7 +670,14 @@
 
         function closeAlbumPage() { document.getElementById('album-screen').style.display = 'none'; document.getElementById('home-screen').style.display = 'block'; }
 
-        // 🌟 Live Search تو صفحه اصلی
+        // 🌟 کلیک روی اسم خواننده تو پلیر
+        function goToArtistFromPlayer() {
+            closeFullPlayer();
+            const aName = document.getElementById('fpArtist').innerText;
+            const aCover = document.getElementById('fpCover').src;
+            openArtistPage(aName, aCover);
+        }
+
         let mainSearchTimeout;
         function handleSearchLive(event) {
             const query = event.target.value.trim();
@@ -697,16 +696,11 @@
                 const response = await fetch(`${SERVER_URL}/search?q=${encodeURIComponent(query)}`); const data = await response.json();
                 document.getElementById('loadingSearch').style.display = 'none';
                 
-                // 🌟 نمایش هنرمند به صورت جداگانه در بالا
                 if (data.artist && data.artist.name) {
                     const hqArtist = data.artist.image ? data.artist.image.replace(/=w\d+-h\d+.*/, "=w500-h500-l90-rj") : '';
                     document.getElementById('searchArtistResult').innerHTML = `
                         <div class="artist-search-card" onclick="openArtistPage('${data.artist.name}', '${hqArtist}')">
-                            <img src="${hqArtist}">
-                            <div>
-                                <div class="artist-search-name">${data.artist.name}</div>
-                                <div class="artist-search-label">Artist</div>
-                            </div>
+                            <img src="${hqArtist}"><div><div class="artist-search-name">${data.artist.name}</div><div class="artist-search-label">Artist</div></div>
                         </div>
                     `;
                 }
@@ -741,15 +735,24 @@
 
         function toggleLyrics() { document.getElementById('lyrics-sheet').classList.toggle('active'); }
         
-        const handleArea = document.querySelector('.lyrics-handle-area');
+        // 🌟 اسکرول و سوایپ بی‌نقص لیریک (هرکجای صفحه بکشی پایین بسته میشه)
+        const sheet = document.getElementById('lyrics-sheet');
+        const content = document.getElementById('lyrics-content');
         let sheetTouchStartY = 0;
-        handleArea.addEventListener('touchstart', e => { sheetTouchStartY = e.touches[0].clientY; }, {passive: true});
-        handleArea.addEventListener('touchend', e => {
-            if (e.changedTouches[0].clientY - sheetTouchStartY > 40) toggleLyrics(); 
-        });
+        
+        sheet.addEventListener('touchstart', e => {
+            if (content.scrollTop <= 0) sheetTouchStartY = e.touches[0].clientY;
+            else sheetTouchStartY = 0;
+        }, {passive: true});
+        
+        sheet.addEventListener('touchmove', e => {
+            if (sheetTouchStartY && e.touches[0].clientY > sheetTouchStartY + 60) {
+                document.getElementById('lyrics-sheet').classList.remove('active');
+                sheetTouchStartY = 0;
+            }
+        }, {passive: true});
 
         async function fetchLyrics(videoId, title, artist) {
-            const content = document.getElementById('lyrics-content');
             content.innerHTML = "Searching for lyrics...";
             parsedLyrics = [];
             try {
@@ -761,27 +764,18 @@
                     
                     lines.forEach((line) => {
                         const match = line.match(/^\[(\d{2}):(\d{2}\.\d{2})\](.*)/);
-                        let time = -1;
-                        let text = line;
+                        let time = -1; let text = line;
                         
                         if(match) {
                             time = (parseInt(match[1]) * 60) + parseFloat(match[2]);
                             text = match[3].trim() || "♪"; 
                         }
                         
-                        const p = document.createElement('div'); 
-                        p.className = 'lyric-line'; 
-                        p.innerText = text;
-                        
+                        const p = document.createElement('div'); p.className = 'lyric-line'; p.innerText = text;
                         if (time !== -1) {
-                            p.onclick = () => { 
-                                audio.currentTime = time; 
-                                if(audio.paused) { audio.play(); updatePlayBtn(true); }
-                            };
+                            p.onclick = () => { audio.currentTime = time; if(audio.paused) { audio.play(); updatePlayBtn(true); }};
                         }
-                        
-                        content.appendChild(p); 
-                        parsedLyrics.push({ time: time, el: p });
+                        content.appendChild(p); parsedLyrics.push({ time: time, el: p });
                     });
                 } else { content.innerHTML = "Lyrics not available for this track."; }
             } catch (e) { content.innerHTML = "Error loading lyrics."; }
@@ -792,11 +786,23 @@
         function openFullPlayer() { document.getElementById('fullPlayer').classList.add('active'); }
         function closeFullPlayer() { document.getElementById('fullPlayer').classList.remove('active'); document.getElementById('lyrics-sheet').classList.remove('active'); }
         function togglePlay(e) { e.stopPropagation(); if (audio.paused) { audio.play(); updatePlayBtn(true); } else { audio.pause(); updatePlayBtn(false); } }
-        function updatePlayBtn(isPlaying) { document.getElementById('miniPlayBtn').innerHTML = isPlaying ? iconPauseWhite : iconPlayWhite; document.getElementById('fpPlayBtn').innerHTML = isPlaying ? iconPauseBlack : iconPlayBlack; }
+        function updatePlayBtn(isPlaying) { 
+            const miniBtn = document.getElementById('miniPlayBtn');
+            if(miniBtn) miniBtn.innerHTML = isPlaying ? iconPauseWhite : iconPlayWhite; 
+            document.getElementById('fpPlayBtn').innerHTML = isPlaying ? iconPauseBlack : iconPlayBlack; 
+        }
         audio.onended = () => playNext();
         
+        // 🌟 درگ کردن روی مینی‌پلیر و فول‌پلیر
         const progressBg = document.getElementById('progressBg');
+        const miniProgressBg = document.getElementById('miniProgressBg');
         let isDragging = false;
+        
+        function seekMini(e) {
+            e.stopPropagation();
+            const bar = document.getElementById('miniProgressBg');
+            if(audio.duration) audio.currentTime = (e.offsetX / bar.clientWidth) * audio.duration;
+        }
         
         progressBg.addEventListener('touchstart', (e) => { isDragging = true; seekFromTouch(e); }, {passive: true});
         progressBg.addEventListener('touchmove', (e) => { if(isDragging) seekFromTouch(e); }, {passive: true});
@@ -809,9 +815,7 @@
             const rect = progressBg.getBoundingClientRect();
             let clientX = e.touches ? e.touches[0].clientX : e.clientX;
             if(!clientX && e.changedTouches) clientX = e.changedTouches[0].clientX;
-            
-            let x = clientX - rect.left;
-            x = Math.max(0, Math.min(x, rect.width));
+            let x = Math.max(0, Math.min(clientX - rect.left, rect.width));
             const percentage = x / rect.width;
             
             document.getElementById('progressFill').style.width = `${percentage * 100}%`;
@@ -822,11 +826,16 @@
 
         audio.ontimeupdate = () => { 
             if (audio.duration) { 
+                const percentage = (audio.currentTime / audio.duration) * 100;
+                
                 if (!isDragging) {
-                    const progress = (audio.currentTime / audio.duration) * 100; 
-                    document.getElementById('progressFill').style.width = `${progress}%`; 
-                    document.getElementById('progressDot').style.left = `${progress}%`; 
+                    document.getElementById('progressFill').style.width = `${percentage}%`; 
+                    document.getElementById('progressDot').style.left = `${percentage}%`; 
                 }
+                
+                // آپدیت نوار مینی پلیر
+                document.getElementById('miniProgressFill').style.width = `${percentage}%`;
+                
                 document.getElementById('currentTime').innerText = formatTime(audio.currentTime); 
                 document.getElementById('duration').innerText = formatTime(audio.duration); 
                 
