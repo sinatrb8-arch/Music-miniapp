@@ -29,7 +29,6 @@
         .ob-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
         .ob-subtitle { font-size: 14px; color: var(--hint-color); margin-bottom: 20px; }
         
-        /* 🌟 بخش جستجوی خواننده در صفحه اول */
         .ob-search-container { position: relative; margin-bottom: 25px; }
         .ob-search-container input {
             width: 100%; padding: 14px 14px 14px 45px; border: none; border-radius: 12px;
@@ -115,10 +114,9 @@
         .mini-play-btn { background: none; border: none; color: white; cursor: pointer; padding: 8px;}
         .mini-play-btn svg { width: 24px; height: 24px; fill: #fff; }
 
-        /* 🌟 فول پلیر کاملاً ایزوله شده (پس زمینه سالید تا چیزی از زیرش معلوم نباشه) */
         .full-player { 
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
-            background-color: var(--bg-color); /* بک‌گراند سالید */
+            background-color: var(--bg-color);
             z-index: 2000; display: flex; flex-direction: column; padding: 25px; box-sizing: border-box; 
             overflow: hidden; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
@@ -154,7 +152,7 @@
         .fp-btn-play:active { transform: scale(0.95); }
         .fp-btn-play svg { fill: #000; width: 28px; height: 28px; }
 
-        /* 🌟 پنل لیریک کشویی بهینه‌شده و رفع باگ بسته شدن */
+        /* 🌟 پنل لیریک کشویی (با رفع باگ اسکرول) */
         #lyrics-sheet {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(20, 20, 20, 0.95); 
@@ -163,7 +161,6 @@
         }
         #lyrics-sheet.active { transform: translateY(0); }
         
-        /* این قسمت تشخیص میده کاربر میخواد صفحه لیریک رو ببنده */
         .lyrics-handle-area { width: 100%; padding: 10px 0 20px 0; display: flex; justify-content: center; align-items: center;}
         .lyrics-handle { width: 50px; height: 6px; background: rgba(255,255,255,0.3); border-radius: 3px; cursor: pointer; }
         .lyrics-header-title { font-size: 24px; font-weight: 800; margin-bottom: 20px;}
@@ -174,7 +171,6 @@
         }
         #lyrics-content::-webkit-scrollbar { display: none; }
         
-        /* 🌟 لیریک‌های لمسی و تعاملی */
         .lyric-line { transition: color 0.3s, transform 0.3s; margin-bottom: 15px; cursor: pointer;}
         .lyric-line.active { color: #fff; transform: scale(1.05); transform-origin: left center;}
     </style>
@@ -187,13 +183,12 @@
         <div class="ob-title">What's your vibe?</div>
         <div class="ob-subtitle">Choose your favorite artists.</div>
         
-        <!-- 🌟 فرم جستجوی جدید آرتیست در صفحه ورود -->
         <div class="ob-search-container">
             <svg class="ob-search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             <input type="text" id="obSearchInput" placeholder="Search for your favorite artist..." onkeypress="handleObSearch(event)">
         </div>
 
-        <div id="obLoading">Loading artists from server...</div>
+        <div id="obLoading" style="display:none;">Loading...</div>
         <div class="artist-grid" id="onboardingGrid"></div>
         <div style="height: 80px;"></div> 
         <div class="ob-btn-container"><button class="ob-btn" id="obFinishBtn" onclick="finishOnboarding()">Continue</button></div>
@@ -284,7 +279,6 @@
         <button class="mini-play-btn" id="miniPlayBtn" onclick="togglePlay(event)"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
     </div>
 
-    <!-- 🌟 Full Player -->
     <div class="full-player" id="fullPlayer">
         <div class="bg-blur-container"><img id="bgBlurImage" class="bg-blur-img" src=""></div>
         <div class="bg-gradient-overlay"></div>
@@ -315,7 +309,7 @@
             <div style="width:32px;"></div>
         </div>
         
-        <!-- 🌟 صفحه لیریک -->
+        <!-- صفحه لیریک -->
         <div id="lyrics-sheet">
             <div class="lyrics-handle-area" onclick="toggleLyrics()"><div class="lyrics-handle"></div></div>
             <div class="lyrics-header-title">Lyrics</div>
@@ -335,11 +329,8 @@
         let audio = new Audio();
         let currentPlaylist = [];
         let currentIndex = -1;
-        
-        // 🌟 سیستم لیریک و همگام‌سازی
         let parsedLyrics = []; 
         let lastActiveIndex = -1; 
-        let lyricOffset = 0.3; // آفست برای تنظیم دقیق‌تر ثانیه
         
         const iconPlayWhite = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
         const iconPauseWhite = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
@@ -355,9 +346,8 @@
                 try {
                     const res = await fetch(`${SERVER_URL}/api/initial_artists`);
                     const initialArtists = await res.json();
-                    document.getElementById('obLoading').style.display = 'none';
-                    initialArtists.forEach(a => { if (a.image) addArtistToGrid(a.name, a.image); });
-                } catch (e) { document.getElementById('obLoading').innerText = "Error."; }
+                    initialArtists.forEach(a => { if (a.image) addArtistToGrid(a.name, a.image, false); });
+                } catch (e) {}
             } else {
                 selectedArtists = JSON.parse(savedArtists);
                 selectedArtistsData = JSON.parse(localStorage.getItem(FAV_ARTISTS_IMGS_KEY) || '[]');
@@ -365,31 +355,38 @@
             }
         };
 
-        // 🌟 جستجوی خواننده در صفحه Onboarding
+        // 🌟 سرچ در Onboarding و اضافه شدن به بالاترین نقطه
         async function handleObSearch(event) {
             if (event.key === 'Enter') {
                 const query = document.getElementById('obSearchInput').value.trim(); if (!query) return;
                 document.getElementById('obLoading').style.display = 'block';
-                document.getElementById('obLoading').innerText = 'Searching...';
                 try {
                     const res = await fetch(`${SERVER_URL}/api/search_artist?q=${encodeURIComponent(query)}`);
                     const artists = await res.json();
                     document.getElementById('obLoading').style.display = 'none';
-                    artists.forEach(a => { if (a.image) addArtistToGrid(a.name, a.image); });
+                    // Reverse to keep the first result exactly at the top
+                    artists.reverse().forEach(a => { if (a.image) addArtistToGrid(a.name, a.image, true); });
                 } catch (error) { document.getElementById('obLoading').style.display = 'none'; }
             }
         }
 
-        function addArtistToGrid(name, image) {
+        function addArtistToGrid(name, image, prepend = false) {
             if (displayedArtists.has(name)) return;
             displayedArtists.add(name);
             const grid = document.getElementById('onboardingGrid');
             const card = document.createElement('div');
             card.className = 'artist-card';
+            if (prepend) card.classList.add('new-arrival');
+            
             let hqImage = image ? image.replace(/=w\d+-h\d+.*/, "=w500-h500-l90-rj") : '';
             card.innerHTML = `<img class="artist-img" src="${hqImage}" alt="${name}"><div class="artist-name">${name}</div>`;
             card.onclick = () => toggleArtistSelection(card, name, hqImage);
-            grid.appendChild(card); // میره به آخر لیست تا چیدمان رو بهم نریزه
+            
+            if (prepend) {
+                grid.insertBefore(card, grid.firstChild);
+            } else {
+                grid.appendChild(card);
+            }
         }
 
         async function toggleArtistSelection(cardElement, artistName, imageUrl) {
@@ -469,6 +466,7 @@
             renderSpeedDial();
         }
 
+        // 🌟 New Releases فقط کل آلبوم رو نشون میده
         async function fetchNewReleases() {
             if (selectedArtists.length === 0) return;
             try {
@@ -480,11 +478,12 @@
                 if (mixedFeed.length === 0) { document.getElementById('loadingReleases').style.display = 'block'; document.getElementById('loadingReleases').innerText = 'No new releases.'; return; }
                 mixedFeed = mixedFeed.sort(() => Math.random() - 0.5);
                 const container = document.getElementById('releasesList');
-                let tempPlaylist = mixedFeed.map(t => { return { ...t, hqCover: t.cover ? t.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' }; });
-                tempPlaylist.forEach((track, index) => {
+                
+                mixedFeed.forEach(album => {
+                    const hqCover = album.cover ? album.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '';
                     const item = document.createElement('div'); item.className = 'track-item';
-                    item.onclick = () => { currentPlaylist = tempPlaylist; playTrack(index); };
-                    item.innerHTML = `<img src="${track.hqCover}" alt="cover"><div class="track-info"><div class="track-title">${track.title}</div><div class="track-artist">${track.artist}</div></div>`;
+                    item.onclick = () => { openAlbumPage(album.id, album.title, hqCover, album.artist); };
+                    item.innerHTML = `<img src="${hqCover}" alt="cover"><div class="track-info"><div class="track-title">${album.title}</div><div class="track-artist">${album.artist} (Album)</div></div>`;
                     container.appendChild(item);
                 });
             } catch (error) { document.getElementById('loadingReleases').innerText = 'Failed.'; }
@@ -523,7 +522,7 @@
         function closeArtistPage() { document.getElementById('artist-screen').style.display = 'none'; document.getElementById('home-screen').style.display = 'block'; }
         
         async function openAlbumPage(browseId, albumTitle, coverUrl, artistName) {
-            document.getElementById('artist-screen').style.display = 'none'; document.getElementById('album-screen').style.display = 'block'; window.scrollTo(0, 0);
+            document.getElementById('artist-screen').style.display = 'none'; document.getElementById('home-screen').style.display = 'none'; document.getElementById('album-screen').style.display = 'block'; window.scrollTo(0, 0);
             document.getElementById('albumHeaderBg').src = coverUrl; document.getElementById('albumHeaderImg').src = coverUrl; document.getElementById('albumHeaderName').innerText = albumTitle; document.getElementById('albumHeaderArtist').innerText = artistName;
             document.getElementById('loadingAlbum').style.display = 'block'; document.getElementById('albumTrackList').innerHTML = '';
             try {
@@ -541,7 +540,7 @@
             } catch(e) { document.getElementById('loadingAlbum').style.display = 'block'; document.getElementById('loadingAlbum').innerText = "Error."; }
         }
 
-        function closeAlbumPage() { document.getElementById('album-screen').style.display = 'none'; document.getElementById('artist-screen').style.display = 'block'; }
+        function closeAlbumPage() { document.getElementById('album-screen').style.display = 'none'; document.getElementById('home-screen').style.display = 'block'; }
 
         async function handleSearch(event) {
             if (event.key === 'Enter') {
@@ -565,7 +564,7 @@
             if (index < 0 || index >= currentPlaylist.length) return;
             currentIndex = index; const track = currentPlaylist[index];
             addToSpeedDial(track);
-            lastActiveIndex = -1; // Reset lyrics
+            lastActiveIndex = -1; 
             
             document.getElementById('miniTitle').innerText = track.title; document.getElementById('miniArtist').innerText = track.artist;
             document.getElementById('miniCover').src = track.hqCover; document.getElementById('miniPlayer').style.display = 'flex';
@@ -573,24 +572,20 @@
             document.getElementById('bgBlurImage').src = track.hqCover; 
             document.getElementById('fpTitle').innerText = track.title; document.getElementById('fpArtist').innerText = track.artist;
             
-            document.getElementById('dynamic-bg').style.backgroundImage = `url('${track.hqCover}')`;
-            
-            // ⚡ پخش آنی (به لطف ریدایرکت سمت سرور)
+            // پخش آنی
             audio.src = `${SERVER_URL}/stream?id=${track.id}`; audio.play(); updatePlayBtn(true);
             fetchLyrics(track.id, track.title, track.artist);
         }
 
         function toggleLyrics() { document.getElementById('lyrics-sheet').classList.toggle('active'); }
         
-        // 🌟 رفع باگ بسته شدن ناخواسته لیریک
         const handleArea = document.querySelector('.lyrics-handle-area');
-        let touchStartY = 0;
-        handleArea.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, {passive: true});
+        let sheetTouchStartY = 0;
+        handleArea.addEventListener('touchstart', e => { sheetTouchStartY = e.touches[0].clientY; }, {passive: true});
         handleArea.addEventListener('touchend', e => {
-            if (e.changedTouches[0].clientY - touchStartY > 40) toggleLyrics(); 
+            if (e.changedTouches[0].clientY - sheetTouchStartY > 40) toggleLyrics(); 
         });
 
-        // 🌟 دریافت هوشمند لیریک و قابلیت کلیک روی متن
         async function fetchLyrics(videoId, title, artist) {
             const content = document.getElementById('lyrics-content');
             content.innerHTML = "Searching for lyrics...";
@@ -616,7 +611,7 @@
                         p.className = 'lyric-line'; 
                         p.innerText = text;
                         
-                        // 🌟 رفتن به همون ثانیه با کلیک روی متن!
+                        // با کلیک میره به همون ثانیه!
                         if (time !== -1) {
                             p.onclick = () => { 
                                 audio.currentTime = time; 
@@ -639,7 +634,7 @@
         function updatePlayBtn(isPlaying) { document.getElementById('miniPlayBtn').innerHTML = isPlaying ? iconPauseWhite : iconPlayWhite; document.getElementById('fpPlayBtn').innerHTML = isPlaying ? iconPauseBlack : iconPlayBlack; }
         audio.onended = () => playNext();
         
-        // 🌟 سیستم نوار لمسی بهینه (Draggable Seekbar)
+        // درگ کردن حرفه‌ای
         const progressBg = document.getElementById('progressBg');
         let isDragging = false;
         
@@ -675,12 +670,12 @@
                 document.getElementById('currentTime').innerText = formatTime(audio.currentTime); 
                 document.getElementById('duration').innerText = formatTime(audio.duration); 
                 
-                // 🌟 اسکرول لیریک بدون لگ (با آفست زمانی 0.3 ثانیه برای همگام‌سازی کامل)
+                // اسکرول لیریک فقط زمانی که صفحه باز باشه
                 if (parsedLyrics.length > 0) {
                     let activeIdx = -1;
                     if (parsedLyrics[0].time !== -1) {
                         for(let i=0; i<parsedLyrics.length; i++) {
-                            if (audio.currentTime + lyricOffset >= parsedLyrics[i].time) activeIdx = i;
+                            if (audio.currentTime + 0.3 >= parsedLyrics[i].time) activeIdx = i;
                             else break;
                         }
                     } else {
@@ -691,7 +686,9 @@
                         parsedLyrics.forEach((lyric, i) => {
                             if (i === activeIdx) {
                                 lyric.el.classList.add('active');
-                                lyric.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                if (document.getElementById('lyrics-sheet').classList.contains('active')) {
+                                    lyric.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }
                             } else {
                                 lyric.el.classList.remove('active');
                             }
