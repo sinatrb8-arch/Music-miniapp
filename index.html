@@ -17,7 +17,7 @@
 
         body {
             background-color: var(--bg-color); color: var(--text-color);
-            font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 120px; overflow-x: hidden;
+            font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 140px; overflow-x: hidden;
             transition: background-color 1s ease;
         }
         
@@ -69,7 +69,6 @@
         .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 20px; fill: var(--hint-color); }
         .section-title { font-size: 22px; font-weight: 800; margin-bottom: 15px; letter-spacing: -0.5px;}
         
-        /* 🌟 دکمه برگشت از سرچ */
         .search-header-row { display: flex; align-items: center; gap: 12px; margin-bottom: 25px; }
         #searchBackBtn { display: none; cursor: pointer; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 50%; backdrop-filter: blur(5px);}
         #searchBackBtn svg { width: 24px; height: 24px; fill: #fff; }
@@ -124,19 +123,35 @@
         .back-btn { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.5); border-radius: 50%; padding: 10px; display:flex; justify-content:center; align-items:center; z-index: 10; cursor:pointer;}
         .back-btn svg { width: 24px; height: 24px; fill: #fff; }
 
-        /* 4. Mini Player (🌟 کاملا چسبیده به چپ با نوار بزرگتر و نقطه) */
+        /* 4. Mini Player (🌟 کاملا چسبیده به چپ با نوار 3D و بزرگتر) */
         .mini-player { 
             position: fixed; bottom: 10px; left: 10px; right: 10px; 
             background: rgba(40,40,40,0.95); border-radius: 12px; 
             display: none; flex-direction: column; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.6); backdrop-filter: blur(10px); 
-            overflow: hidden; padding: 0;
+            padding: 0; overflow: visible;
         }
-        .mini-progress-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.15); cursor: pointer; position: relative; z-index: 5;}
-        .mini-progress-fill { height: 100%; background: var(--accent); width: 0%; pointer-events: none; }
-        .mini-progress-dot { position: absolute; top: -3px; left: 0%; width: 10px; height: 10px; background-color: #fff; border-radius: 50%; transform: translateX(-50%); pointer-events: none; box-shadow: 0 2px 5px rgba(0,0,0,0.5);}
+        
+        /* 🌟 نوار پیشرفت باکلاس برای مینی پلیر */
+        .mini-progress-area {
+            position: relative; width: 100%; height: 20px; cursor: pointer; margin-top: -10px; z-index: 10;
+        }
+        .mini-progress-track {
+            position: absolute; top: 50%; left: 15px; right: 15px; transform: translateY(-50%);
+            height: 4px; background: rgba(255,255,255,0.15); border-radius: 2px;
+        }
+        .mini-progress-fill {
+            position: absolute; top: 0; left: 0; height: 100%;
+            background: var(--accent); border-radius: 2px; width: 0%; pointer-events: none;
+        }
+        .mini-progress-dot {
+            position: absolute; top: 50%; left: 0%; width: 16px; height: 16px;
+            background: linear-gradient(145deg, #ffffff, #e6e6e6);
+            border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.5), inset 0 -1px 2px rgba(0,0,0,0.2);
+        }
         
         .mini-main-row { display: flex; width: 100%; align-items: center; height: 55px; }
-        .mini-cover { width: 55px; height: 55px; object-fit: cover; cursor: pointer; border-radius: 0; }
+        .mini-cover { width: 55px; height: 55px; object-fit: cover; cursor: pointer; border-radius: 0 0 0 12px; } /* کاملا چسبیده */
         .mini-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; cursor: pointer; padding-left: 12px; }
         .mini-text {display: flex; flex-direction: column;}
         .mini-title { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -232,7 +247,6 @@
 
     <!-- Home Screen -->
     <div id="home-screen">
-        <!-- 🌟 نوار جستجو با دکمه برگشت -->
         <div class="search-header-row">
             <div id="searchBackBtn" onclick="closeSearch()">
                 <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
@@ -250,22 +264,12 @@
             <div class="track-list" id="searchResultsList" style="margin-bottom: 25px;"></div>
         </div>
 
-        <!-- 🌟 بخش جدید Made For You -->
-        <div id="made-for-you-section" style="display: none;">
-            <div class="section-title">Made For You</div>
-            <div class="horizontal-scroll" id="madeForYouList"></div>
-        </div>
-
+        <!-- بخش‌ها به ترتیب جدید -->
         <div id="speed-dial-section" style="display: none;">
             <div class="section-title">Recently Played</div>
             <div class="horizontal-scroll" id="speedDialList"></div>
         </div>
         
-        <div id="fav-artists-section">
-            <div class="section-title">Your Favorite Artists</div>
-            <div class="horizontal-scroll" id="favArtistsList"></div>
-        </div>
-
         <div id="releases-section">
             <div id="loadingReleases" class="loading-text">Curating your feed...</div>
             <div id="new-albums-section" style="display:none;">
@@ -276,6 +280,17 @@
                 <div class="section-title">New Single Releases</div>
                 <div class="horizontal-scroll" id="newSinglesList"></div>
             </div>
+        </div>
+
+        <div id="fav-artists-section">
+            <div class="section-title">Your Favorite Artists</div>
+            <div class="horizontal-scroll" id="favArtistsList"></div>
+        </div>
+
+        <!-- 🌟 بخش ترکیبی Made For You اومد پایین صفحه -->
+        <div id="made-for-you-section" style="display: none;">
+            <div class="section-title">Made For You</div>
+            <div class="horizontal-scroll" id="madeForYouList"></div>
         </div>
         
         <button class="reset-btn" onclick="forceResetAll()">🔄 Reset All My Data</button>
@@ -324,11 +339,13 @@
         </div>
     </div>
 
-    <!-- 🌟 Mini Player -->
+    <!-- 🌟 Mini Player با نوار 3D و دکمه‌های کامل -->
     <div class="mini-player" id="miniPlayer">
-        <div class="mini-progress-bg" id="miniProgressBg">
-            <div class="mini-progress-fill" id="miniProgressFill"></div>
-            <div class="mini-progress-dot" id="miniProgressDot"></div>
+        <div class="mini-progress-area" id="miniProgressBg">
+            <div class="mini-progress-track">
+                <div class="mini-progress-fill" id="miniProgressFill"></div>
+                <div class="mini-progress-dot" id="miniProgressDot"></div>
+            </div>
         </div>
         <div class="mini-main-row">
             <img id="miniCover" src="" class="mini-cover" onclick="openFullPlayer()">
@@ -352,7 +369,7 @@
         <div class="bg-gradient-overlay"></div>
         
         <div class="fp-header">
-            <!-- 🌟 آیکون بستن پلیر تبدیل به فلش رو به پایین شد -->
+            <!-- فلش رو به پایین -->
             <svg onclick="closeFullPlayer()" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
             <div class="fp-header-center">NOW PLAYING</div>
             <div class="lyrics-top-btn" onclick="toggleLyrics()">LYRICS</div>
@@ -502,10 +519,10 @@
 
         function showHome() {
             document.getElementById('home-screen').style.display = 'block';
-            renderSpeedDial(); renderMadeForYou(); renderFavArtists(); fetchNewReleases();
+            renderSpeedDial(); renderFavArtists(); fetchNewReleases(); renderMadeForYou();
         }
         
-        // 🌟 بخش جدید پلی‌لیست‌های اختصاصی کاربر
+        // 🌟 ساخت میکس‌ها بر اساس کل هنرمندان
         function renderMadeForYou() {
             const container = document.getElementById('madeForYouList');
             container.innerHTML = '';
@@ -513,20 +530,26 @@
             
             document.getElementById('made-for-you-section').style.display = 'block';
             
+            // سوپرمیکس اصلی (ترکیبی)
+            createMixCard(container, "Ultimate Supermix", "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=500&h=500", async () => {
+                tg.showAlert("Generating Supermix...");
+                try {
+                    const artistsParam = encodeURIComponent(selectedArtists.join(','));
+                    const res = await fetch(`${SERVER_URL}/api/mix?artists=${artistsParam}`);
+                    const tracks = await res.json();
+                    if(tracks.length > 0) {
+                        currentPlaylist = tracks.map(t => ({ ...t, hqCover: t.cover ? t.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' }));
+                        playTrack(0);
+                    } else { tg.showAlert("Failed to create mix."); }
+                } catch(e) { tg.showAlert("Network Error."); }
+            });
+            
+            // رادیوی آرتیست اول و دوم
             const favArtist = selectedArtistsData[0];
             createMixCard(container, `${favArtist.name} Mix`, favArtist.image, async () => { await playArtistMix(favArtist.name); });
-            
             if (selectedArtistsData.length > 1) {
                 const secondArtist = selectedArtistsData[1];
                 createMixCard(container, `${secondArtist.name} Radio`, secondArtist.image, async () => { await playArtistMix(secondArtist.name); });
-            }
-            
-            const recent = JSON.parse(localStorage.getItem(RECENT_TRACKS_KEY) || '[]');
-            if (recent.length > 0) {
-                createMixCard(container, "Your Supermix", recent[0].hqCover, () => {
-                    currentPlaylist = [...recent].sort(() => Math.random() - 0.5);
-                    playTrack(0);
-                });
             }
         }
         
@@ -590,6 +613,7 @@
             renderSpeedDial();
         }
 
+        // 🌟 تفکیک و مرتب‌سازی واقعی New Releases بر اساس سال
         async function fetchNewReleases() {
             if (selectedArtists.length === 0) return;
             try {
@@ -615,7 +639,7 @@
                         const hqCover = album.cover ? album.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '';
                         const item = document.createElement('div'); item.className = 'scroll-item';
                         item.onclick = () => { openAlbumPage(album.id, album.title, hqCover, album.artist); };
-                        item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${album.title}</div><div style="font-size:10px; color:#a7a7a7;">${album.artist}</div>`;
+                        item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${album.title}</div><div style="font-size:10px; color:#a7a7a7;">${album.artist} • ${album.year}</div>`;
                         albumsContainer.appendChild(item);
                     });
                 }
@@ -626,9 +650,10 @@
                     newSingles.forEach(single => {
                         const hqCover = single.cover ? single.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '';
                         const item = document.createElement('div'); item.className = 'scroll-item';
-                        // 🌟 کلیک روی سینگل = پخش مستقیم
-                        item.onclick = async () => { 
-                            tg.showAlert("Loading Single...");
+                        // 🌟 رفع باگ: کلیک روی سینگل = پخش مستقیم
+                        item.onclick = async (e) => { 
+                            const icon = e.currentTarget.querySelector('.scroll-cover');
+                            icon.style.opacity = '0.4';
                             try {
                                 const res = await fetch(`${SERVER_URL}/api/album_tracks?id=${single.id}&artist=${encodeURIComponent(single.artist)}`); 
                                 const tracks = await res.json();
@@ -636,9 +661,10 @@
                                     currentPlaylist = tracks.map(t => ({ ...t, hqCover: hqCover }));
                                     playTrack(0);
                                 }
-                            } catch(e) {}
+                            } catch(err) {}
+                            icon.style.opacity = '1';
                         };
-                        item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${single.title}</div><div style="font-size:10px; color:#a7a7a7;">${single.artist}</div>`;
+                        item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${single.title}</div><div style="font-size:10px; color:#a7a7a7;">${single.artist} • ${single.year}</div>`;
                         singlesContainer.appendChild(item);
                     });
                 }
@@ -713,7 +739,6 @@
                             sngList.appendChild(item);
                         });
                     }
-                    
                     if (data.songs) {
                         currentArtistSongsCache = data.songs.map(t => { return { ...t, hqCover: t.cover ? t.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' }; });
                         currentArtistSongsCache.forEach((track, index) => {
@@ -750,6 +775,7 @@
 
         function closeAlbumPage() { document.getElementById('album-screen').style.display = 'none'; document.getElementById('home-screen').style.display = 'block'; }
 
+        // 🌟 رفتن به صفحه آرتیست از داخل پلیر
         function goToArtistFromPlayer() {
             closeFullPlayer();
             const aName = document.getElementById('fpArtist').innerText;
@@ -769,6 +795,7 @@
             }
         }
         
+        // 🌟 بستن سرچ و بازگشت به هوم
         function closeSearch() {
             document.getElementById('searchInput').value = '';
             document.getElementById('search-results-area').style.display = 'none';
@@ -821,7 +848,7 @@
 
         function toggleLyrics() { document.getElementById('lyrics-sheet').classList.toggle('active'); }
         
-        // 🌟 اسکرول بی‌نقص لیریک (بستن با پایین کشیدن کل صفحه لیریک)
+        // 🌟 اسکرول بی‌نقص لیریک (از روی خود متن هم بکشی بسته میشه)
         const sheet = document.getElementById('lyrics-sheet');
         const content = document.getElementById('lyrics-content');
         let sheetTouchStartY = 0;
