@@ -151,7 +151,7 @@
         .mini-progress-dot { position: absolute; top: 50%; left: 0%; width: 16px; height: 16px; background: linear-gradient(145deg, #ffffff, #e6e6e6); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; box-shadow: 0 2px 6px rgba(0,0,0,0.5), inset 0 -1px 2px rgba(0,0,0,0.2); }
         
         .mini-main-row { display: flex; width: 100%; align-items: center; height: 55px; }
-        .mini-cover { width: 55px; height: 55px; object-fit: cover; cursor: pointer; border-radius: 0 0 0 12px; }
+        .mini-cover { width: 55px; height: 55px; min-width: 55px; object-fit: cover; cursor: pointer; border-radius: 0 0 0 12px; }
         .mini-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; cursor: pointer; padding-left: 12px; }
         .mini-text {display: flex; flex-direction: column;}
         .mini-title { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -792,27 +792,35 @@
             const hqImage = getHqCover(image);
             const item = document.createElement('div'); item.className = 'scroll-item';
             item.onclick = onClick;
+            
             item.innerHTML = `
                 <div style="position:relative; width: 110px; height: 110px; margin-bottom: 8px; flex: 0 0 auto;">
-                    <img src="${hqImage}" class="scroll-cover" style="margin-bottom: 0; width: 100%; height: 100%;">
+                    <img src="${hqImage}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 12px; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.4); display: block;">
                     <div style="position:absolute; bottom:10px; left:8px; width:35px; height:4px; background:var(--accent); border-radius:2px; box-shadow: 0 2px 4px rgba(0,0,0,0.5);"></div>
                 </div>
-                <div class="scroll-title">${title}</div>
+                <div class="scroll-title" style="width: 110px;">${title}</div>
             `;
             container.appendChild(item);
         }
 
+        // 🌟 استایل اینلاینِ غیرقابل نفوذ برای عکس هنرمندان
         function renderFavArtists() {
             const container = document.getElementById('favArtistsList');
             container.innerHTML = '';
             selectedArtistsData.forEach(artist => {
                 const item = document.createElement('div'); item.className = 'scroll-item';
                 item.onclick = () => openArtistPage(artist.name, artist.image);
-                item.innerHTML = `<img src="${artist.image}" class="scroll-cover circle"><div class="scroll-title">${artist.name}</div>`;
+                item.innerHTML = `
+                    <div style="position:relative; width: 110px; height: 110px; margin-bottom: 8px; flex: 0 0 auto;">
+                        <img src="${artist.image}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 50%; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.4); display: block;">
+                    </div>
+                    <div class="scroll-title" style="width: 110px;">${artist.name}</div>
+                `;
                 container.appendChild(item);
             });
         }
 
+        // 🌟 استایل اینلاینِ غیرقابل نفوذ برای Recently Played
         function renderSpeedDial() {
             const recent = JSON.parse(localStorage.getItem(RECENT_TRACKS_KEY) || '[]');
             const container = document.getElementById('speedDialList');
@@ -822,7 +830,12 @@
             recent.forEach(track => {
                 const item = document.createElement('div'); item.className = 'scroll-item';
                 item.onclick = () => { currentPlaylist = [track]; currentContext='single'; playTrack(0); };
-                item.innerHTML = `<img src="${track.hqCover}"><div class="scroll-title">${track.title}</div>`;
+                item.innerHTML = `
+                    <div style="position:relative; width: 110px; height: 110px; margin-bottom: 8px; flex: 0 0 auto;">
+                        <img src="${track.hqCover}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 12px; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.4); display: block;">
+                    </div>
+                    <div class="scroll-title" style="width: 110px;">${track.title}</div>
+                `;
                 container.appendChild(item);
             });
         }
@@ -860,7 +873,15 @@
                         const hqCover = getHqCover(album.cover);
                         const item = document.createElement('div'); item.className = 'scroll-item';
                         item.onclick = () => { openAlbumPage(album.id, album.title, hqCover, album.artist); };
-                        item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${album.title}</div><div style="font-size:10px; color:#a7a7a7;">${album.artist} • ${album.year}</div>`;
+                        
+                        // 🌟 قفل کردن سایز عکس
+                        item.innerHTML = `
+                            <div style="position:relative; width: 110px; height: 110px; margin-bottom: 8px; flex: 0 0 auto;">
+                                <img src="${hqCover}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 12px; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.4); display: block;">
+                            </div>
+                            <div class="scroll-title" style="width: 110px;">${album.title}</div>
+                            <div style="font-size:10px; color:#a7a7a7;">${album.artist} • ${album.year}</div>
+                        `;
                         albumsContainer.appendChild(item);
                     });
                 }
@@ -872,7 +893,7 @@
                         const hqCover = getHqCover(single.cover);
                         const item = document.createElement('div'); item.className = 'scroll-item';
                         item.onclick = async (e) => { 
-                            const icon = item.querySelector('.scroll-cover'); icon.style.opacity = '0.4';
+                            const icon = item.querySelector('img'); if(icon) icon.style.opacity = '0.4';
                             try {
                                 const res = await fetch(`${SERVER_URL}/search?q=${encodeURIComponent(single.title + " " + single.artist)}`); 
                                 const data = await res.json();
@@ -882,9 +903,17 @@
                                     playTrack(0);
                                 }
                             } catch(err) {}
-                            icon.style.opacity = '1';
+                            if(icon) icon.style.opacity = '1';
                         };
-                        item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${single.title}</div><div style="font-size:10px; color:#a7a7a7;">${single.artist} • ${single.year}</div>`;
+                        
+                        // 🌟 قفل کردن سایز عکس
+                        item.innerHTML = `
+                            <div style="position:relative; width: 110px; height: 110px; margin-bottom: 8px; flex: 0 0 auto;">
+                                <img src="${hqCover}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 12px; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.4); display: block;">
+                            </div>
+                            <div class="scroll-title" style="width: 110px;">${single.title}</div>
+                            <div style="font-size:10px; color:#a7a7a7;">${single.artist} • ${single.year}</div>
+                        `;
                         singlesContainer.appendChild(item);
                     });
                 }
@@ -941,7 +970,14 @@
                         let hqCover = getHqCover(a.cover);
                         const item = document.createElement('div'); item.className = 'scroll-item';
                         item.onclick = () => openAlbumPage(a.id, a.title, hqCover, name);
-                        item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${a.title}</div><div style="font-size:10px; color:#a7a7a7;">${a.year}</div>`;
+                        
+                        item.innerHTML = `
+                            <div style="position:relative; width: 110px; height: 110px; margin-bottom: 8px; flex: 0 0 auto;">
+                                <img src="${hqCover}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 12px; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.4); display: block;">
+                            </div>
+                            <div class="scroll-title" style="width: 110px;">${a.title}</div>
+                            <div style="font-size:10px; color:#a7a7a7;">${a.year}</div>
+                        `;
                         albList.appendChild(item);
                     });
                 }
@@ -973,7 +1009,7 @@
                         });
                     }
                 }
-            } catch (e) { document.getElementById('loadingArtist').innerText = 'Error.'; }
+            } catch (e) {}
         }
         
         function closeArtistPage() { document.getElementById('artist-screen').style.display = 'none'; document.getElementById('home-screen').style.display = 'block'; }
@@ -1056,7 +1092,6 @@
             } catch (error) {}
         }
 
-        // 🌟 تابع قدرتمند شده با Media Session API
         function playTrack(index) {
             if (index < 0 || index >= currentPlaylist.length) return;
             
@@ -1092,7 +1127,6 @@
                 fetch(`${SERVER_URL}/api/preload?id=${nextTrack.id}`).catch(()=>{});
             }
 
-            // 🌟 ادغام با لاک‌اسکرین و داینامیک آیلند
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: track.title,
@@ -1104,7 +1138,7 @@
                         { src: track.hqCover, sizes: '192x192', type: 'image/jpeg' },
                         { src: track.hqCover, sizes: '256x256', type: 'image/jpeg' },
                         { src: track.hqCover, sizes: '384x384', type: 'image/jpeg' },
-                        { src: track.hqCover, sizes: '512x512', type: 'image/jpeg' }
+                        { src: track.hqCover, sizes: '512x512', type: 'image/jpeg' },
                     ]
                 });
 
@@ -1290,7 +1324,6 @@
                     lastSaveTime = audio.currentTime;
                 }
 
-                // 🌟 آپدیت کردن نوار زمان در داینامیک آیلند و لاک‌اسکرین
                 if ('mediaSession' in navigator && navigator.mediaSession.setPositionState) {
                     navigator.mediaSession.setPositionState({
                         duration: audio.duration || 0,
