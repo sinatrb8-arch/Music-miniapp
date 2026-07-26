@@ -208,7 +208,6 @@
         }
         #lyrics-sheet.active { transform: translateY(0); }
         
-        /* 🌟 رفع مشکل سوایپ لیریک با یک پدینگ بزرگ‌تر برای دستگیره */
         .lyrics-handle-area { width: 100%; padding: 20px 0 30px 0; display: flex; justify-content: center; align-items: center;}
         .lyrics-handle { width: 50px; height: 6px; background: rgba(255,255,255,0.3); border-radius: 3px; cursor: pointer; }
         .lyrics-header-title { font-size: 24px; font-weight: 800; margin-bottom: 20px; text-align: center;}
@@ -286,7 +285,7 @@
             <div class="horizontal-scroll" id="favArtistsList"></div>
         </div>
 
-        <!-- 🌟 بخش ترکیبی Made For You در آخر صفحه -->
+        <!-- 🌟 بخش ترکیبی Made For You -->
         <div id="made-for-you-section" style="display: none;">
             <div class="section-title">Made For You</div>
             <div class="horizontal-scroll" id="madeForYouList"></div>
@@ -321,15 +320,15 @@
         </div>
     </div>
 
-    <!-- Album / Playlist Screen -->
+    <!-- Album Screen / Mix Screen -->
     <div id="album-screen">
         <div class="album-header">
             <div class="back-btn" onclick="closeAlbumPage()"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
             <img id="albumHeaderBg" class="album-header-bg" src="">
             <div class="album-header-info">
                 <img id="albumHeaderImg" class="album-header-img" src="">
-                <h1 id="albumHeaderName" class="album-header-name">List Name</h1>
-                <div id="albumHeaderArtist" class="album-header-artist">Subtitle</div>
+                <h1 id="albumHeaderName" class="album-header-name">Album Name</h1>
+                <div id="albumHeaderArtist" class="album-header-artist">Artist</div>
             </div>
         </div>
         <div style="padding: 0 20px;">
@@ -410,6 +409,7 @@
         const FAV_ARTISTS_KEY = 'fav_artists_' + userId;
         const FAV_ARTISTS_IMGS_KEY = 'fav_artists_imgs_' + userId;
         const RECENT_TRACKS_KEY = 'recent_tracks_' + userId;
+        const PLAYER_STATE_KEY = 'player_state_' + userId; // 🌟 کلید جدید برای ذخیره نشست کاربر
         const SERVER_URL = "https://programmer-flags-brass-gba.trycloudflare.com";
         
         let audio = new Audio();
@@ -428,13 +428,21 @@
         
         let selectedArtists = []; let selectedArtistsData = []; let displayedArtists = new Set(); 
 
-        // 🌟 تابع قدرتمند و یکپارچه برای دریافت عکس با بالاترین کیفیت
         function getHqCover(url) {
             if (!url) return '';
-            if (url.includes('=')) {
-                return url.split('=')[0] + '=w800-h800-l90-rj';
-            }
+            if (url.includes('=')) return url.split('=')[0] + '=w800-h800-l90-rj';
             return url;
+        }
+
+        // 🌟 ذخیره وضعیت پلیر در هر لحظه
+        function savePlayerState() {
+            if (currentIndex === -1) return;
+            const state = {
+                playlist: currentPlaylist,
+                index: currentIndex,
+                time: audio.currentTime
+            };
+            localStorage.setItem(PLAYER_STATE_KEY, JSON.stringify(state));
         }
 
         window.onload = async () => {
@@ -450,6 +458,39 @@
                 selectedArtists = JSON.parse(savedArtists);
                 selectedArtistsData = JSON.parse(localStorage.getItem(FAV_ARTISTS_IMGS_KEY) || '[]');
                 showHome();
+                
+                // 🌟 بازیابی آخرین آهنگی که کاربر گوش می‌داد (بعد از بسته شدن تصادفی برنامه)
+                const savedState = localStorage.getItem(PLAYER_STATE_KEY);
+                if (savedState) {
+                    try {
+                        const state = JSON.parse(savedState);
+                        if (state.playlist && state.index >= 0 && state.playlist.length > state.index) {
+                            currentPlaylist = state.playlist;
+                            currentIndex = state.index;
+                            const track = currentPlaylist[currentIndex];
+                            
+                            document.getElementById('miniTitle').innerText = track.title; 
+                            document.getElementById('miniArtist').innerText = track.artist;
+                            document.getElementById('miniCover').src = track.hqCover; 
+                            document.getElementById('miniPlayer').style.display = 'flex';
+                            document.getElementById('fpCover').src = track.hqCover; 
+                            document.getElementById('bgBlurImage').src = track.hqCover; 
+                            document.getElementById('fpTitle').innerText = track.title; 
+                            document.getElementById('fpArtist').innerText = track.artist;
+                            document.getElementById('dynamic-bg').style.backgroundImage = `url('${track.hqCover}')`;
+                            
+                            audio.src = `${SERVER_URL}/stream?id=${track.id}`;
+                            // صبر می‌کنیم متادیتا لود بشه بعد زمان رو ست می‌کنیم تا ارور نده
+                            audio.addEventListener('loadedmetadata', function onLoaded() {
+                                audio.currentTime = state.time || 0;
+                                audio.removeEventListener('loadedmetadata', onLoaded);
+                            });
+                            
+                            fetchLyrics(track.id, track.title, track.artist);
+                            updatePlayBtn(false); // در حالت متوقف شده بالا میاد
+                        }
+                    } catch(e) {}
+                }
             }
         };
 
@@ -529,7 +570,7 @@
             renderSpeedDial(); renderFavArtists(); fetchNewReleases(); renderMadeForYou();
         }
         
-        // 🌟 سیستم هوشمند باز کردن لیست‌های میکس
+        // 🌟 سیستم هوشمند باز کردن لیست‌های میکس با کاور
         async function openMixPage(title, coverUrl, fetchUrl) {
             document.getElementById('home-screen').style.display = 'none';
             document.getElementById('artist-screen').style.display = 'none';
@@ -556,7 +597,8 @@
                     tempPlaylist.forEach((track, index) => {
                         const trackEl = document.createElement('div'); trackEl.className = 'track-item'; trackEl.style.background = 'transparent';
                         trackEl.onclick = () => { currentPlaylist = tempPlaylist; playTrack(index); };
-                        trackEl.innerHTML = `<div style="width: 30px; text-align: center; color: var(--hint-color); font-weight: 600;">${index + 1}</div><div class="track-info"><div class="track-title">${track.title}</div><div class="track-artist">${track.artist}</div></div>`;
+                        // 🌟 اضافه شدن عکس به جای شماره
+                        trackEl.innerHTML = `<img src="${track.hqCover}"><div class="track-info"><div class="track-title">${track.title}</div><div class="track-artist">${track.artist}</div></div>`;
                         document.getElementById('albumTrackList').appendChild(trackEl);
                     });
                 } else {
@@ -576,13 +618,11 @@
             
             document.getElementById('made-for-you-section').style.display = 'block';
             
-            // سوپرمیکس (کل آرتیست‌ها)
             const artistsParam = encodeURIComponent(selectedArtists.join(','));
             createMixCard(container, "Ultimate Supermix", "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=500&h=500", () => {
                 openMixPage("Ultimate Supermix", "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=500&h=500", `${SERVER_URL}/api/mix?artists=${artistsParam}`);
             });
             
-            // میکسِ ریتم و سبکِ آخرین آهنگ (Vibe Mix)
             const recent = JSON.parse(localStorage.getItem(RECENT_TRACKS_KEY) || '[]');
             if (recent.length > 0) {
                 const seedTrack = recent[0];
@@ -591,7 +631,6 @@
                 });
             }
 
-            // میکس خواننده‌های محبوب
             const favArtist = selectedArtistsData[0];
             createMixCard(container, `${favArtist.name} Mix`, favArtist.image, () => { 
                 openMixPage(`${favArtist.name} Mix`, favArtist.image, `${SERVER_URL}/api/artist_details?name=${encodeURIComponent(favArtist.name)}`);
@@ -689,7 +728,7 @@
                     newSingles.forEach(single => {
                         const hqCover = getHqCover(single.cover);
                         const item = document.createElement('div'); item.className = 'scroll-item';
-                        item.onclick = async () => { 
+                        item.onclick = async (e) => { 
                             const icon = item.querySelector('.scroll-cover');
                             icon.style.opacity = '0.4';
                             try {
@@ -808,7 +847,8 @@
                     tempPlaylist.forEach((track, index) => {
                         const trackEl = document.createElement('div'); trackEl.className = 'track-item'; trackEl.style.background = 'transparent';
                         trackEl.onclick = () => { currentPlaylist = tempPlaylist; playTrack(index); };
-                        trackEl.innerHTML = `<div style="width: 30px; text-align: center; color: var(--hint-color); font-weight: 600;">${index + 1}</div><div class="track-info"><div class="track-title">${track.title}</div><div class="track-artist">${track.artist}</div></div>`;
+                        // 🌟 کاور آهنگ‌ها جایگزین شماره شد
+                        trackEl.innerHTML = `<img src="${track.hqCover}"><div class="track-info"><div class="track-title">${track.title}</div><div class="track-artist">${track.artist}</div></div>`;
                         document.getElementById('albumTrackList').appendChild(trackEl);
                     });
                 } else { document.getElementById('loadingAlbum').style.display = 'block'; document.getElementById('loadingAlbum').innerText = "No tracks."; }
@@ -873,6 +913,7 @@
             currentIndex = index; const track = currentPlaylist[index];
             addToSpeedDial(track);
             lastActiveIndex = -1; 
+            savePlayerState(); // ذخیره نشست کاربر
             
             document.getElementById('miniTitle').innerText = track.title; document.getElementById('miniArtist').innerText = track.artist;
             document.getElementById('miniCover').src = track.hqCover; document.getElementById('miniPlayer').style.display = 'flex';
@@ -888,7 +929,6 @@
 
         function toggleLyrics() { document.getElementById('lyrics-sheet').classList.toggle('active'); }
         
-        // 🌟 رفع کامل باگ بسته شدن لیریکس: الان فقط ناحیه بالای صفحه لیریک باعث بسته شدنش می‌شه (بدون تداخل با اسکرول کردن متن‌ها)
         const handleArea = document.querySelector('.lyrics-handle-area');
         let sheetTouchStartY = 0;
         
@@ -989,9 +1029,16 @@
             if(audio.duration) audio.currentTime = percentage * audio.duration;
         }
 
+        let lastSaveTime = 0;
         audio.ontimeupdate = () => { 
             if (audio.duration) { 
                 const percentage = (audio.currentTime / audio.duration) * 100;
+                
+                // 🌟 ذخیره وضعیت در پس‌زمینه (هر 2 ثانیه یکبار تا منابع رو درگیر نکنه)
+                if (audio.currentTime - lastSaveTime > 2) {
+                    savePlayerState();
+                    lastSaveTime = audio.currentTime;
+                }
                 
                 if (!isDragging) {
                     document.getElementById('progressFill').style.width = `${percentage}%`; 
