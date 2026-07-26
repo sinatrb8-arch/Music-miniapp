@@ -13,11 +13,7 @@
             --secondary-bg: #282828; --accent: #1db954;
         }
         
-        /* 🌟 حذف هاله آبی رنگ روی تمام دکمه‌ها و المان‌ها */
-        * {
-            -webkit-tap-highlight-color: transparent;
-            outline: none;
-        }
+        * { -webkit-tap-highlight-color: transparent; outline: none; }
 
         body {
             background-color: var(--bg-color); color: var(--text-color);
@@ -81,7 +77,6 @@
         .scroll-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
         .track-list { display: flex; flex-direction: column; gap: 10px; }
-        
         .releases-grid { display: grid; grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 15px; margin-bottom: 25px; scrollbar-width: none;}
         .releases-grid::-webkit-scrollbar { display: none; }
         
@@ -98,13 +93,13 @@
         /* 3. Artist & Album Screens */
         #artist-screen, #album-screen { display: none; padding-bottom: 100px; }
         .artist-header, .album-header { position: relative; width: 100%; height: 280px; overflow: hidden; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; border-radius: 0 0 30px 30px;}
-        .artist-header-bg { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); position: absolute; top:0; left:0; z-index:-1;}
+        
+        /* 🌟 عکس دایره‌ای حذف شد و اسم اومد روی پس‌زمینه اصلی */
+        .artist-header-bg { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); position: absolute; top:0; left:0; z-index:-1;}
+        .artist-header-info { position: absolute; bottom: 25px; left: 25px; right: 25px; display: flex; align-items: flex-end;}
+        .artist-header-name { font-size: 44px; font-weight: 800; color: #fff; margin: 0; letter-spacing: -1px; text-shadow: 0 4px 15px rgba(0,0,0,0.8);}
+        
         .album-header-bg { width: 100%; height: 100%; object-fit: cover; filter: blur(20px) brightness(0.4); position: absolute; top:0; left:0; z-index:-1;}
-        
-        .artist-header-info { position: absolute; bottom: 20px; left: 20px; display: flex; align-items: flex-end; gap: 15px;}
-        .artist-header-img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid #fff; object-fit: cover; object-position: center; aspect-ratio: 1/1; box-shadow: 0 4px 15px rgba(0,0,0,0.4);}
-        .artist-header-name { font-size: 36px; font-weight: 800; color: #fff; margin: 0; letter-spacing: -1px;}
-        
         .album-header-info { text-align: center; padding-top: 30px; z-index: 1;}
         .album-header-img { width: 150px; height: 150px; border-radius: 12px; object-fit: cover; aspect-ratio: 1/1; box-shadow: 0 15px 35px rgba(0,0,0,0.6); margin-bottom: 15px;}
         .album-header-name { font-size: 24px; font-weight: 800; color: #fff; margin: 0 15px; }
@@ -160,7 +155,7 @@
         .fp-btn-play:active { transform: scale(0.95); }
         .fp-btn-play svg { fill: #000; width: 28px; height: 28px; }
 
-        /* 🌟 صفحه لیریک وسط‌چین شده */
+        /* 🌟 پنل لیریک کشویی (با فونت کوچکتر، وسط چین و استایل شیشه‌ای کادر) */
         #lyrics-sheet {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(20, 20, 20, 0.95); 
@@ -171,17 +166,26 @@
         
         .lyrics-handle-area { width: 100%; padding: 10px 0 20px 0; display: flex; justify-content: center; align-items: center;}
         .lyrics-handle { width: 50px; height: 6px; background: rgba(255,255,255,0.3); border-radius: 3px; cursor: pointer; }
-        .lyrics-header-title { font-size: 24px; font-weight: 800; margin-bottom: 20px;}
+        .lyrics-header-title { font-size: 24px; font-weight: 800; margin-bottom: 20px; text-align: center;}
         
         #lyrics-content { 
-            flex: 1; overflow-y: auto; font-size: 24px; font-weight: 700; line-height: 1.6; 
+            flex: 1; overflow-y: auto; font-size: 20px; font-weight: 700; line-height: 1.6; /* 🌟 فونت کوچکتر شد */
             color: rgba(255,255,255,0.5); padding-bottom: 50px; scroll-behavior: smooth;
-            text-align: center; /* 🌟 وسط چین شدن متن لیریک */
+            text-align: center; /* 🌟 کاملا وسط چین */
         }
         #lyrics-content::-webkit-scrollbar { display: none; }
         
-        .lyric-line { transition: color 0.3s, transform 0.3s; margin-bottom: 15px; cursor: pointer;}
-        .lyric-line.active { color: #fff; transform: scale(1.1); transform-origin: center center;} /* زوم از وسط */
+        .lyric-line { transition: all 0.3s ease; margin-bottom: 15px; cursor: pointer; padding: 10px 15px; border-radius: 12px; border: 1px solid transparent;}
+        
+        /* 🌟 کادر شیشه‌ای دور متنِ در حال پخش */
+        .lyric-line.active { 
+            color: #fff; 
+            transform: scale(1.05); 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
@@ -241,7 +245,6 @@
             <div class="back-btn" onclick="closeArtistPage()"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
             <img id="artistHeaderBg" class="artist-header-bg" src="">
             <div class="artist-header-info">
-                <img id="artistHeaderImg" class="artist-header-img" src="">
                 <h1 id="artistHeaderName" class="artist-header-name">Artist</h1>
             </div>
         </div>
@@ -254,9 +257,9 @@
                 <div class="horizontal-scroll" id="artistAlbumsList"></div>
             </div>
             
-            <!-- 🌟 بخش سینگل‌ها به تاپ ترک‌ها تغییر کرد و عمودی شد -->
+            <!-- 🌟 بخش سینگل‌ها به لیست عمودی تغییر کرد -->
             <div id="artist-singles-section" style="display:none; margin-top:20px;">
-                <div class="section-title">Top Tracks</div>
+                <div class="section-title">Singles</div>
                 <div class="track-list" id="artistSinglesList"></div>
             </div>
         </div>
@@ -324,7 +327,7 @@
         
         <div id="lyrics-sheet">
             <div class="lyrics-handle-area" onclick="toggleLyrics()"><div class="lyrics-handle"></div></div>
-            <div class="lyrics-header-title" style="text-align: center;">Lyrics</div>
+            <div class="lyrics-header-title">Lyrics</div>
             <div id="lyrics-content">Loading lyrics...</div>
         </div>
     </div>
@@ -497,13 +500,16 @@
         
         async function openArtistPage(name, image) {
             document.getElementById('home-screen').style.display = 'none'; document.getElementById('artist-screen').style.display = 'block'; window.scrollTo(0, 0);
-            document.getElementById('artistHeaderBg').src = image; document.getElementById('artistHeaderImg').src = image; document.getElementById('artistHeaderName').innerText = name;
+            
+            // 🌟 عکس دایره‌ای حذف شد، فقط عکس پشت با اسم خواننده موند
+            document.getElementById('artistHeaderBg').src = image; 
+            document.getElementById('artistHeaderName').innerText = name;
+            
             document.getElementById('loadingArtist').style.display = 'block'; document.getElementById('artist-albums-section').style.display = 'none'; document.getElementById('artist-singles-section').style.display = 'none';
             try {
                 const res = await fetch(`${SERVER_URL}/api/artist_details?name=${encodeURIComponent(name)}`); const data = await res.json();
                 document.getElementById('loadingArtist').style.display = 'none';
                 
-                // 🌟 آلبوم‌ها به صورت افقی
                 if(data.albums && data.albums.length > 0) {
                     document.getElementById('artist-albums-section').style.display = 'block'; const albList = document.getElementById('artistAlbumsList'); albList.innerHTML = '';
                     data.albums.forEach(a => {
@@ -515,19 +521,18 @@
                     });
                 }
                 
-                // 🌟 ترک‌های برتر به صورت عمودی (کاملاً جدید)
-                if(data.songs && data.songs.length > 0) {
+                // 🌟 سینگل‌ها با فرمت عمودی مثل ترک‌لیست
+                if(data.singles && data.singles.length > 0) {
                     document.getElementById('artist-singles-section').style.display = 'block'; 
                     const sngList = document.getElementById('artistSinglesList'); sngList.innerHTML = '';
                     
-                    let tempPlaylist = data.songs.map(t => { return { ...t, hqCover: t.cover ? t.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' }; });
-                    
-                    tempPlaylist.forEach((track, index) => {
+                    data.singles.forEach(s => {
+                        let hqCover = s.cover ? s.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '';
                         const item = document.createElement('div'); 
                         item.className = 'track-item';
-                        item.style.background = 'transparent'; // بدون حاشیه اضافی
-                        item.onclick = () => { currentPlaylist = tempPlaylist; playTrack(index); };
-                        item.innerHTML = `<img src="${track.hqCover}"><div class="track-info"><div class="track-title">${track.title}</div><div class="track-artist">${track.artist}</div></div>`;
+                        item.style.background = 'transparent'; 
+                        item.onclick = () => openAlbumPage(s.id, s.title, hqCover, name);
+                        item.innerHTML = `<img src="${hqCover}"><div class="track-info"><div class="track-title">${s.title}</div><div class="track-artist">${s.year || 'Single'}</div></div>`;
                         sngList.appendChild(item);
                     });
                 }
