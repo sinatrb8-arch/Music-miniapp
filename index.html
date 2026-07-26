@@ -12,6 +12,13 @@
             --bg-color: #121212; --text-color: #ffffff; --hint-color: #a7a7a7;
             --secondary-bg: #282828; --accent: #1db954;
         }
+        
+        /* 🌟 حذف هاله آبی رنگ روی تمام دکمه‌ها و المان‌ها */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+        }
+
         body {
             background-color: var(--bg-color); color: var(--text-color);
             font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 120px; overflow-x: hidden;
@@ -24,7 +31,6 @@
             transition: background-image 1s ease-in-out; background-size: cover; background-position: center;
         }
         
-        /* 1. Onboarding Screen */
         #onboarding-screen { padding: 30px 20px; display: none; }
         .ob-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
         .ob-subtitle { font-size: 14px; color: var(--hint-color); margin-bottom: 20px; }
@@ -73,6 +79,8 @@
         .scroll-cover { width: 90px; height: 90px; border-radius: 12px; object-fit: cover; object-position: center; margin-bottom: 10px;}
         .scroll-cover.circle { border-radius: 50%; aspect-ratio: 1/1; }
         .scroll-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .track-list { display: flex; flex-direction: column; gap: 10px; }
         
         .releases-grid { display: grid; grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 15px; margin-bottom: 25px; scrollbar-width: none;}
         .releases-grid::-webkit-scrollbar { display: none; }
@@ -152,7 +160,7 @@
         .fp-btn-play:active { transform: scale(0.95); }
         .fp-btn-play svg { fill: #000; width: 28px; height: 28px; }
 
-        /* 🌟 پنل لیریک کشویی (با رفع باگ اسکرول) */
+        /* 🌟 صفحه لیریک وسط‌چین شده */
         #lyrics-sheet {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(20, 20, 20, 0.95); 
@@ -168,11 +176,12 @@
         #lyrics-content { 
             flex: 1; overflow-y: auto; font-size: 24px; font-weight: 700; line-height: 1.6; 
             color: rgba(255,255,255,0.5); padding-bottom: 50px; scroll-behavior: smooth;
+            text-align: center; /* 🌟 وسط چین شدن متن لیریک */
         }
         #lyrics-content::-webkit-scrollbar { display: none; }
         
         .lyric-line { transition: color 0.3s, transform 0.3s; margin-bottom: 15px; cursor: pointer;}
-        .lyric-line.active { color: #fff; transform: scale(1.05); transform-origin: left center;}
+        .lyric-line.active { color: #fff; transform: scale(1.1); transform-origin: center center;} /* زوم از وسط */
     </style>
 </head>
 <body>
@@ -239,13 +248,16 @@
         
         <div style="padding: 0 20px;">
             <div id="loadingArtist" class="loading-text">Loading discography...</div>
+            
             <div id="artist-albums-section" style="display:none;">
                 <div class="section-title">Albums</div>
                 <div class="horizontal-scroll" id="artistAlbumsList"></div>
             </div>
-            <div id="artist-singles-section" style="display:none;">
-                <div class="section-title">Singles</div>
-                <div class="horizontal-scroll" id="artistSinglesList"></div>
+            
+            <!-- 🌟 بخش سینگل‌ها به تاپ ترک‌ها تغییر کرد و عمودی شد -->
+            <div id="artist-singles-section" style="display:none; margin-top:20px;">
+                <div class="section-title">Top Tracks</div>
+                <div class="track-list" id="artistSinglesList"></div>
             </div>
         </div>
     </div>
@@ -279,6 +291,7 @@
         <button class="mini-play-btn" id="miniPlayBtn" onclick="togglePlay(event)"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
     </div>
 
+    <!-- Full Player -->
     <div class="full-player" id="fullPlayer">
         <div class="bg-blur-container"><img id="bgBlurImage" class="bg-blur-img" src=""></div>
         <div class="bg-gradient-overlay"></div>
@@ -309,10 +322,9 @@
             <div style="width:32px;"></div>
         </div>
         
-        <!-- صفحه لیریک -->
         <div id="lyrics-sheet">
             <div class="lyrics-handle-area" onclick="toggleLyrics()"><div class="lyrics-handle"></div></div>
-            <div class="lyrics-header-title">Lyrics</div>
+            <div class="lyrics-header-title" style="text-align: center;">Lyrics</div>
             <div id="lyrics-content">Loading lyrics...</div>
         </div>
     </div>
@@ -355,7 +367,6 @@
             }
         };
 
-        // 🌟 سرچ در Onboarding و اضافه شدن به بالاترین نقطه
         async function handleObSearch(event) {
             if (event.key === 'Enter') {
                 const query = document.getElementById('obSearchInput').value.trim(); if (!query) return;
@@ -364,7 +375,6 @@
                     const res = await fetch(`${SERVER_URL}/api/search_artist?q=${encodeURIComponent(query)}`);
                     const artists = await res.json();
                     document.getElementById('obLoading').style.display = 'none';
-                    // Reverse to keep the first result exactly at the top
                     artists.reverse().forEach(a => { if (a.image) addArtistToGrid(a.name, a.image, true); });
                 } catch (error) { document.getElementById('obLoading').style.display = 'none'; }
             }
@@ -382,11 +392,8 @@
             card.innerHTML = `<img class="artist-img" src="${hqImage}" alt="${name}"><div class="artist-name">${name}</div>`;
             card.onclick = () => toggleArtistSelection(card, name, hqImage);
             
-            if (prepend) {
-                grid.insertBefore(card, grid.firstChild);
-            } else {
-                grid.appendChild(card);
-            }
+            if (prepend) grid.insertBefore(card, grid.firstChild);
+            else grid.appendChild(card);
         }
 
         async function toggleArtistSelection(cardElement, artistName, imageUrl) {
@@ -466,7 +473,6 @@
             renderSpeedDial();
         }
 
-        // 🌟 New Releases فقط کل آلبوم رو نشون میده
         async function fetchNewReleases() {
             if (selectedArtists.length === 0) return;
             try {
@@ -496,6 +502,8 @@
             try {
                 const res = await fetch(`${SERVER_URL}/api/artist_details?name=${encodeURIComponent(name)}`); const data = await res.json();
                 document.getElementById('loadingArtist').style.display = 'none';
+                
+                // 🌟 آلبوم‌ها به صورت افقی
                 if(data.albums && data.albums.length > 0) {
                     document.getElementById('artist-albums-section').style.display = 'block'; const albList = document.getElementById('artistAlbumsList'); albList.innerHTML = '';
                     data.albums.forEach(a => {
@@ -506,13 +514,20 @@
                         albList.appendChild(item);
                     });
                 }
-                if(data.singles && data.singles.length > 0) {
-                    document.getElementById('artist-singles-section').style.display = 'block'; const sngList = document.getElementById('artistSinglesList'); sngList.innerHTML = '';
-                    data.singles.forEach(s => {
-                        let hqCover = s.cover ? s.cover.replace(/=w\d+-h\d+.*/, "=w500-h500-l90-rj") : '';
-                        const item = document.createElement('div'); item.className = 'scroll-item';
-                        item.onclick = () => openAlbumPage(s.id, s.title, hqCover, name);
-                        item.innerHTML = `<img src="${hqCover}" class="scroll-cover"><div class="scroll-title">${s.title}</div><div style="font-size:10px; color:#a7a7a7;">${s.year}</div>`;
+                
+                // 🌟 ترک‌های برتر به صورت عمودی (کاملاً جدید)
+                if(data.songs && data.songs.length > 0) {
+                    document.getElementById('artist-singles-section').style.display = 'block'; 
+                    const sngList = document.getElementById('artistSinglesList'); sngList.innerHTML = '';
+                    
+                    let tempPlaylist = data.songs.map(t => { return { ...t, hqCover: t.cover ? t.cover.replace(/=w\d+-h\d+.*/, "=w800-h800-l90-rj") : '' }; });
+                    
+                    tempPlaylist.forEach((track, index) => {
+                        const item = document.createElement('div'); 
+                        item.className = 'track-item';
+                        item.style.background = 'transparent'; // بدون حاشیه اضافی
+                        item.onclick = () => { currentPlaylist = tempPlaylist; playTrack(index); };
+                        item.innerHTML = `<img src="${track.hqCover}"><div class="track-info"><div class="track-title">${track.title}</div><div class="track-artist">${track.artist}</div></div>`;
                         sngList.appendChild(item);
                     });
                 }
@@ -572,7 +587,8 @@
             document.getElementById('bgBlurImage').src = track.hqCover; 
             document.getElementById('fpTitle').innerText = track.title; document.getElementById('fpArtist').innerText = track.artist;
             
-            // پخش آنی
+            document.getElementById('dynamic-bg').style.backgroundImage = `url('${track.hqCover}')`;
+            
             audio.src = `${SERVER_URL}/stream?id=${track.id}`; audio.play(); updatePlayBtn(true);
             fetchLyrics(track.id, track.title, track.artist);
         }
@@ -611,7 +627,6 @@
                         p.className = 'lyric-line'; 
                         p.innerText = text;
                         
-                        // با کلیک میره به همون ثانیه!
                         if (time !== -1) {
                             p.onclick = () => { 
                                 audio.currentTime = time; 
@@ -634,7 +649,6 @@
         function updatePlayBtn(isPlaying) { document.getElementById('miniPlayBtn').innerHTML = isPlaying ? iconPauseWhite : iconPlayWhite; document.getElementById('fpPlayBtn').innerHTML = isPlaying ? iconPauseBlack : iconPlayBlack; }
         audio.onended = () => playNext();
         
-        // درگ کردن حرفه‌ای
         const progressBg = document.getElementById('progressBg');
         let isDragging = false;
         
@@ -670,7 +684,6 @@
                 document.getElementById('currentTime').innerText = formatTime(audio.currentTime); 
                 document.getElementById('duration').innerText = formatTime(audio.duration); 
                 
-                // اسکرول لیریک فقط زمانی که صفحه باز باشه
                 if (parsedLyrics.length > 0) {
                     let activeIdx = -1;
                     if (parsedLyrics[0].time !== -1) {
