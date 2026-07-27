@@ -76,14 +76,7 @@
 
         #home-screen { padding: 20px; display: none; }
         
-        .app-logo { 
-            font-family: 'Playfair Display', serif; 
-            font-size: 48px; 
-            font-weight: 900; 
-            margin-bottom: 20px; 
-            letter-spacing: -1.5px;
-            color: var(--text-color);
-        }
+        .app-logo { font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 900; margin-bottom: 20px; letter-spacing: -1.5px; color: var(--text-color); }
 
         .search-container { position: relative; margin-bottom: 0; flex: 1;}
         .search-container input {
@@ -106,17 +99,8 @@
         .horizontal-scroll { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 25px; scroll-snap-type: x mandatory; scrollbar-width: none;}
         .horizontal-scroll::-webkit-scrollbar { display: none; }
         
-        .scroll-item { 
-            width: 110px; min-width: 110px; max-width: 110px; flex: 0 0 auto;
-            background: transparent; border-radius: 12px; padding: 0; 
-            text-align: center; cursor: pointer; scroll-snap-align: start; 
-            display: flex; flex-direction: column; align-items: center; overflow: visible;
-        }
-        .scroll-cover { 
-            width: 110px; height: 110px; min-width: 110px; min-height: 110px;
-            border-radius: 12px; object-fit: cover; object-position: center; 
-            margin-bottom: 8px; box-shadow: 0 6px 14px rgba(0,0,0,0.4); display: block;
-        }
+        .scroll-item { width: 110px; min-width: 110px; max-width: 110px; flex: 0 0 auto; background: transparent; border-radius: 12px; padding: 0; text-align: center; cursor: pointer; scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; overflow: visible;}
+        .scroll-cover { width: 110px; height: 110px; min-width: 110px; min-height: 110px; border-radius: 12px; object-fit: cover; object-position: center; margin-bottom: 8px; box-shadow: 0 6px 14px rgba(0,0,0,0.4); display: block;}
         .scroll-cover.circle { border-radius: 50%; aspect-ratio: 1/1; }
         .scroll-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; width: 100%;}
         
@@ -133,7 +117,6 @@
         .track-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .track-artist { font-size: 13px; color: var(--hint-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         
-        .reset-btn { display: block; width: 100%; text-align: center; color: #ff4d4d; font-size: 14px; margin-top: 40px; padding: 15px; cursor: pointer; background: rgba(255, 77, 77, 0.1); border: 1px solid #ff4d4d; border-radius: 16px; font-weight: 600;}
         .loading-text { text-align: center; color: var(--hint-color); margin-top: 20px; font-size: 14px;}
 
         #artist-screen, #album-screen { display: none; padding-bottom: 100px; }
@@ -251,10 +234,7 @@
         }
         .modal-overlay.active .user-menu-content { transform: translateY(0); }
         
-        .menu-group {
-            background: rgba(20, 20, 20, 0.6); border-radius: 16px; margin-bottom: 15px;
-            overflow: hidden; border: 1px solid rgba(255,255,255,0.05);
-        }
+        .menu-group { background: rgba(20, 20, 20, 0.6); border-radius: 16px; margin-bottom: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
         .menu-item { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s;}
         .menu-item:active { background: rgba(255,255,255,0.05); }
         .menu-item:last-child { border-bottom: none; }
@@ -278,14 +258,15 @@
         .lyrics-header-title { font-size: 24px; font-weight: 800; margin-bottom: 20px; text-align: center;}
         #lyrics-content { flex: 1; overflow-y: auto; font-size: 20px; font-weight: 700; line-height: 1.6; color: rgba(255,255,255,0.4); padding-bottom: 150px; scroll-behavior: smooth; text-align: center;}
         #lyrics-content::-webkit-scrollbar { display: none; }
+        
+        /* 🌟 حل مشکل محو شدن لیریک‌ها: حذف backdrop-filter و افزودن پس‌زمینه سالید شفاف */
         .lyric-line { transition: color 0.15s ease, transform 0.15s ease; margin-bottom: 15px; cursor: pointer; padding: 10px 15px; border-radius: 12px; border: 1px solid transparent;}
-        .lyric-line.active { color: #fff; transform: scale(1.05); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 20px rgba(0,0,0,0.2);}
+        .lyric-line.active { color: #fff; transform: scale(1.05); background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 4px 15px rgba(0,0,0,0.3);}
     </style>
 </head>
 <body>
     <div id="dynamic-bg"></div>
 
-    <!-- 🌟 فرم لاگین با دکمه فراموشی رمز عبور -->
     <div id="auth-screen">
         <div class="app-logo" style="margin-bottom: 40px;">Musick</div>
         
@@ -327,7 +308,6 @@
             <button class="auth-btn" id="btn-verify" onclick="verifyCode()">Verify & Enter</button>
         </div>
 
-        <!-- 🌟 فرم گرفتن ایمیل برای فراموشی رمز -->
         <div id="forgot-form" class="auth-container" style="display:none;">
             <div class="auth-title">Reset Password</div>
             <div class="auth-subtitle">Enter your email to get a code</div>
@@ -336,7 +316,6 @@
             <div class="auth-switch" onclick="switchAuth('login')">Back to <span>Log In</span></div>
         </div>
 
-        <!-- 🌟 فرم تغییر رمز عبور و وارد کردن کد -->
         <div id="reset-form" class="auth-container" style="display:none;">
             <div class="auth-title">New Password</div>
             <div class="auth-subtitle">Enter the 6-digit code and new password</div>
@@ -428,7 +407,10 @@
             <div class="horizontal-scroll" id="madeForYouList"></div>
         </div>
         
-        <button class="reset-btn" onclick="forceResetAll()">🔄 Reset All My Data</button>
+        <!-- 🌟 دکمه ریست جدید و خیلی کوچیک پایین سمت راست -->
+        <div style="text-align: right; margin-top: 40px; padding-right: 10px;">
+            <button onclick="forceResetAll()" style="background: none; border: 1px solid rgba(255,77,77,0.5); color: #ff4d4d; font-size: 10px; padding: 5px 10px; border-radius: 6px; cursor: pointer;">🔄 Reset Data</button>
+        </div>
     </div>
 
     <!-- Artist Screen -->
@@ -673,7 +655,6 @@
             document.getElementById('user-menu-modal').classList.remove('active');
         }
 
-        /* 🌟 نمایش منوهای مختلف لاگین */
         function switchAuth(type) {
             document.getElementById('login-form').style.display = type === 'login' ? 'block' : 'none';
             document.getElementById('register-form').style.display = type === 'register' ? 'block' : 'none';
@@ -682,7 +663,6 @@
             document.getElementById('reset-form').style.display = type === 'reset' ? 'block' : 'none';
         }
 
-        /* 🌟 توابع ارتباط با سرور برای فراموشی رمز عبور */
         async function forgotPassword() {
             const email = document.getElementById('forgot-email').value.trim().toLowerCase();
             if(!email) return tg.showAlert('Please enter your email');
@@ -1305,14 +1285,16 @@
         async function openArtistPage(name, image) {
             document.getElementById('home-screen').style.display = 'none'; document.getElementById('fullPlayer').classList.remove('active'); document.getElementById('artist-screen').style.display = 'block'; window.scrollTo(0, 0);
             
-            currentArtistPageName = name; currentArtistPageImage = image; updateHeartIcon();
-            document.getElementById('artistHeaderBg').src = image; document.getElementById('artistHeaderName').innerText = name;
+            // 🌟 خواندن فقط اسم خواننده اول برای صفحه اختصاصی
+            currentArtistPageName = name.split(',')[0].strip(); 
+            currentArtistPageImage = image; updateHeartIcon();
+            document.getElementById('artistHeaderBg').src = image; document.getElementById('artistHeaderName').innerText = currentArtistPageName;
             
             document.getElementById('loadingArtist').style.display = 'block'; document.getElementById('artist-albums-section').style.display = 'none'; document.getElementById('artist-singles-section').style.display = 'none';
             currentArtistSongsCache = [];
             
             try {
-                const res = await fetch(`${SERVER_URL}/api/artist_details?name=${encodeURIComponent(name)}`); const data = await res.json();
+                const res = await fetch(`${SERVER_URL}/api/artist_details?name=${encodeURIComponent(currentArtistPageName)}`); const data = await res.json();
                 document.getElementById('loadingArtist').style.display = 'none';
                 
                 if(data.albums && data.albums.length > 0) {
@@ -1320,7 +1302,7 @@
                     data.albums.forEach(a => {
                         let hqCover = getHqCover(a.cover);
                         const item = document.createElement('div'); item.className = 'scroll-item';
-                        item.onclick = () => openAlbumPage(a.id, a.title, hqCover, name);
+                        item.onclick = () => openAlbumPage(a.id, a.title, hqCover, currentArtistPageName);
                         
                         item.innerHTML = `
                             <div style="position:relative; width: 110px; height: 110px; margin-bottom: 8px; flex: 0 0 auto;">
@@ -1342,7 +1324,7 @@
                             let hqCover = getHqCover(s.cover);
                             const item = document.createElement('div'); item.className = 'track-item'; item.style.background = 'transparent'; 
                             item.onclick = async () => {
-                                const res = await fetch(`${SERVER_URL}/search?q=${encodeURIComponent(s.title + " " + name)}`); 
+                                const res = await fetch(`${SERVER_URL}/search?q=${encodeURIComponent(s.title + " " + currentArtistPageName)}`); 
                                 const d = await res.json();
                                 if(d.tracks && d.tracks.length > 0) { currentPlaylist = [d.tracks[0]].map(t => ({...t, hqCover: getHqCover(t.cover)})); currentContext='single'; playTrack(0); }
                             };
@@ -1392,9 +1374,11 @@
 
         function closeAlbumPage() { document.getElementById('album-screen').style.display = 'none'; document.getElementById('home-screen').style.display = 'block'; }
 
+        // 🌟 خواندن خواننده اول هنگام رفتن از پلیر به صفحه آرتیست
         function goToArtistFromPlayer() {
             closeFullPlayer();
-            const aName = document.getElementById('fpArtist').innerText;
+            const aNameFull = document.getElementById('fpArtist').innerText;
+            const aName = aNameFull.split(',')[0].trim();
             const aCover = document.getElementById('fpCover').src;
             openArtistPage(aName, aCover);
         }
