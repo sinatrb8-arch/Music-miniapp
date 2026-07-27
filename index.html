@@ -6,7 +6,7 @@
     <title>Music Player</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* 🌟 اضافه شدن فونت Playfair Display برای امضای اپلیکیشن */
+        /* 🌟 فونت‌ها */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:wght@800;900&display=swap');
         
         :root {
@@ -28,12 +28,18 @@
             transition: background-image 1s ease-in-out; background-size: cover; background-position: center;
         }
 
-        /* 🌟 استایل‌های سیستم احراز هویت (Login/Register) */
+        /* 🌟 استایل‌های سیستم احراز هویت (آپدیت شده با چشمک پسورد) */
         #auth-screen { padding: 40px 25px; display: none; height: 100vh; flex-direction: column; justify-content: center; }
         .auth-container { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 24px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);}
         .auth-title { font-size: 24px; font-weight: 800; margin-bottom: 8px; text-align: center;}
         .auth-subtitle { font-size: 14px; color: var(--hint-color); margin-bottom: 25px; text-align: center;}
-        .auth-input { width: 100%; padding: 16px; border: none; border-radius: 12px; background: rgba(0,0,0,0.3); color: #fff; margin-bottom: 15px; font-size: 15px; outline: none; box-sizing: border-box;}
+        
+        .pwd-wrap { position: relative; margin-bottom: 15px; }
+        .auth-input { width: 100%; padding: 16px; border: none; border-radius: 12px; background: rgba(0,0,0,0.3); color: #fff; font-size: 15px; outline: none; box-sizing: border-box;}
+        .pwd-wrap .auth-input { margin-bottom: 0; padding-right: 50px; }
+        .pwd-eye { position: absolute; right: 15px; top: 16px; cursor: pointer; opacity: 0.6; transition: 0.2s; display: flex; align-items: center; justify-content: center;}
+        .pwd-eye:active { opacity: 1; transform: scale(0.9); }
+
         .auth-btn { width: 100%; padding: 16px; border: none; border-radius: 12px; background: #fff; color: #000; font-weight: 800; font-size: 16px; cursor: pointer; margin-top: 10px; transition: 0.2s;}
         .auth-btn:active { transform: scale(0.98); }
         .auth-switch { text-align: center; font-size: 14px; color: var(--hint-color); margin-top: 20px; cursor: pointer;}
@@ -70,10 +76,9 @@
         .ob-btn { width: 100%; padding: 18px; background: var(--text-color); color: var(--bg-color); border: none; border-radius: 30px; font-weight: 700; font-size: 16px; cursor: pointer; opacity: 0.5; transition: 0.2s;}
         .ob-btn.active { opacity: 1; pointer-events: auto; transform: translateY(-3px);}
 
-        /* 2. Home Screen */
+        /* Home Screen */
         #home-screen { padding: 20px; display: none; }
         
-        /* 🌟 استایل لوگوی اختصاصی */
         .app-logo { 
             font-family: 'Playfair Display', serif; 
             font-size: 48px; 
@@ -134,7 +139,7 @@
         .reset-btn { display: block; width: 100%; text-align: center; color: #ff4d4d; font-size: 14px; margin-top: 40px; padding: 15px; cursor: pointer; background: rgba(255, 77, 77, 0.1); border: 1px solid #ff4d4d; border-radius: 16px; font-weight: 600;}
         .loading-text { text-align: center; color: var(--hint-color); margin-top: 20px; font-size: 14px;}
 
-        /* 3. Artist & Album Screens */
+        /* Artist & Album Screens */
         #artist-screen, #album-screen { display: none; padding-bottom: 100px; }
         .artist-header, .album-header { position: relative; width: 100%; height: 320px; overflow: hidden; margin-bottom: 20px; display: flex; justify-content: center; align-items: center;}
         
@@ -157,7 +162,7 @@
         .back-btn { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.5); border-radius: 50%; padding: 10px; display:flex; justify-content:center; align-items:center; z-index: 10; cursor:pointer;}
         .back-btn svg { width: 24px; height: 24px; fill: #fff; }
 
-        /* 4. Mini Player */
+        /* Mini Player */
         .mini-player { 
             position: fixed; bottom: 10px; left: 10px; right: 10px; 
             background: rgba(40,40,40,0.95); border-radius: 12px; 
@@ -205,7 +210,6 @@
         .fp-text { flex: 1; overflow: hidden; padding-right: 15px; cursor: pointer;}
         .fp-title { font-size: 26px; font-weight: 800; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.5px;}
         .fp-artist { font-size: 18px; color: rgba(255,255,255,0.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: underline; text-decoration-color: transparent; transition: 0.3s;}
-        .fp-artist:active { text-decoration-color: rgba(255,255,255,0.7); }
         
         .progress-container { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px;}
         .progress-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; cursor: pointer; position: relative;}
@@ -224,6 +228,7 @@
         .play-mode-btn.active { opacity: 1; color: var(--accent);}
         .play-mode-btn svg { width: 22px; height: 22px; fill: currentColor; }
 
+        /* 🌟 استایل‌های مدال (پاپ‌آپ شیشه‌ای) */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
@@ -237,6 +242,7 @@
         }
         .modal-overlay.active .modal-content { transform: translateY(0); }
         .modal-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 3px; margin: 0 auto 20px auto;}
+        
         .opt-btn {
             padding: 16px; margin-bottom: 12px; background: rgba(255,255,255,0.05);
             border-radius: 14px; font-weight: 600; font-size: 16px; cursor: pointer;
@@ -244,43 +250,61 @@
         }
         .opt-btn:active { background: rgba(255,255,255,0.1); transform: scale(0.98); }
 
+        /* 🌟 استایل اختصاصی برای منوی پروفایل کاربر (کاملاً شیشه‌ای) */
+        .user-menu-content {
+            background: rgba(30, 30, 30, 0.65); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-top: 1px solid rgba(255,255,255,0.1); border-radius: 28px 28px 0 0;
+            padding: 30px 20px 40px 20px; transform: translateY(100%); transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .modal-overlay.active .user-menu-content { transform: translateY(0); }
+        
+        .menu-group {
+            background: rgba(20, 20, 20, 0.6); border-radius: 16px; margin-bottom: 15px;
+            overflow: hidden; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .menu-item { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s;}
+        .menu-item:active { background: rgba(255,255,255,0.05); }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-icon { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; justify-content: center; align-items: center; margin-right: 15px;}
+        .menu-icon svg { width: 20px; height: 20px; fill: #fff; }
+        .menu-icon.yellow { background: rgba(255, 215, 0, 0.15); }
+        .menu-icon.yellow svg { fill: #ffd700; }
+        .menu-text { flex: 1; }
+        .menu-title { font-weight: 700; font-size: 16px; margin-bottom: 2px; }
+        .menu-sub { font-size: 12px; color: var(--hint-color); }
+        .menu-arrow { fill: var(--hint-color); width: 20px; height: 20px; }
+
+        /* Lyrics */
         #lyrics-sheet {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(20, 20, 20, 0.95); 
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(20, 20, 20, 0.95); 
             z-index: 2001; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box;
             transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
         #lyrics-sheet.active { transform: translateY(0); }
-        
         .lyrics-handle-area { width: 100%; padding: 20px 0 30px 0; display: flex; justify-content: center; align-items: center;}
         .lyrics-handle { width: 50px; height: 6px; background: rgba(255,255,255,0.3); border-radius: 3px; cursor: pointer; }
         .lyrics-header-title { font-size: 24px; font-weight: 800; margin-bottom: 20px; text-align: center;}
-        
-        #lyrics-content { 
-            flex: 1; overflow-y: auto; font-size: 20px; font-weight: 700; line-height: 1.6; 
-            color: rgba(255,255,255,0.4); padding-bottom: 150px; scroll-behavior: smooth; text-align: center;
-        }
+        #lyrics-content { flex: 1; overflow-y: auto; font-size: 20px; font-weight: 700; line-height: 1.6; color: rgba(255,255,255,0.4); padding-bottom: 150px; scroll-behavior: smooth; text-align: center;}
         #lyrics-content::-webkit-scrollbar { display: none; }
-        
         .lyric-line { transition: color 0.15s ease, transform 0.15s ease; margin-bottom: 15px; cursor: pointer; padding: 10px 15px; border-radius: 12px; border: 1px solid transparent;}
-        .lyric-line.active { 
-            color: #fff; transform: scale(1.05); background: rgba(255, 255, 255, 0.1); 
-            backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        }
+        .lyric-line.active { color: #fff; transform: scale(1.05); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 20px rgba(0,0,0,0.2);}
     </style>
 </head>
 <body>
     <div id="dynamic-bg"></div>
 
-    <!-- 🌟 بخش جدید احراز هویت (Auth) -->
+    <!-- 🌟 بخش احراز هویت با چشمک برای پسورد -->
     <div id="auth-screen">
         <div class="app-logo" style="margin-bottom: 40px;">Musick</div>
         
         <div id="login-form" class="auth-container">
             <div class="auth-title">Welcome Back</div>
             <div class="auth-subtitle">Login to sync your music</div>
-            <input type="email" id="log-email" class="auth-input" placeholder="Email address">
-            <input type="password" id="log-pass" class="auth-input" placeholder="Password">
+            <input type="email" id="log-email" class="auth-input" placeholder="Email address" style="margin-bottom:15px;">
+            <div class="pwd-wrap">
+                <input type="password" id="log-pass" class="auth-input" placeholder="Password">
+                <div class="pwd-eye" onclick="togglePass('log-pass', this)"><svg viewBox="0 0 24 24" width="22" height="22" fill="var(--hint-color)"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg></div>
+            </div>
             <button class="auth-btn" id="btn-login" onclick="login()">Log In</button>
             <div class="auth-switch" onclick="switchAuth('register')">Don't have an account? <span>Sign Up</span></div>
         </div>
@@ -288,8 +312,15 @@
         <div id="register-form" class="auth-container" style="display:none;">
             <div class="auth-title">Create Account</div>
             <div class="auth-subtitle">Join Musick today</div>
-            <input type="email" id="reg-email" class="auth-input" placeholder="Email address">
-            <input type="password" id="reg-pass" class="auth-input" placeholder="Password">
+            <input type="email" id="reg-email" class="auth-input" placeholder="Email address" style="margin-bottom:15px;">
+            <div class="pwd-wrap">
+                <input type="password" id="reg-pass" class="auth-input" placeholder="Password">
+                <div class="pwd-eye" onclick="togglePass('reg-pass', this)"><svg viewBox="0 0 24 24" width="22" height="22" fill="var(--hint-color)"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg></div>
+            </div>
+            <div class="pwd-wrap">
+                <input type="password" id="reg-pass-confirm" class="auth-input" placeholder="Confirm Password">
+                <div class="pwd-eye" onclick="togglePass('reg-pass-confirm', this)"><svg viewBox="0 0 24 24" width="22" height="22" fill="var(--hint-color)"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg></div>
+            </div>
             <button class="auth-btn" id="btn-register" onclick="register()">Sign Up</button>
             <div class="auth-switch" onclick="switchAuth('login')">Already have an account? <span>Log In</span></div>
         </div>
@@ -318,10 +349,12 @@
     </div>
 
     <div id="home-screen">
-        <!-- 🌟 اضافه شدن دکمه خروج به هدر اصلی -->
+        <!-- 🌟 آیکون پروفایل کاربر جایگزین نوشته شد -->
         <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <div class="app-logo" style="margin-bottom: 0;">Musick</div>
-            <button onclick="logout()" style="background:none; border:none; color:var(--hint-color); font-family:Inter; font-weight:600; font-size:14px; cursor:pointer; padding:0;">Log Out</button>
+            <button onclick="openUserMenu()" style="background:none; border:none; cursor:pointer; padding:8px; border-radius:50%; background:rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center;">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            </button>
         </div>
         
         <div class="search-header-row">
@@ -376,6 +409,7 @@
         <button class="reset-btn" onclick="forceResetAll()">🔄 Reset All My Data</button>
     </div>
 
+    <!-- Artist Screen -->
     <div id="artist-screen">
         <div class="artist-header">
             <div class="back-btn" onclick="closeArtistPage()"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
@@ -401,6 +435,7 @@
         </div>
     </div>
 
+    <!-- Album Screen -->
     <div id="album-screen">
         <div class="album-header">
             <div class="back-btn" onclick="closeAlbumPage()"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
@@ -420,6 +455,7 @@
         </div>
     </div>
 
+    <!-- Mini Player -->
     <div class="mini-player" id="miniPlayer">
         <div class="mini-progress-area" id="miniProgressBg">
             <div class="mini-progress-track">
@@ -443,6 +479,7 @@
         </div>
     </div>
 
+    <!-- Full Player -->
     <div class="full-player" id="fullPlayer">
         <div class="bg-blur-container"><img id="bgBlurImage" class="bg-blur-img" src=""></div>
         <div class="bg-gradient-overlay"></div>
@@ -489,19 +526,55 @@
         </div>
     </div>
     
+    <!-- Modal برای پخش -->
     <div id="playback-options-modal" class="modal-overlay" onclick="closePlaybackOptions()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-handle"></div>
             <h3 style="margin-top:0; margin-bottom: 25px; text-align:center;">Up Next Strategy</h3>
+            <div class="opt-btn" id="opt-play-album" onclick="setPlaybackMode('album')" style="display:none;"><span style="font-size: 20px;">💿</span> Continue this Album/List</div>
+            <div class="opt-btn" onclick="setPlaybackMode('artist')"><span style="font-size: 20px;">👤</span> Play only this Artist</div>
+            <div class="opt-btn" onclick="setPlaybackMode('radio')"><span style="font-size: 20px;">📻</span> Play Similar Tracks (Mix)</div>
+        </div>
+    </div>
+
+    <!-- 🌟 پاپ‌آپ جدید شیشه‌ای منوی کاربر -->
+    <div id="user-menu-modal" class="modal-overlay" onclick="closeUserMenu()">
+        <div class="user-menu-content" onclick="event.stopPropagation()">
+            <div class="menu-group">
+                <div class="menu-item">
+                    <div class="menu-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
+                    <div class="menu-text">
+                        <div class="menu-title">See your account</div>
+                        <div class="menu-sub" id="menu-user-email">Premium User</div>
+                    </div>
+                    <svg class="menu-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                </div>
+            </div>
             
-            <div class="opt-btn" id="opt-play-album" onclick="setPlaybackMode('album')" style="display:none;">
-                <span style="font-size: 20px;">💿</span> Continue this Album/List
+            <div class="menu-group">
+                <div class="menu-item">
+                    <div class="menu-icon yellow"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
+                    <div class="menu-text">
+                        <div class="menu-title">Musick Premium</div>
+                        <div class="menu-sub">Exclusive layouts & quality</div>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="menu-icon"><svg viewBox="0 0 24 24"><path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg></div>
+                    <div class="menu-text">
+                        <div class="menu-title">AI Translation</div>
+                        <div class="menu-sub">Translate lyrics instantly</div>
+                    </div>
+                </div>
             </div>
-            <div class="opt-btn" onclick="setPlaybackMode('artist')">
-                <span style="font-size: 20px;">👤</span> Play only this Artist
-            </div>
-            <div class="opt-btn" onclick="setPlaybackMode('radio')">
-                <span style="font-size: 20px;">📻</span> Play Similar Tracks (Mix)
+
+            <div class="menu-group">
+                <div class="menu-item" onclick="logout()">
+                    <div class="menu-icon"><svg viewBox="0 0 24 24" fill="#ff4d4d"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg></div>
+                    <div class="menu-text">
+                        <div class="menu-title" style="color: #ff4d4d;">Log Out</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -516,7 +589,6 @@
         const PLAYER_STATE_KEY = 'player_state_' + userId; 
         const SERVER_URL = "https://programmer-flags-brass-gba.trycloudflare.com";
         
-        // 🌟 متغیرهای سیستم احراز هویت
         let authToken = localStorage.getItem('musick_token');
         let tempEmail = '';
 
@@ -560,7 +632,26 @@
             localStorage.setItem(PLAYER_STATE_KEY, JSON.stringify(state));
         }
 
-        // 🌟 توابع جدید احراز هویت (Login/Register)
+        /* 🌟 توابع جدید UI (چشمک پسورد و پاپ‌آپ کاربر) */
+        function togglePass(inputId, iconWrap) {
+            const inp = document.getElementById(inputId);
+            if (inp.type === "password") {
+                inp.type = "text";
+                iconWrap.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" fill="var(--hint-color)"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>`;
+            } else {
+                inp.type = "password";
+                iconWrap.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" fill="var(--hint-color)"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>`;
+            }
+        }
+
+        function openUserMenu() {
+            document.getElementById('user-menu-modal').classList.add('active');
+            document.getElementById('menu-user-email').innerText = localStorage.getItem('musick_user_email') || 'Premium User';
+        }
+        function closeUserMenu() {
+            document.getElementById('user-menu-modal').classList.remove('active');
+        }
+
         function switchAuth(type) {
             document.getElementById('login-form').style.display = type === 'login' ? 'block' : 'none';
             document.getElementById('register-form').style.display = type === 'register' ? 'block' : 'none';
@@ -570,7 +661,10 @@
         async function register() {
             const email = document.getElementById('reg-email').value.trim().toLowerCase();
             const pass = document.getElementById('reg-pass').value;
-            if(!email || !pass) return tg.showAlert('Please fill all fields');
+            const confirmPass = document.getElementById('reg-pass-confirm').value; // 🌟 اعتبارسنجی پسورد
+            
+            if(!email || !pass || !confirmPass) return tg.showAlert('Please fill all fields');
+            if(pass !== confirmPass) return tg.showAlert('Passwords do not match!');
             
             const btn = document.getElementById('btn-register');
             btn.innerText = 'Creating account...'; btn.style.opacity = '0.5'; btn.disabled = true;
@@ -584,6 +678,7 @@
                 
                 if(res.ok) {
                     tempEmail = email;
+                    localStorage.setItem('musick_user_email', email); // 🌟 ذخیره ایمیل برای منوی شیشه‌ای
                     document.getElementById('register-form').style.display = 'none';
                     document.getElementById('verify-form').style.display = 'block';
                 } else tg.showAlert(data.message || 'Error occurred');
@@ -635,11 +730,12 @@
                 
                 if(res.ok) {
                     localStorage.setItem('musick_token', data.token);
+                    localStorage.setItem('musick_user_email', email); // 🌟 ذخیره ایمیل
                     authToken = data.token;
                     loadUserDataAndStart();
                 } else {
                     tg.showAlert(data.message || 'Login failed');
-                    if(data.unverified) { tempEmail = email; switchAuth('verify'); document.getElementById('verify-form').style.display = 'block'; }
+                    if(data.unverified) { tempEmail = email; localStorage.setItem('musick_user_email', email); switchAuth('verify'); document.getElementById('verify-form').style.display = 'block'; }
                 }
             } catch(e) { 
                 btn.innerText = 'Log In'; btn.style.opacity = '1'; btn.disabled = false;
@@ -649,7 +745,6 @@
         
         function logout() { localStorage.removeItem('musick_token'); window.location.reload(); }
 
-        // 🌟 تابع همگام‌سازی ابری اطلاعات
         async function syncDataToServer() {
             if(!authToken) return;
             const favImgs = JSON.parse(localStorage.getItem(FAV_ARTISTS_IMGS_KEY) || '[]');
@@ -661,7 +756,6 @@
             }).catch(()=>{});
         }
 
-        // 🌟 مدیریت ورود کاربر با سیستم جدید
         window.onload = async () => {
             if (!authToken) {
                 document.getElementById('auth-screen').style.display = 'flex';
@@ -671,7 +765,6 @@
         };
 
         async function loadUserDataAndStart() {
-            // 🌟 این همون خط مهمیه که پنهان کردن صفحه لاگین رو انجام میده
             document.getElementById('auth-screen').style.display = 'none'; 
             
             try {
@@ -692,7 +785,6 @@
             } catch(e) { logout(); }
         }
 
-        // 🌟 همان کدهای قبلی خودت که دقیقاً با همان ساختار اجرا می‌شوند
         async function originalInitLogic() {
             const savedArtists = localStorage.getItem(FAV_ARTISTS_KEY);
             if (!savedArtists) {
