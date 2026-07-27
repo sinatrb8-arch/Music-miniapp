@@ -6,7 +6,8 @@
     <title>Music Player</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        /* 🌟 اضافه شدن فونت Playfair Display برای امضای اپلیکیشن */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:wght@800;900&display=swap');
         
         :root {
             --bg-color: #121212; --text-color: #ffffff; --hint-color: #a7a7a7;
@@ -61,7 +62,15 @@
         /* 2. Home Screen */
         #home-screen { padding: 20px; display: none; }
         
-        .greeting-title { font-size: 26px; font-weight: 800; margin-bottom: 20px; letter-spacing: -0.5px;}
+        /* 🌟 استایل لوگوی اختصاصی */
+        .app-logo { 
+            font-family: 'Playfair Display', serif; 
+            font-size: 48px; 
+            font-weight: 900; 
+            margin-bottom: 20px; 
+            letter-spacing: -1.5px;
+            color: var(--text-color);
+        }
 
         .search-container { position: relative; margin-bottom: 0; flex: 1;}
         .search-container input {
@@ -268,7 +277,8 @@
     </div>
 
     <div id="home-screen">
-        <div class="greeting-title" id="greetingTitle">Good Day</div>
+        <!-- 🌟 کلمه Musick با فونت مشابه اپ اندرویدی جایگزین شد -->
+        <div class="app-logo">Musick</div>
         
         <div class="search-header-row">
             <div id="searchBackBtn" onclick="closeSearch()">
@@ -502,16 +512,7 @@
             localStorage.setItem(PLAYER_STATE_KEY, JSON.stringify(state));
         }
 
-        function setGreetingAndMood() {
-            const hour = new Date().getHours();
-            let greeting = "Good Evening";
-            if (hour >= 5 && hour < 12) greeting = "Good Morning";
-            else if (hour >= 12 && hour < 18) greeting = "Good Afternoon";
-            document.getElementById('greetingTitle').innerText = greeting;
-        }
-
         window.onload = async () => {
-            setGreetingAndMood();
             const savedArtists = localStorage.getItem(FAV_ARTISTS_KEY);
             if (!savedArtists) {
                 document.getElementById('onboarding-screen').style.display = 'block';
@@ -803,7 +804,6 @@
             container.appendChild(item);
         }
 
-        // 🌟 استایل اینلاینِ غیرقابل نفوذ برای عکس هنرمندان
         function renderFavArtists() {
             const container = document.getElementById('favArtistsList');
             container.innerHTML = '';
@@ -820,7 +820,6 @@
             });
         }
 
-        // 🌟 استایل اینلاینِ غیرقابل نفوذ برای Recently Played
         function renderSpeedDial() {
             const recent = JSON.parse(localStorage.getItem(RECENT_TRACKS_KEY) || '[]');
             const container = document.getElementById('speedDialList');
@@ -874,7 +873,6 @@
                         const item = document.createElement('div'); item.className = 'scroll-item';
                         item.onclick = () => { openAlbumPage(album.id, album.title, hqCover, album.artist); };
                         
-                        // 🌟 قفل کردن سایز عکس
                         item.innerHTML = `
                             <div style="position:relative; width: 110px; height: 110px; margin-bottom: 8px; flex: 0 0 auto;">
                                 <img src="${hqCover}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 12px; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.4); display: block;">
@@ -906,7 +904,6 @@
                             if(icon) icon.style.opacity = '1';
                         };
                         
-                        // 🌟 قفل کردن سایز عکس
                         item.innerHTML = `
                             <div style="position:relative; width: 110px; height: 110px; margin-bottom: 8px; flex: 0 0 auto;">
                                 <img src="${hqCover}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 12px; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.4); display: block;">
@@ -1009,7 +1006,7 @@
                         });
                     }
                 }
-            } catch (e) {}
+            } catch (e) { document.getElementById('loadingArtist').innerText = 'Error.'; }
         }
         
         function closeArtistPage() { document.getElementById('artist-screen').style.display = 'none'; document.getElementById('home-screen').style.display = 'block'; }
@@ -1122,10 +1119,9 @@
             updatePlayBtn(true);
             fetchLyrics(track.id, track.title, track.artist);
             
-            if (index + 1 < currentPlaylist.length) {
-                const nextTrack = currentPlaylist[index + 1];
-                fetch(`${SERVER_URL}/api/preload?id=${nextTrack.id}`).catch(()=>{});
-            }
+            if (index + 1 < currentPlaylist.length) fetch(`${SERVER_URL}/api/preload?id=${currentPlaylist[index + 1].id}`).catch(()=>{});
+            if (index + 2 < currentPlaylist.length) fetch(`${SERVER_URL}/api/preload?id=${currentPlaylist[index + 2].id}`).catch(()=>{});
+            if (index + 3 < currentPlaylist.length) fetch(`${SERVER_URL}/api/preload?id=${currentPlaylist[index + 3].id}`).catch(()=>{});
 
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
