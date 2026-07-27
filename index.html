@@ -568,7 +568,7 @@
         }
 
         async function register() {
-            const email = document.getElementById('reg-email').value.trim();
+            const email = document.getElementById('reg-email').value.trim().toLowerCase();
             const pass = document.getElementById('reg-pass').value;
             if(!email || !pass) return tg.showAlert('Please fill all fields');
             
@@ -619,7 +619,7 @@
         }
 
         async function login() {
-            const email = document.getElementById('log-email').value.trim();
+            const email = document.getElementById('log-email').value.trim().toLowerCase();
             const pass = document.getElementById('log-pass').value;
             if(!email || !pass) return tg.showAlert('Please fill all fields');
             
@@ -666,12 +666,14 @@
             if (!authToken) {
                 document.getElementById('auth-screen').style.display = 'flex';
             } else {
-                document.getElementById('auth-screen').style.display = 'none';
                 await loadUserDataAndStart();
             }
         };
 
         async function loadUserDataAndStart() {
+            // 🌟 این همون خط مهمیه که پنهان کردن صفحه لاگین رو انجام میده
+            document.getElementById('auth-screen').style.display = 'none'; 
+            
             try {
                 const res = await fetch(`${SERVER_URL}/api/user/data`, { headers: { 'Authorization': `Bearer ${authToken}` } });
                 if(res.ok) {
@@ -865,7 +867,7 @@
             localStorage.setItem(FAV_ARTISTS_KEY, JSON.stringify(selectedArtists));
             localStorage.setItem(FAV_ARTISTS_IMGS_KEY, JSON.stringify(selectedArtistsData));
             document.getElementById('onboarding-screen').style.display = 'none';
-            syncDataToServer(); // 🌟 Sync Added
+            syncDataToServer(); 
             showHome();
         }
 
@@ -1027,7 +1029,7 @@
             localStorage.setItem(RECENT_TRACKS_KEY, JSON.stringify(recent));
             renderSpeedDial();
             liveUpdateMadeForYou(track); 
-            syncDataToServer(); // 🌟 Sync Added
+            syncDataToServer(); 
         }
 
         async function fetchNewReleases() {
@@ -1119,7 +1121,7 @@
             localStorage.setItem(FAV_ARTISTS_KEY, JSON.stringify(selectedArtists));
             localStorage.setItem(FAV_ARTISTS_IMGS_KEY, JSON.stringify(selectedArtistsData));
             updateHeartIcon(); renderFavArtists(); renderMadeForYou();
-            syncDataToServer(); // 🌟 Sync Added
+            syncDataToServer(); 
         }
         
         function shuffleArtistTracks() {
