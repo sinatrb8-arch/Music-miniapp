@@ -19,7 +19,7 @@
             --border-color: rgba(255, 255, 255, 0.08);
             --icon-color: #ffffff;
             --modal-bg: #1e1e1e;
-            --accent: #93C572; /* Pistachio Green */
+            --accent: #93C572; /* 🌟 Pistachio Green */
         }
 
         body.theme-light {
@@ -97,42 +97,40 @@
 
         #home-screen { padding: 20px; display: none; }
         
-        /* 🌟 انیمیشن رو به پایین و واقعی ذوب شدن */
+        /* 🌟 ایده اول: پر شدن با موج مایع (بدون کثیف‌کاری سایه) */
         .app-logo { 
             position: relative;
             font-family: 'Playfair Display', serif; 
             font-size: 48px; 
             font-weight: 900; 
             letter-spacing: -1.5px; 
-            color: var(--text-color); /* رنگ جامد اصلی */
+            
+            /* حالت اولیه: کلمات مثل یک شیشه توخالی هستند */
+            color: transparent; 
+            -webkit-text-stroke: 1.5px var(--hint-color); 
             display: inline-block;
-            z-index: 2; /* بالاتر از لایه ذوب شده */
-        }
-        
-        .app-logo::after {
-            content: attr(data-text); /* شکل دقیق حروف را کپی می‌کند */
-            position: absolute;
-            left: 0;
-            top: 0;
-            color: var(--accent); /* رنگ لایه زیرین سبز پسته‌ای است */
-            z-index: -1; /* می‌رود پشت متن اصلی */
-            transform-origin: top;
-            opacity: 0;
-            animation: liquidDrop 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards 0.5s;
         }
 
-        @keyframes liquidDrop {
-            0% {
-                transform: scaleY(1) translateY(0);
-                opacity: 1;
-                filter: blur(0px);
-            }
-            100% {
-                /* کِش آوردن حروف رو به پایین و ساختن یک افکت چکه‌مانند */
-                transform: scaleY(1.4) translateY(3px);
-                opacity: 0.85;
-                filter: blur(4px); /* لبه‌های نرم برای حس مایع بودن */
-            }
+        .app-logo::before {
+            content: attr(data-text); 
+            position: absolute;
+            left: 0;
+            bottom: 0; /* مایع از پایین به بالا می‌آید */
+            width: 100%;
+            height: 0%; /* در ابتدا خالی است */
+            color: var(--accent); /* رنگ مایع: سبز پسته‌ای */
+            -webkit-text-stroke: 0px; /* مایعِ داخل حاشیه ندارد */
+            overflow: hidden;
+            border-bottom: 2px solid transparent;
+            /* انیمیشن پر شدن آب */
+            animation: liquidFillUp 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards 0.4s;
+        }
+
+        @keyframes liquidFillUp {
+            0% { height: 0%; }
+            40% { height: 45%; } /* مایع تا نیمه می‌آید */
+            55% { height: 45%; } /* مکث کوتاه برای حس پر شدن لیوان */
+            100% { height: 100%; } /* کاملا پر می‌شود */
         }
 
         .search-container { position: relative; margin-bottom: 0; flex: 1;}
@@ -336,7 +334,6 @@
     <div id="dynamic-bg"></div>
 
     <div id="auth-screen">
-        <!-- 🌟 استفاده از ویژگی data-text برای فعال شدن انیمیشن ذوب شدن -->
         <div class="app-logo" data-text="Musick" style="margin-bottom: 40px; text-align:center;">Musick</div>
         
         <div id="login-form" class="auth-container">
@@ -421,7 +418,6 @@
 
     <div id="home-screen">
         <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <!-- 🌟 اضافه شدن data-text به تگ برای کپی شدن حروف -->
             <div class="app-logo" data-text="Musick" style="margin-bottom: 0;">Musick</div>
             <button onclick="openUserMenu()" style="background:none; border:none; cursor:pointer; padding:8px; border-radius:50%; background:var(--card-bg); display:flex; align-items:center; justify-content:center; border: 1px solid var(--border-color);">
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--icon-color)"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
@@ -1145,7 +1141,6 @@
         }
 
         function showHome() {
-            updateAppBackground(false);
             document.getElementById('home-screen').style.display = 'block';
             renderSpeedDial(); renderFavArtists(); fetchNewReleases(); renderMadeForYou(); renderGenreMixes();
         }
