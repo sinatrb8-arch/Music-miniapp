@@ -19,7 +19,7 @@
             --border-color: rgba(255, 255, 255, 0.08);
             --icon-color: #ffffff;
             --modal-bg: #1e1e1e;
-            --accent: #93C572; /* 🌟 Pistachio Green */
+            --accent: #93C572; /* Pistachio Green */
         }
 
         body.theme-light {
@@ -97,7 +97,32 @@
 
         #home-screen { padding: 20px; display: none; }
         
-        .app-logo { font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 900; margin-bottom: 20px; letter-spacing: -1.5px; color: var(--text-color); }
+        /* 🌟 انیمیشن ذوب شدن و رنگ‌گرفتن لوگو */
+        .app-logo { 
+            font-family: 'Playfair Display', serif; 
+            font-size: 48px; 
+            font-weight: 900; 
+            letter-spacing: -1.5px; 
+            
+            /* گرادیانت هوشمند برای اثر ذوب شدن */
+            background: linear-gradient(180deg, var(--text-color) 0%, var(--text-color) 40%, var(--accent) 65%, var(--accent) 100%);
+            background-size: 100% 200%;
+            background-position: 0% 0%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            
+            display: inline-block;
+            transform-origin: top;
+            animation: meltLogo 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes meltLogo {
+            0% { background-position: 0% 0%; transform: scaleY(1) translateY(0); }
+            40% { transform: scaleY(1.12) translateY(3px); } /* کش آمدن حروف مثل قطره مایع */
+            100% { background-position: 0% 100%; transform: scaleY(1) translateY(0); } /* نشستن رنگ سبز در پایین */
+        }
 
         .search-container { position: relative; margin-bottom: 0; flex: 1;}
         .search-container input {
@@ -140,13 +165,11 @@
         
         .loading-text { text-align: center; color: var(--hint-color); margin-top: 20px; font-size: 14px;}
 
-        /* 🌟 Artist Screen Header (Full Bleed Image) */
+        /* Artist Screen Header */
         #artist-screen { display: none; padding-bottom: 100px; background-color: var(--bg-color); }
         .artist-header { position: relative; width: 100%; height: 400px; margin-bottom: 15px; display: flex; justify-content: center; align-items: center;}
         
-        /* عکس کاملاً فول اسکرین و زوم شده با ایندکس درست */
         .artist-header-bg { width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0; z-index: 1;}
-        /* گرادیانت هوشمند برای محو شدن تصویر در رنگ پس‌زمینه */
         .artist-header-gradient { position: absolute; top:0; left:0; width: 100%; height: 100%; background: linear-gradient(to top, var(--bg-color) 5%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%); z-index: 2; pointer-events: none;}
         
         .artist-header-info { position: absolute; bottom: 25px; left: 25px; right: 25px; display: flex; justify-content: space-between; align-items: flex-end; z-index: 3;}
@@ -194,7 +217,7 @@
         .mini-play-btn { background: none; border: none; color: white; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center;}
         .mini-play-btn svg { width: 24px; height: 24px; fill: var(--icon-color); }
 
-        /* Full Player (Always Dark & Transparent over blurred cover) */
+        /* Full Player */
         .full-player { 
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
             background-color: transparent; 
@@ -446,12 +469,12 @@
         </div>
     </div>
 
-    <!-- 🌟 Artist Screen (Full Bleed Header) -->
+    <!-- Artist Screen -->
     <div id="artist-screen">
         <div class="artist-header">
             <div class="back-btn" onclick="closeArtistPage()"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
             <img id="artistHeaderBg" class="artist-header-bg" src="">
-            <div class="artist-header-gradient"></div> <!-- 🌟 سایه ملایم برای خوانایی متن -->
+            <div class="artist-header-gradient"></div>
             <div class="artist-header-info">
                 <div style="display:flex; flex-direction:column; gap:5px; z-index: 1;">
                     <h1 id="artistHeaderName" class="artist-header-name">Artist</h1>
@@ -578,7 +601,7 @@
         </div>
     </div>
 
-    <!-- 🌟 Modal برای انتخاب تم -->
+    <!-- Modal برای انتخاب تم -->
     <div id="theme-modal" class="modal-overlay" onclick="closeThemeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-handle"></div>
@@ -1088,7 +1111,7 @@
                         const newCard = document.createElement('div');
                         newCard.className = 'artist-card new-arrival'; 
                         let hqImage = getHqCover(r.image);
-                        newCard.innerHTML = `<img class="artist-img" src="${hqImage}" alt="${r.name}"><div class="artist-name">${r.name}</div>`;
+                        newCard.innerHTML = `<img class="artist-img" src="${hqCover}" alt="${r.name}"><div class="artist-name">${r.name}</div>`;
                         newCard.onclick = () => toggleArtistSelection(newCard, r.name, hqImage);
                         insertReference.insertAdjacentElement('afterend', newCard);
                         insertReference = newCard; 
@@ -1109,6 +1132,7 @@
         }
 
         function showHome() {
+            updateAppBackground(false);
             document.getElementById('home-screen').style.display = 'block';
             renderSpeedDial(); renderFavArtists(); fetchNewReleases(); renderMadeForYou(); renderGenreMixes();
         }
@@ -1673,7 +1697,10 @@
         function closeFullPlayer() { 
             document.getElementById('fullPlayer').classList.remove('active'); 
             document.getElementById('lyrics-sheet').classList.remove('active'); 
-            updateAppBackground(false);
+            
+            if (document.getElementById('home-screen').style.display !== 'none') {
+                updateAppBackground(false);
+            }
         }
         
         function togglePlay(e) { e.stopPropagation(); if (audio.paused) { audio.play(); updatePlayBtn(true); } else { audio.pause(); updatePlayBtn(false); } }
