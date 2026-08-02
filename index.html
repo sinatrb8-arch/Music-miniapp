@@ -19,7 +19,7 @@
             --border-color: rgba(255, 255, 255, 0.08);
             --icon-color: #ffffff;
             --modal-bg: #1e1e1e;
-            --accent: #009B77; /* Emerald Green */
+            --accent: #93C572; /* 🌟 Pistachio Green */
         }
 
         body.theme-light {
@@ -140,23 +140,27 @@
         
         .loading-text { text-align: center; color: var(--hint-color); margin-top: 20px; font-size: 14px;}
 
-        /* Artist & Album Screens (Solid Backgrounds) */
-        #artist-screen, #album-screen { display: none; padding-bottom: 100px; background-color: var(--bg-color); }
-        .artist-header, .album-header { position: relative; width: 100%; height: 350px; overflow: hidden; margin-bottom: 20px; display: flex; justify-content: center; align-items: center;}
+        /* 🌟 Artist Screen Header (Full Bleed Image) */
+        #artist-screen { display: none; padding-bottom: 100px; background-color: var(--bg-color); }
+        .artist-header { position: relative; width: 100%; height: 380px; overflow: hidden; margin-bottom: 20px; display: flex; justify-content: center; align-items: center;}
         
-        .artist-header-bg { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.4) blur(10px); position: absolute; top:0; left:0; z-index:-1; border-radius: 0 0 30px 30px;}
+        .artist-header-bg { width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0; z-index:-2; border-radius: 0 0 30px 30px;}
+        .artist-header-gradient { position: absolute; top:0; left:0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.4) 100%); z-index: -1; border-radius: 0 0 30px 30px; pointer-events: none;}
         .artist-header-info { position: absolute; bottom: 25px; left: 25px; right: 25px; display: flex; justify-content: space-between; align-items: flex-end;}
         
-        .artist-header-name { font-size: 38px; font-weight: 800; color: #fff; margin: 0; letter-spacing: -1px; text-shadow: 0 4px 20px rgba(0,0,0,0.8);}
-        .artist-header-subs { font-size: 13px; color: rgba(255,255,255,0.9); font-weight: 600; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.8);}
+        .artist-header-name { font-size: 46px; font-weight: 900; color: #fff; margin: 0; letter-spacing: -1.5px; text-shadow: 0 4px 20px rgba(0,0,0,0.8); line-height: 1.1;}
+        .artist-header-subs { font-size: 13px; color: rgba(255,255,255,0.9); font-weight: 600; margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.8);}
         
-        .artist-actions { display: flex; gap: 15px; align-items: center;}
+        .artist-actions { display: flex; gap: 15px; align-items: center; margin-bottom: 5px;}
         .action-btn { background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); border: none; border-radius: 50%; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s;}
         .action-btn:active { transform: scale(0.9);}
         .action-btn.play { background: var(--accent); }
         .action-btn svg { width: 22px; height: 22px; fill: #fff;}
-        .action-btn.play svg { fill: #ffffff; width: 24px; height: 24px;}
+        .action-btn.play svg { fill: #121212; width: 24px; height: 24px;}
         
+        /* Album Screen */
+        #album-screen { display: none; padding-bottom: 100px; background-color: var(--bg-color); }
+        .album-header { position: relative; width: 100%; height: 350px; overflow: hidden; margin-bottom: 20px; display: flex; justify-content: center; align-items: center;}
         .album-header-bg { width: 100%; height: 100%; object-fit: cover; filter: blur(20px) brightness(0.4); position: absolute; top:0; left:0; z-index:-1; border-radius: 0 0 30px 30px;}
         .album-header-info { text-align: center; padding-top: 30px; z-index: 1;}
         .album-header-img { width: 160px; height: 160px; border-radius: 12px; object-fit: cover; aspect-ratio: 1/1; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin-bottom: 15px;}
@@ -225,7 +229,7 @@
         .ctrl-main-btn svg { width: 36px; height: 36px; fill: #fff; }
         .fp-btn-play { background: var(--accent); border: none; border-radius: 50%; width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; cursor: pointer;}
         .fp-btn-play:active { transform: scale(0.95); }
-        .fp-btn-play svg { fill: #ffffff; width: 28px; height: 28px; }
+        .fp-btn-play svg { fill: #121212; width: 28px; height: 28px; }
         
         .play-mode-btn { background: none; border: none; cursor: pointer; padding: 5px; opacity: 0.7; transition: 0.3s;}
         .play-mode-btn.active { opacity: 1; color: var(--accent);}
@@ -439,15 +443,14 @@
         </div>
     </div>
 
-    <!-- 🌟 Artist Screen -->
+    <!-- 🌟 Artist Screen (Full Bleed Header) -->
     <div id="artist-screen">
         <div class="artist-header">
             <div class="back-btn" onclick="closeArtistPage()"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
             <img id="artistHeaderBg" class="artist-header-bg" src="">
+            <div class="artist-header-gradient"></div> <!-- 🌟 اضافه شدن سایه هوشمند برای خوانایی متن -->
             <div class="artist-header-info">
                 <div style="display:flex; flex-direction:column; gap:5px; z-index: 1;">
-                    <!-- 🌟 عکس پروفایل آرتیست (تغییر به کادر مربعی با گوشه‌های گرد) -->
-                    <img id="artistHeaderImg" src="" style="width: 120px; height: 120px; border-radius: 16px; object-fit: cover; margin-bottom: 10px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 1px solid var(--border-color);">
                     <h1 id="artistHeaderName" class="artist-header-name">Artist</h1>
                     <div id="artistHeaderSubs" class="artist-header-subs"></div>
                 </div>
@@ -1103,7 +1106,6 @@
         }
 
         function showHome() {
-            updateAppBackground(false);
             document.getElementById('home-screen').style.display = 'block';
             renderSpeedDial(); renderFavArtists(); fetchNewReleases(); renderMadeForYou(); renderGenreMixes();
         }
@@ -1121,7 +1123,6 @@
         }
         
         async function openMixPage(title, coverUrl, fetchUrl) {
-            updateAppBackground(true);
             document.getElementById('home-screen').style.display = 'none';
             document.getElementById('artist-screen').style.display = 'none';
             document.getElementById('album-screen').style.display = 'block';
@@ -1366,14 +1367,12 @@
         }
 
         async function openArtistPage(name, image) {
-            updateAppBackground(true);
             document.getElementById('home-screen').style.display = 'none'; document.getElementById('fullPlayer').classList.remove('active'); document.getElementById('artist-screen').style.display = 'block'; window.scrollTo(0, 0);
             
             currentArtistPageName = name.split(',')[0].trim(); 
             currentArtistPageImage = image; updateHeartIcon();
             
             document.getElementById('artistHeaderBg').src = image; 
-            document.getElementById('artistHeaderImg').src = image; 
             document.getElementById('artistHeaderName').innerText = currentArtistPageName;
             document.getElementById('artistHeaderSubs').innerText = ''; 
             
@@ -1669,10 +1668,7 @@
         function closeFullPlayer() { 
             document.getElementById('fullPlayer').classList.remove('active'); 
             document.getElementById('lyrics-sheet').classList.remove('active'); 
-            
-            if (document.getElementById('home-screen').style.display !== 'none') {
-                updateAppBackground(false);
-            }
+            updateAppBackground(false);
         }
         
         function togglePlay(e) { e.stopPropagation(); if (audio.paused) { audio.play(); updatePlayBtn(true); } else { audio.pause(); updatePlayBtn(false); } }
