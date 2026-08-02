@@ -10,37 +10,26 @@
         
         /* ================= Theme Variables ================= */
         :root {
-            /* Default: Titanium Mode */
-            --bg-color: #6b6b6b; 
-            --text-color: #ffffff; 
-            --hint-color: #e0e0e0;
-            --card-bg: rgba(0, 0, 0, 0.15);
-            --input-bg: rgba(0, 0, 0, 0.25);
-            --border-color: rgba(255, 255, 255, 0.15);
-            --icon-color: #ffffff;
-            --modal-bg: #5a5a5a;
-            --accent: #1db954;
-        }
-
-        body.theme-dark {
+            /* Default: Dark Mode */
             --bg-color: #121212; 
             --text-color: #ffffff; 
             --hint-color: #a7a7a7;
-            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-bg: rgba(255, 255, 255, 0.06);
             --input-bg: rgba(255, 255, 255, 0.1);
-            --border-color: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.08);
             --icon-color: #ffffff;
-            --modal-bg: #282828;
+            --modal-bg: #1e1e1e;
+            --accent: #009B77; /* Emerald Green */
         }
 
         body.theme-light {
-            --bg-color: #faf9f6; 
-            --text-color: #121212; 
+            --bg-color: #F7F7F8; 
+            --text-color: #1A1A1A; 
             --hint-color: #666666;
             --card-bg: rgba(0, 0, 0, 0.04);
             --input-bg: rgba(0, 0, 0, 0.08);
-            --border-color: rgba(0, 0, 0, 0.1);
-            --icon-color: #121212;
+            --border-color: rgba(0, 0, 0, 0.06);
+            --icon-color: #1A1A1A;
             --modal-bg: #ffffff;
         }
 
@@ -54,7 +43,7 @@
         
         #dynamic-bg {
             position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
-            z-index: -5; filter: blur(80px) brightness(0.6); pointer-events: none;
+            z-index: -5; filter: blur(80px) brightness(0.6); pointer-events: none; opacity: 0;
             transition: background-image 1s ease-in-out, opacity 0.6s ease; background-size: cover; background-position: center;
         }
 
@@ -94,7 +83,7 @@
         .artist-img { 
             width: 120px; height: 120px; border-radius: 50%; object-fit: cover; object-position: center; aspect-ratio: 1/1;
             margin-bottom: 12px; border: 3px solid transparent; transition: transform 0.3s; 
-            box-shadow: 0 8px 16px rgba(0,0,0,0.3); background-color: var(--input-bg); 
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2); background-color: var(--input-bg); 
         }
         .artist-card.selected .artist-img { border-color: var(--accent); opacity: 0.8; transform: scale(0.92);}
         .artist-name { font-size: 14px; font-weight: 600; text-align: center; color: var(--text-color); }
@@ -123,7 +112,7 @@
         #searchBackBtn { display: none; cursor: pointer; background: var(--card-bg); padding: 10px; border-radius: 50%; backdrop-filter: blur(5px);}
         #searchBackBtn svg { width: 24px; height: 24px; fill: var(--icon-color); }
 
-        .artist-search-card { display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--card-bg); border-radius: 16px; margin-bottom: 20px; cursor: pointer;}
+        .artist-search-card { display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--card-bg); border-radius: 16px; margin-bottom: 20px; cursor: pointer; border: 1px solid var(--border-color);}
         .artist-search-card img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover;}
         .artist-search-name { font-size: 18px; font-weight: 800; color: var(--text-color);}
         .artist-search-label { font-size: 12px; color: var(--hint-color); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px;}
@@ -132,7 +121,7 @@
         .horizontal-scroll::-webkit-scrollbar { display: none; }
         
         .scroll-item { width: 110px; min-width: 110px; max-width: 110px; flex: 0 0 auto; background: transparent; border-radius: 12px; padding: 0; text-align: center; cursor: pointer; scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; overflow: visible;}
-        .scroll-cover { width: 110px; height: 110px; min-width: 110px; min-height: 110px; border-radius: 12px; object-fit: cover; object-position: center; margin-bottom: 8px; box-shadow: 0 6px 14px rgba(0,0,0,0.4); display: block;}
+        .scroll-cover { width: 110px; height: 110px; min-width: 110px; min-height: 110px; border-radius: 12px; object-fit: cover; object-position: center; margin-bottom: 8px; box-shadow: 0 6px 14px rgba(0,0,0,0.2); display: block;}
         .scroll-cover.circle { border-radius: 50%; aspect-ratio: 1/1; }
         .scroll-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; width: 100%; color: var(--text-color);}
         
@@ -144,42 +133,42 @@
         .track-item { display: flex; align-items: center; padding: 8px; border-radius: 12px; gap: 14px; background: transparent; cursor:pointer; transition: background 0.2s;}
         .track-item:active { background: var(--card-bg); }
         .releases-grid .track-item { width: 260px; scroll-snap-align: start; margin: 0;}
-        .track-item img { width: 55px; height: 55px; min-width: 55px; border-radius: 8px; object-fit: cover; aspect-ratio: 1/1; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
+        .track-item img { width: 55px; height: 55px; min-width: 55px; border-radius: 8px; object-fit: cover; aspect-ratio: 1/1; box-shadow: 0 4px 10px rgba(0,0,0,0.2);}
         .track-info { flex: 1; overflow: hidden; }
         .track-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-color);}
         .track-artist { font-size: 13px; color: var(--hint-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         
         .loading-text { text-align: center; color: var(--hint-color); margin-top: 20px; font-size: 14px;}
 
-        /* Artist & Album Screens */
-        #artist-screen, #album-screen { display: none; padding-bottom: 100px; }
+        /* Artist & Album Screens (Solid Backgrounds) */
+        #artist-screen, #album-screen { display: none; padding-bottom: 100px; background-color: var(--bg-color); }
         .artist-header, .album-header { position: relative; width: 100%; height: 320px; overflow: hidden; margin-bottom: 20px; display: flex; justify-content: center; align-items: center;}
         
         .artist-header-bg { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); position: absolute; top:0; left:0; z-index:-1; border-radius: 0 0 30px 30px;}
         .artist-header-info { position: absolute; bottom: 25px; left: 25px; right: 25px; display: flex; justify-content: space-between; align-items: flex-end;}
         
         .artist-header-name { font-size: 44px; font-weight: 800; color: #fff; margin: 0; letter-spacing: -1.5px; text-shadow: 0 4px 20px rgba(0,0,0,0.8);}
-        .artist-header-subs { font-size: 13px; color: rgba(255,255,255,0.8); font-weight: 600; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.8);}
+        .artist-header-subs { font-size: 13px; color: rgba(255,255,255,0.9); font-weight: 600; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.8);}
         
         .artist-actions { display: flex; gap: 15px; align-items: center;}
-        .action-btn { background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); border: none; border-radius: 50%; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s;}
+        .action-btn { background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); border: none; border-radius: 50%; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s;}
         .action-btn:active { transform: scale(0.9);}
         .action-btn.play { background: var(--accent); }
         .action-btn svg { width: 22px; height: 22px; fill: #fff;}
-        .action-btn.play svg { fill: #000; width: 24px; height: 24px;}
+        .action-btn.play svg { fill: #ffffff; width: 24px; height: 24px;}
         
         .album-header-bg { width: 100%; height: 100%; object-fit: cover; filter: blur(20px) brightness(0.4); position: absolute; top:0; left:0; z-index:-1; border-radius: 0 0 30px 30px;}
         .album-header-info { text-align: center; padding-top: 30px; z-index: 1;}
-        .album-header-img { width: 160px; height: 160px; border-radius: 12px; object-fit: cover; aspect-ratio: 1/1; box-shadow: 0 15px 35px rgba(0,0,0,0.6); margin-bottom: 15px;}
-        .album-header-name { font-size: 24px; font-weight: 800; color: #fff; margin: 0 15px; }
-        .album-header-artist { font-size: 14px; color: rgba(255,255,255,0.7); margin-top: 5px; font-weight: 600;}
+        .album-header-img { width: 160px; height: 160px; border-radius: 12px; object-fit: cover; aspect-ratio: 1/1; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin-bottom: 15px;}
+        .album-header-name { font-size: 24px; font-weight: 800; color: #fff; margin: 0 15px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .album-header-artist { font-size: 14px; color: rgba(255,255,255,0.9); margin-top: 5px; font-weight: 600; text-shadow: 0 2px 10px rgba(0,0,0,0.5);}
         .back-btn { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.5); border-radius: 50%; padding: 10px; display:flex; justify-content:center; align-items:center; z-index: 10; cursor:pointer;}
         .back-btn svg { width: 24px; height: 24px; fill: #fff; }
 
         .mini-player { 
             position: fixed; bottom: 10px; left: 10px; right: 10px; 
             background: var(--modal-bg); border-radius: 12px; border: 1px solid var(--border-color);
-            display: none; flex-direction: column; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.4); backdrop-filter: blur(10px); 
+            display: none; flex-direction: column; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.2); backdrop-filter: blur(10px); 
             padding: 0; overflow: visible;
         }
         
@@ -195,12 +184,13 @@
         .mini-title { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-color); }
         .mini-artist { font-size: 12px; color: var(--hint-color); }
         .mini-controls { display: flex; align-items: center; padding-right: 12px; gap: 5px;}
-        .mini-play-btn { background: none; border: none; color: white; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center;}
+        .mini-play-btn { background: none; border: none; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center;}
         .mini-play-btn svg { width: 24px; height: 24px; fill: var(--icon-color); }
 
+        /* Full Player (Always Dark & Transparent over blurred cover) */
         .full-player { 
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
-            background-color: #121212; /* Full player is always dark to overlay image */
+            background-color: transparent; 
             z-index: 2000; display: flex; flex-direction: column; padding: 25px; box-sizing: border-box; 
             overflow: hidden; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
@@ -233,9 +223,9 @@
         .fp-controls { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 10px; box-sizing: border-box;}
         .ctrl-main-btn { background: none; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center;}
         .ctrl-main-btn svg { width: 36px; height: 36px; fill: #fff; }
-        .fp-btn-play { background: #fff; border: none; border-radius: 50%; width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; cursor: pointer;}
+        .fp-btn-play { background: var(--accent); border: none; border-radius: 50%; width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; cursor: pointer;}
         .fp-btn-play:active { transform: scale(0.95); }
-        .fp-btn-play svg { fill: #000; width: 28px; height: 28px; }
+        .fp-btn-play svg { fill: #ffffff; width: 28px; height: 28px; }
         
         .play-mode-btn { background: none; border: none; cursor: pointer; padding: 5px; opacity: 0.7; transition: 0.3s;}
         .play-mode-btn.active { opacity: 1; color: var(--accent);}
@@ -243,7 +233,7 @@
 
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
             z-index: 3000; display: flex; flex-direction: column; justify-content: flex-end;
             opacity: 0; pointer-events: none; transition: 0.3s;
         }
@@ -253,18 +243,17 @@
             padding: 25px 20px 40px 20px; transform: translateY(100%); transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
         .modal-overlay.active .modal-content { transform: translateY(0); }
-        .modal-handle { width: 40px; height: 5px; background: rgba(128,128,128,0.4); border-radius: 3px; margin: 0 auto 20px auto;}
+        .modal-handle { width: 40px; height: 5px; background: rgba(128,128,128,0.3); border-radius: 3px; margin: 0 auto 20px auto;}
         
-        /* 🌟 استایل جدید سیلور متالیک برای دکمه‌های استراتژی */
         .opt-btn {
             padding: 16px; margin-bottom: 12px; 
-            background: linear-gradient(135deg, #f3f4f6 0%, #d1d5db 50%, #9ca3af 100%);
-            color: #111827;
+            background: var(--card-bg);
+            color: var(--text-color);
             border-radius: 14px; font-weight: 800; font-size: 16px; cursor: pointer;
             display: flex; align-items: center; gap: 12px; transition: 0.2s;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255, 255, 255, 0.5);
+            border: 1px solid var(--border-color);
         }
-        .opt-btn:active { background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 50%, #6b7280 100%); transform: scale(0.98); }
+        .opt-btn:active { background: var(--input-bg); transform: scale(0.98); }
 
         .user-menu-content {
             background: var(--modal-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
@@ -489,7 +478,7 @@
                 <h1 id="albumHeaderName" class="album-header-name">List Name</h1>
                 <div id="albumHeaderArtist" class="album-header-artist" style="margin-bottom: 15px;">Subtitle</div>
             </div>
-            <button class="action-btn play" id="albumPlayBtn" style="position: absolute; bottom: 20px; right: 20px; width: 55px; height: 55px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: none; z-index: 10;">
+            <button class="action-btn play" id="albumPlayBtn" style="position: absolute; bottom: 20px; right: 20px; width: 55px; height: 55px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); display: none; z-index: 10;">
                 <svg viewBox="0 0 24 24" style="width:28px;height:28px;"><path d="M8 5v14l11-7z"/></svg>
             </button>
         </div>
@@ -581,14 +570,13 @@
         </div>
     </div>
 
-    <!-- 🌟 Modal جدید برای انتخاب تم -->
+    <!-- 🌟 Modal برای انتخاب تم -->
     <div id="theme-modal" class="modal-overlay" onclick="closeThemeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-handle"></div>
             <h3 style="margin-top:0; margin-bottom: 25px; text-align:center; color: var(--text-color);">Select Theme</h3>
-            <div class="opt-btn" onclick="setTheme('light'); closeThemeModal();" style="background: #faf9f6; color: #121212; border: 1px solid rgba(0,0,0,0.1); justify-content: center;"><span style="font-size: 20px;">☀️</span> Light Mode</div>
-            <div class="opt-btn" onclick="setTheme('dark'); closeThemeModal();" style="background: #121212; color: #ffffff; border: 1px solid rgba(255,255,255,0.1); justify-content: center;"><span style="font-size: 20px;">🌙</span> Dark Mode</div>
-            <div class="opt-btn" onclick="setTheme('titanium'); closeThemeModal();" style="background: #6b6b6b; color: #ffffff; border: 1px solid rgba(255,255,255,0.2); justify-content: center;"><span style="font-size: 20px;">📱</span> Titanium Mode</div>
+            <div class="opt-btn" onclick="setTheme('light'); closeThemeModal();" style="justify-content: center;"><span style="font-size: 20px;">☀️</span> Light Mode</div>
+            <div class="opt-btn" onclick="setTheme('dark'); closeThemeModal();" style="justify-content: center;"><span style="font-size: 20px;">🌙</span> Dark Mode</div>
         </div>
     </div>
 
@@ -623,12 +611,11 @@
                     </div>
                 </div>
                 
-                <!-- 🌟 گزینه جدید تم (پس از AI Translation) -->
                 <div class="menu-item" onclick="openThemeModal()">
                     <div class="menu-icon"><svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4C12.92 3.04 12.46 3 12 3zm0 18c-4.97 0-9-4.03-9-9 0-.46.04-.92.1-1.36.98 1.37 2.58 2.26 4.4 2.26 2.98 0 5.4 2.42 5.4 5.4 0 1.81-.89 3.42-2.26 4.4.44.06.9.1 1.36.1z"/></svg></div>
                     <div class="menu-text">
                         <div class="menu-title">App Theme</div>
-                        <div class="menu-sub">Light, Dark, Titanium</div>
+                        <div class="menu-sub">Light & Dark Modes</div>
                     </div>
                     <svg class="menu-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
                 </div>
@@ -672,8 +659,8 @@
         
         const iconPlay = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
         const iconPause = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
-        const iconPlayBlack = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
-        const iconPauseBlack = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+        const iconPlayWhite = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        const iconPauseWhite = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
         
         const genres = [
             { title: 'Hip-Hop Vibes', query: 'Hip Hop', cover: 'https://images.unsplash.com/photo-1542204165-65bf26472b9b?w=500&q=80' },
@@ -686,32 +673,25 @@
         
         let selectedArtists = []; let selectedArtistsData = []; let displayedArtists = new Set(); 
 
-        // 🌟 سیستم هوشمند ذخیره و اعمال تم‌ها
-        let currentTheme = localStorage.getItem('musick_theme') || 'titanium';
+        // 🌟 سیستم هوشمند ذخیره و اعمال دو تم لایت و دارک
+        let currentTheme = localStorage.getItem('musick_theme') || 'dark';
         function setTheme(theme) {
-            document.body.classList.remove('theme-light', 'theme-dark', 'theme-titanium');
-            document.body.classList.add('theme-' + theme);
+            document.body.classList.remove('theme-light', 'theme-dark');
+            if(theme === 'light') document.body.classList.add('theme-light');
             localStorage.setItem('musick_theme', theme);
             currentTheme = theme;
-            
-            if (document.getElementById('home-screen').style.display !== 'none' || document.getElementById('auth-screen').style.display !== 'none') {
-                document.body.style.backgroundColor = 'var(--bg-color)';
-            }
+            document.body.style.backgroundColor = 'var(--bg-color)';
         }
         setTheme(currentTheme);
 
-        // 🌟 توابع باز و بسته شدن مودال تم
         function openThemeModal() {
             closeUserMenu();
-            setTimeout(() => {
-                document.getElementById('theme-modal').classList.add('active');
-            }, 250);
+            setTimeout(() => { document.getElementById('theme-modal').classList.add('active'); }, 250);
         }
 
-        function closeThemeModal() {
-            document.getElementById('theme-modal').classList.remove('active');
-        }
+        function closeThemeModal() { document.getElementById('theme-modal').classList.remove('active'); }
 
+        // 🌟 سیستم جدید ترنسپرنت (فقط برای صفحه Now Playing)
         function updateAppBackground(isTransparent) {
             const dynBg = document.getElementById('dynamic-bg');
             if (isTransparent) {
@@ -914,7 +894,6 @@
         }
 
         window.onload = async () => {
-            updateAppBackground(false); 
             if (!authToken) {
                 document.getElementById('auth-screen').style.display = 'flex';
             } else {
@@ -1122,7 +1101,6 @@
         }
 
         function showHome() {
-            updateAppBackground(false);
             document.getElementById('home-screen').style.display = 'block';
             renderSpeedDial(); renderFavArtists(); fetchNewReleases(); renderMadeForYou(); renderGenreMixes();
         }
@@ -1140,7 +1118,6 @@
         }
         
         async function openMixPage(title, coverUrl, fetchUrl) {
-            updateAppBackground(true);
             document.getElementById('home-screen').style.display = 'none';
             document.getElementById('artist-screen').style.display = 'none';
             document.getElementById('album-screen').style.display = 'block';
@@ -1230,7 +1207,7 @@
             
             item.innerHTML = `
                 <div style="position:relative; width: 110px; height: 110px; margin-bottom: 8px; flex: 0 0 auto;">
-                    <img src="${hqImage}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 12px; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.4); display: block;">
+                    <img src="${hqImage}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 12px; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.2); display: block;">
                     <div style="position:absolute; bottom:10px; left:8px; width:35px; height:4px; background:var(--accent); border-radius:2px; box-shadow: 0 2px 4px rgba(0,0,0,0.5);"></div>
                 </div>
                 <div class="scroll-title" style="width: 110px;">${title}</div>
@@ -1246,7 +1223,7 @@
                 item.onclick = () => openArtistPage(artist.name, artist.image);
                 item.innerHTML = `
                     <div style="position:relative; width: 110px; height: 110px; margin-bottom: 8px; flex: 0 0 auto;">
-                        <img src="${artist.image}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 50%; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.4); display: block;">
+                        <img src="${artist.image}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 50%; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.2); display: block;">
                     </div>
                     <div class="scroll-title" style="width: 110px;">${artist.name}</div>
                 `;
@@ -1265,7 +1242,7 @@
                 item.onclick = () => { currentPlaylist = [track]; currentContext='single'; playTrack(0); };
                 item.innerHTML = `
                     <div style="position:relative; width: 110px; height: 110px; margin-bottom: 8px; flex: 0 0 auto;">
-                        <img src="${track.hqCover}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 12px; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.4); display: block;">
+                        <img src="${track.hqCover}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 12px; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.2); display: block;">
                     </div>
                     <div class="scroll-title" style="width: 110px;">${track.title}</div>
                 `;
@@ -1310,7 +1287,7 @@
                         
                         item.innerHTML = `
                             <div style="position:relative; width: 110px; height: 110px; margin-bottom: 8px; flex: 0 0 auto;">
-                                <img src="${hqCover}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 12px; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.4); display: block;">
+                                <img src="${hqCover}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 12px; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.2); display: block;">
                             </div>
                             <div class="scroll-title" style="width: 110px;">${album.title}</div>
                             <div style="font-size:10px; color:var(--hint-color);">${album.artist} • ${album.year}</div>
@@ -1341,7 +1318,7 @@
                         
                         item.innerHTML = `
                             <div style="position:relative; width: 110px; height: 110px; margin-bottom: 8px; flex: 0 0 auto;">
-                                <img src="${hqCover}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 12px; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.4); display: block;">
+                                <img src="${hqCover}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 12px; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.2); display: block;">
                             </div>
                             <div class="scroll-title" style="width: 110px;">${single.title}</div>
                             <div style="font-size:10px; color:var(--hint-color);">${single.artist} • ${single.year}</div>
@@ -1356,7 +1333,7 @@
             const isFav = selectedArtists.includes(currentArtistPageName);
             const btn = document.getElementById('artistFavBtn');
             if (isFav) {
-                btn.innerHTML = `<svg viewBox="0 0 24 24" fill="#1db954"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+                btn.innerHTML = `<svg viewBox="0 0 24 24" fill="var(--accent)"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
             } else {
                 btn.innerHTML = `<svg viewBox="0 0 24 24" fill="#fff"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>`;
             }
@@ -1385,7 +1362,6 @@
         }
 
         async function openArtistPage(name, image) {
-            updateAppBackground(true);
             document.getElementById('home-screen').style.display = 'none'; document.getElementById('fullPlayer').classList.remove('active'); document.getElementById('artist-screen').style.display = 'block'; window.scrollTo(0, 0);
             
             currentArtistPageName = name.split(',')[0].trim(); 
@@ -1419,7 +1395,7 @@
                         
                         item.innerHTML = `
                             <div style="position:relative; width: 110px; height: 110px; margin-bottom: 8px; flex: 0 0 auto;">
-                                <img src="${hqCover}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 12px; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.4); display: block;">
+                                <img src="${hqCover}" style="width: 110px !important; height: 110px !important; min-width: 110px !important; max-width: 110px !important; border-radius: 12px; object-fit: cover; box-shadow: 0 6px 14px rgba(0,0,0,0.2); display: block;">
                             </div>
                             <div class="scroll-title" style="width: 110px;">${a.title}</div>
                             <div style="font-size:10px; color:var(--hint-color);">${a.year}</div>
@@ -1464,7 +1440,6 @@
         }
         
         async function openAlbumPage(browseId, albumTitle, coverUrl, artistName) {
-            updateAppBackground(true);
             document.getElementById('artist-screen').style.display = 'none'; document.getElementById('home-screen').style.display = 'none'; document.getElementById('album-screen').style.display = 'block'; window.scrollTo(0, 0);
             document.getElementById('albumHeaderBg').src = coverUrl; document.getElementById('albumHeaderImg').src = coverUrl; document.getElementById('albumHeaderName').innerText = albumTitle; document.getElementById('albumHeaderArtist').innerText = artistName;
             document.getElementById('loadingAlbum').style.display = 'block'; document.getElementById('albumTrackList').innerHTML = '';
@@ -1687,10 +1662,7 @@
         function closeFullPlayer() { 
             document.getElementById('fullPlayer').classList.remove('active'); 
             document.getElementById('lyrics-sheet').classList.remove('active'); 
-            
-            if (document.getElementById('home-screen').style.display !== 'none') {
-                updateAppBackground(false);
-            }
+            updateAppBackground(false);
         }
         
         function togglePlay(e) { e.stopPropagation(); if (audio.paused) { audio.play(); updatePlayBtn(true); } else { audio.pause(); updatePlayBtn(false); } }
@@ -1698,7 +1670,7 @@
         function updatePlayBtn(isPlaying) { 
             const miniBtn = document.getElementById('miniPlayBtn');
             if(miniBtn) miniBtn.innerHTML = isPlaying ? iconPause : iconPlay; 
-            document.getElementById('fpPlayBtn').innerHTML = isPlaying ? iconPauseBlack : iconPlayBlack; 
+            document.getElementById('fpPlayBtn').innerHTML = isPlaying ? iconPauseWhite : iconPlayWhite; 
         }
         audio.onended = () => playNext();
         
