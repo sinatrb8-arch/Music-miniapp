@@ -142,16 +142,19 @@
 
         /* 🌟 Artist Screen Header (Full Bleed Image) */
         #artist-screen { display: none; padding-bottom: 100px; background-color: var(--bg-color); }
-        .artist-header { position: relative; width: 100%; height: 380px; overflow: hidden; margin-bottom: 20px; display: flex; justify-content: center; align-items: center;}
+        .artist-header { position: relative; width: 100%; height: 400px; margin-bottom: 15px; display: flex; justify-content: center; align-items: center;}
         
-        .artist-header-bg { width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0; z-index:-2; border-radius: 0 0 30px 30px;}
-        .artist-header-gradient { position: absolute; top:0; left:0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.4) 100%); z-index: -1; border-radius: 0 0 30px 30px; pointer-events: none;}
-        .artist-header-info { position: absolute; bottom: 25px; left: 25px; right: 25px; display: flex; justify-content: space-between; align-items: flex-end;}
+        /* عکس کاملاً فول اسکرین و زوم شده با ایندکس درست */
+        .artist-header-bg { width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0; z-index: 1;}
+        /* گرادیانت هوشمند برای محو شدن تصویر در رنگ پس‌زمینه */
+        .artist-header-gradient { position: absolute; top:0; left:0; width: 100%; height: 100%; background: linear-gradient(to top, var(--bg-color) 5%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%); z-index: 2; pointer-events: none;}
+        
+        .artist-header-info { position: absolute; bottom: 25px; left: 25px; right: 25px; display: flex; justify-content: space-between; align-items: flex-end; z-index: 3;}
         
         .artist-header-name { font-size: 46px; font-weight: 900; color: #fff; margin: 0; letter-spacing: -1.5px; text-shadow: 0 4px 20px rgba(0,0,0,0.8); line-height: 1.1;}
         .artist-header-subs { font-size: 13px; color: rgba(255,255,255,0.9); font-weight: 600; margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.8);}
         
-        .artist-actions { display: flex; gap: 15px; align-items: center; margin-bottom: 5px;}
+        .artist-actions { display: flex; gap: 15px; align-items: center; margin-bottom: 5px; z-index: 3;}
         .action-btn { background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); border: none; border-radius: 50%; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s;}
         .action-btn:active { transform: scale(0.9);}
         .action-btn.play { background: var(--accent); }
@@ -448,7 +451,7 @@
         <div class="artist-header">
             <div class="back-btn" onclick="closeArtistPage()"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
             <img id="artistHeaderBg" class="artist-header-bg" src="">
-            <div class="artist-header-gradient"></div> <!-- 🌟 اضافه شدن سایه هوشمند برای خوانایی متن -->
+            <div class="artist-header-gradient"></div> <!-- 🌟 سایه ملایم برای خوانایی متن -->
             <div class="artist-header-info">
                 <div style="display:flex; flex-direction:column; gap:5px; z-index: 1;">
                     <h1 id="artistHeaderName" class="artist-header-name">Artist</h1>
@@ -1123,6 +1126,7 @@
         }
         
         async function openMixPage(title, coverUrl, fetchUrl) {
+            updateAppBackground(false);
             document.getElementById('home-screen').style.display = 'none';
             document.getElementById('artist-screen').style.display = 'none';
             document.getElementById('album-screen').style.display = 'block';
@@ -1367,6 +1371,7 @@
         }
 
         async function openArtistPage(name, image) {
+            updateAppBackground(false);
             document.getElementById('home-screen').style.display = 'none'; document.getElementById('fullPlayer').classList.remove('active'); document.getElementById('artist-screen').style.display = 'block'; window.scrollTo(0, 0);
             
             currentArtistPageName = name.split(',')[0].trim(); 
@@ -1445,7 +1450,7 @@
         }
         
         async function openAlbumPage(browseId, albumTitle, coverUrl, artistName) {
-            updateAppBackground(true);
+            updateAppBackground(false);
             document.getElementById('artist-screen').style.display = 'none'; document.getElementById('home-screen').style.display = 'none'; document.getElementById('album-screen').style.display = 'block'; window.scrollTo(0, 0);
             document.getElementById('albumHeaderBg').src = coverUrl; document.getElementById('albumHeaderImg').src = coverUrl; document.getElementById('albumHeaderName').innerText = albumTitle; document.getElementById('albumHeaderArtist').innerText = artistName;
             document.getElementById('loadingAlbum').style.display = 'block'; document.getElementById('albumTrackList').innerHTML = '';
