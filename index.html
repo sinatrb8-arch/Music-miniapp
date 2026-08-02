@@ -97,17 +97,18 @@
 
         #home-screen { padding: 20px; display: none; }
         
-        /* 🌟 انیمیشن ذوب شدن و رنگ‌گرفتن لوگو */
+        /* 🌟 انیمیشن تصحیح شده ذوب شدن لوگو */
         .app-logo { 
             font-family: 'Playfair Display', serif; 
             font-size: 48px; 
             font-weight: 900; 
             letter-spacing: -1.5px; 
             
-            /* گرادیانت هوشمند برای اثر ذوب شدن */
-            background: linear-gradient(180deg, var(--text-color) 0%, var(--text-color) 40%, var(--accent) 65%, var(--accent) 100%);
+            /* تنظیم دقیق نیمه بالا (رنگ متن) و نیمه پایین (رنگ سبز) */
+            background: linear-gradient(to bottom, var(--text-color) 50%, var(--accent) 50%);
             background-size: 100% 200%;
-            background-position: 0% 0%;
+            background-position: 0% 0%; /* در ابتدا فقط نیمه بالا (سفید/مشکی) دیده می‌شود */
+            
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -115,13 +116,14 @@
             
             display: inline-block;
             transform-origin: top;
-            animation: meltLogo 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            /* شروع انیمیشن با 0.5 ثانیه تاخیر تا کاربر رنگ اولیه را ببیند */
+            animation: meltLogo 2s cubic-bezier(0.25, 1, 0.5, 1) forwards 0.5s;
         }
 
         @keyframes meltLogo {
             0% { background-position: 0% 0%; transform: scaleY(1) translateY(0); }
-            40% { transform: scaleY(1.12) translateY(3px); } /* کش آمدن حروف مثل قطره مایع */
-            100% { background-position: 0% 100%; transform: scaleY(1) translateY(0); } /* نشستن رنگ سبز در پایین */
+            50% { transform: scaleY(1.15) translateY(4px); } /* حالت ذوب و کش آمدن */
+            100% { background-position: 0% 100%; transform: scaleY(1) translateY(0); } /* سبز شدن کامل */
         }
 
         .search-container { position: relative; margin-bottom: 0; flex: 1;}
@@ -469,12 +471,12 @@
         </div>
     </div>
 
-    <!-- Artist Screen -->
+    <!-- Artist Screen (Full Bleed Header) -->
     <div id="artist-screen">
         <div class="artist-header">
             <div class="back-btn" onclick="closeArtistPage()"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
             <img id="artistHeaderBg" class="artist-header-bg" src="">
-            <div class="artist-header-gradient"></div>
+            <div class="artist-header-gradient"></div> 
             <div class="artist-header-info">
                 <div style="display:flex; flex-direction:column; gap:5px; z-index: 1;">
                     <h1 id="artistHeaderName" class="artist-header-name">Artist</h1>
@@ -1132,7 +1134,6 @@
         }
 
         function showHome() {
-            updateAppBackground(false);
             document.getElementById('home-screen').style.display = 'block';
             renderSpeedDial(); renderFavArtists(); fetchNewReleases(); renderMadeForYou(); renderGenreMixes();
         }
