@@ -97,32 +97,41 @@
 
         #home-screen { padding: 20px; display: none; }
         
-        /* 🌟 انیمیشن جدید و تصحیح شده برای ذوب شدن سایه زیر لوگو */
+        /* 🌟 انیمیشن رو به پایین و واقعی ذوب شدن */
         .app-logo { 
+            position: relative;
             font-family: 'Playfair Display', serif; 
             font-size: 48px; 
             font-weight: 900; 
             letter-spacing: -1.5px; 
-            color: var(--text-color); /* حفظ رنگ اصلی نوشته (سفید در دارک، مشکی در لایت) */
+            color: var(--text-color); /* رنگ جامد اصلی */
             display: inline-block;
+            z-index: 2; /* بالاتر از لایه ذوب شده */
+        }
+        
+        .app-logo::after {
+            content: attr(data-text); /* شکل دقیق حروف را کپی می‌کند */
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--accent); /* رنگ لایه زیرین سبز پسته‌ای است */
+            z-index: -1; /* می‌رود پشت متن اصلی */
             transform-origin: top;
-            animation: meltShadow 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards 0.5s;
+            opacity: 0;
+            animation: liquidDrop 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards 0.5s;
         }
 
-        @keyframes meltShadow {
-            0% { 
-                text-shadow: 0 0 0 transparent; 
-                transform: scaleY(1) translateY(0); 
+        @keyframes liquidDrop {
+            0% {
+                transform: scaleY(1) translateY(0);
+                opacity: 1;
+                filter: blur(0px);
             }
-            40% { 
-                /* سایه پسته‌ای ضخیم به سمت پایین می‌چکد */
-                text-shadow: 0 15px 10px var(--accent), 0 30px 20px rgba(147, 197, 114, 0.5); 
-                transform: scaleY(1.08) translateY(-2px); 
-            }
-            100% { 
-                /* سایه سبز به زیبایی زیر متن تثبیت و نرم می‌شود */
-                text-shadow: 0 8px 18px var(--accent), 0 15px 35px rgba(147, 197, 114, 0.3); 
-                transform: scaleY(1) translateY(0); 
+            100% {
+                /* کِش آوردن حروف رو به پایین و ساختن یک افکت چکه‌مانند */
+                transform: scaleY(1.4) translateY(3px);
+                opacity: 0.85;
+                filter: blur(4px); /* لبه‌های نرم برای حس مایع بودن */
             }
         }
 
@@ -327,7 +336,8 @@
     <div id="dynamic-bg"></div>
 
     <div id="auth-screen">
-        <div class="app-logo" style="margin-bottom: 40px; text-align:center;">Musick</div>
+        <!-- 🌟 استفاده از ویژگی data-text برای فعال شدن انیمیشن ذوب شدن -->
+        <div class="app-logo" data-text="Musick" style="margin-bottom: 40px; text-align:center;">Musick</div>
         
         <div id="login-form" class="auth-container">
             <div class="auth-title">Welcome Back</div>
@@ -411,7 +421,8 @@
 
     <div id="home-screen">
         <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div class="app-logo" style="margin-bottom: 0;">Musick</div>
+            <!-- 🌟 اضافه شدن data-text به تگ برای کپی شدن حروف -->
+            <div class="app-logo" data-text="Musick" style="margin-bottom: 0;">Musick</div>
             <button onclick="openUserMenu()" style="background:none; border:none; cursor:pointer; padding:8px; border-radius:50%; background:var(--card-bg); display:flex; align-items:center; justify-content:center; border: 1px solid var(--border-color);">
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--icon-color)"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
             </button>
@@ -1134,6 +1145,7 @@
         }
 
         function showHome() {
+            updateAppBackground(false);
             document.getElementById('home-screen').style.display = 'block';
             renderSpeedDial(); renderFavArtists(); fetchNewReleases(); renderMadeForYou(); renderGenreMixes();
         }
