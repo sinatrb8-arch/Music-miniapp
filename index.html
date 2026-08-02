@@ -446,8 +446,8 @@
             <img id="artistHeaderBg" class="artist-header-bg" src="">
             <div class="artist-header-info">
                 <div style="display:flex; flex-direction:column; gap:5px; z-index: 1;">
-                    <!-- 🌟 عکس پروفایل آرتیست -->
-                    <img id="artistHeaderImg" src="" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 2px solid var(--border-color);">
+                    <!-- 🌟 عکس پروفایل آرتیست (تغییر به کادر مربعی با گوشه‌های گرد) -->
+                    <img id="artistHeaderImg" src="" style="width: 120px; height: 120px; border-radius: 16px; object-fit: cover; margin-bottom: 10px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 1px solid var(--border-color);">
                     <h1 id="artistHeaderName" class="artist-header-name">Artist</h1>
                     <div id="artistHeaderSubs" class="artist-header-subs"></div>
                 </div>
@@ -1103,6 +1103,7 @@
         }
 
         function showHome() {
+            updateAppBackground(false);
             document.getElementById('home-screen').style.display = 'block';
             renderSpeedDial(); renderFavArtists(); fetchNewReleases(); renderMadeForYou(); renderGenreMixes();
         }
@@ -1120,6 +1121,7 @@
         }
         
         async function openMixPage(title, coverUrl, fetchUrl) {
+            updateAppBackground(true);
             document.getElementById('home-screen').style.display = 'none';
             document.getElementById('artist-screen').style.display = 'none';
             document.getElementById('album-screen').style.display = 'block';
@@ -1364,6 +1366,7 @@
         }
 
         async function openArtistPage(name, image) {
+            updateAppBackground(true);
             document.getElementById('home-screen').style.display = 'none'; document.getElementById('fullPlayer').classList.remove('active'); document.getElementById('artist-screen').style.display = 'block'; window.scrollTo(0, 0);
             
             currentArtistPageName = name.split(',')[0].trim(); 
@@ -1443,6 +1446,7 @@
         }
         
         async function openAlbumPage(browseId, albumTitle, coverUrl, artistName) {
+            updateAppBackground(true);
             document.getElementById('artist-screen').style.display = 'none'; document.getElementById('home-screen').style.display = 'none'; document.getElementById('album-screen').style.display = 'block'; window.scrollTo(0, 0);
             document.getElementById('albumHeaderBg').src = coverUrl; document.getElementById('albumHeaderImg').src = coverUrl; document.getElementById('albumHeaderName').innerText = albumTitle; document.getElementById('albumHeaderArtist').innerText = artistName;
             document.getElementById('loadingAlbum').style.display = 'block'; document.getElementById('albumTrackList').innerHTML = '';
@@ -1665,7 +1669,10 @@
         function closeFullPlayer() { 
             document.getElementById('fullPlayer').classList.remove('active'); 
             document.getElementById('lyrics-sheet').classList.remove('active'); 
-            updateAppBackground(false);
+            
+            if (document.getElementById('home-screen').style.display !== 'none') {
+                updateAppBackground(false);
+            }
         }
         
         function togglePlay(e) { e.stopPropagation(); if (audio.paused) { audio.play(); updatePlayBtn(true); } else { audio.pause(); updatePlayBtn(false); } }
@@ -1789,7 +1796,6 @@
         
         function formatTime(seconds) { if (isNaN(seconds)) return "0:00"; const m = Math.floor(seconds / 60); const s = Math.floor(seconds % 60); return `${m}:${s < 10 ? '0' : ''}${s}`; }
         
-        // 🌟 سیستم جدید ریست واقعی دیتای کاربر روی سرور و حافظه
         function forceResetAll() { 
             tg.showConfirm("Are you sure you want to reset your account data? This will clear your favorite artists and history.", async function(confirmed) {
                 if(confirmed) {
