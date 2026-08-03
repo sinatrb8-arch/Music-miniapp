@@ -899,7 +899,7 @@
             <div class="horizontal-scroll" id="favArtistsList"></div>
         </div>
 
-        <!-- 🌟 بخش Explore Genres منتقل شد دقیقاً زیر هنرمندان -->
+        <!-- EXPLORE GENRES MOVED HERE (Under Favorite Artists) -->
         <div id="genre-mix-section" style="display: none;">
             <div class="section-title">Explore Genres</div>
             <div class="horizontal-scroll" id="genreMixList"></div>
@@ -915,7 +915,7 @@
         </div>
     </div>
 
-    <!-- Artist Screen -->
+    <!-- Artist Screen (Full Bleed Header) -->
     <div id="artist-screen">
         <div class="artist-header">
             <div class="back-btn" onclick="closeArtistPage()"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
@@ -1036,7 +1036,7 @@
         </div>
     </div>
     
-    <!-- Modal برای استراتژی پخش -->
+    <!-- Modal برای پخش -->
     <div id="playback-options-modal" class="modal-overlay" onclick="closePlaybackOptions()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-handle"></div>
@@ -1141,9 +1141,9 @@
         
         // 🌟 ژانرهای مدرن (New School Rap)
         const genres = [
-            { title: 'New School Rap', query: 'Travis Scott Lil Baby Gunna Drake 2026', cover: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=500&q=80' },
+            { title: 'New School Rap', query: 'Travis Scott Lil Baby Gunna Drake 2026 rap', cover: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=500&q=80' },
             { title: 'Pop Hits', query: 'dua lipa the weeknd hits', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&q=80' },
-            { title: 'R&B Essentials', query: 'SZA Brent Faiyaz Summer Walker R&B', cover: 'https://images.unsplash.com/photo-1516280440502-37f8e0019599?w=500&q=80' },
+            { title: 'R&B Essentials', query: 'SZA Brent Faiyaz Summer Walker', cover: 'https://images.unsplash.com/photo-1493225457224-eda0e6fd49ee?w=500&q=80' },
             { title: 'Electronic Dance', query: 'EDM house music 2026', cover: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=500&q=80' },
             { title: 'Rock Anthems', query: 'modern rock alternative', cover: 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=500&q=80' },
             { title: 'Chill & Relax', query: 'lo-fi chill vibe', cover: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80' }
@@ -1179,9 +1179,20 @@
             }
         }
 
-        // 🌟 سیستم کاملاً ضد-خطا برای گرفتن کاورها (حل مشکل R&B و Mix)
+        function extractCoverSafely(t) {
+            if (!t) return 'https://images.unsplash.com/photo-1470229722913-7c090bf8c04c?w=500&q=80';
+            if (Array.isArray(t.thumbnail) && t.thumbnail.length > 0) return t.thumbnail[t.thumbnail.length - 1].url || t.thumbnail[t.thumbnail.length - 1];
+            if (Array.isArray(t.thumbnails) && t.thumbnails.length > 0) return t.thumbnails[t.thumbnails.length - 1].url || t.thumbnails[t.thumbnails.length - 1];
+            if (t.cover && typeof t.cover === 'string') return t.cover;
+            if (t.thumbnail && typeof t.thumbnail === 'string') return t.thumbnail;
+            if (t.image && typeof t.image === 'string') return t.image;
+            if (t.thumbnail && t.thumbnail.url) return t.thumbnail.url;
+            if (t.thumbnails && t.thumbnails.url) return t.thumbnails.url;
+            return 'https://images.unsplash.com/photo-1470229722913-7c090bf8c04c?w=500&q=80';
+        }
+
         function getHqCover(url) {
-            if (!url || typeof url !== 'string') return 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=500&q=80'; // یک کاور پیش‌فرض زیبا در صورت نبودن عکس
+            if (!url) return '';
             if (url.includes('ggpht.com') || url.includes('googleusercontent.com')) {
                 if (url.includes('=')) return url.split('=')[0] + '=w800-h800-l90-rj';
             }
@@ -1480,17 +1491,7 @@
                 const res = await fetch(url);
                 const data = await res.json();
                 let newTracks = mode === 'radio' ? data : (data.tracks || []);
-                newTracks = newTracks.map(t => {
-                    let rawCover = '';
-                    if (t.cover && typeof t.cover === 'string') rawCover = t.cover;
-                    else if (t.thumbnail && typeof t.thumbnail === 'string') rawCover = t.thumbnail;
-                    else if (t.thumbnails && Array.isArray(t.thumbnails) && t.thumbnails.length > 0) {
-                        rawCover = t.thumbnails[t.thumbnails.length - 1].url;
-                    } else if (t.thumbnail && t.thumbnail.url) {
-                        rawCover = t.thumbnail.url;
-                    }
-                    return {...t, hqCover: getHqCover(rawCover)};
-                });
+                newTracks = newTracks.map(t => ({...t, hqCover: getHqCover(extractCoverSafely(t))}));
                 newTracks = newTracks.filter(nt => !currentPlaylist.find(ct => ct.id === nt.id));
                 
                 if (newTracks.length > 0) {
@@ -1607,7 +1608,6 @@
             });
         }
         
-        // 🌟 سیستم ضدخطای کاور در میکس‌ها
         async function openMixPage(title, coverUrl, fetchUrl) {
             updateAppBackground(false);
             document.getElementById('home-screen').style.display = 'none';
@@ -1630,18 +1630,8 @@
                 if(tracks.songs) tracks = tracks.songs; 
 
                 document.getElementById('loadingAlbum').style.display = 'none';
-                if(tracks && tracks.length > 0) {
-                    let tempPlaylist = tracks.map(t => {
-                        let rawCover = '';
-                        if (t.cover && typeof t.cover === 'string') rawCover = t.cover;
-                        else if (t.thumbnail && typeof t.thumbnail === 'string') rawCover = t.thumbnail;
-                        else if (t.thumbnails && Array.isArray(t.thumbnails) && t.thumbnails.length > 0) {
-                            rawCover = t.thumbnails[t.thumbnails.length - 1].url;
-                        } else if (t.thumbnail && t.thumbnail.url) {
-                            rawCover = t.thumbnail.url;
-                        }
-                        return { ...t, hqCover: getHqCover(rawCover) };
-                    });
+                if(tracks.length > 0) {
+                    let tempPlaylist = tracks.map(t => ({ ...t, hqCover: getHqCover(extractCoverSafely(t)) }));
                     
                     document.getElementById('albumPlayBtn').style.display = 'flex';
                     document.getElementById('albumPlayBtn').onclick = () => { 
@@ -1810,10 +1800,7 @@
                                 const res = await fetch(`${SERVER_URL}/search?q=${encodeURIComponent(single.title + " " + single.artist)}`); 
                                 const data = await res.json();
                                 if(data.tracks && data.tracks.length > 0) {
-                                    currentPlaylist = [data.tracks[0]].map(t => {
-                                        let rawCover = t.cover || t.thumbnail || (t.thumbnails ? t.thumbnails[t.thumbnails.length - 1].url : '');
-                                        return { ...t, hqCover: getHqCover(rawCover) };
-                                    });
+                                    currentPlaylist = [data.tracks[0]].map(t => ({ ...t, hqCover: getHqCover(extractCoverSafely(t)) }));
                                     currentContext = 'single';
                                     playTrack(0);
                                 }
@@ -1922,10 +1909,7 @@
                                 const res = await fetch(`${SERVER_URL}/search?q=${encodeURIComponent(s.title + " " + currentArtistPageName)}`); 
                                 const d = await res.json();
                                 if(d.tracks && d.tracks.length > 0) {
-                                    currentPlaylist = [d.tracks[0]].map(t => {
-                                        let rawCover = t.cover || t.thumbnail || (t.thumbnails ? t.thumbnails[t.thumbnails.length - 1].url : '');
-                                        return { ...t, hqCover: getHqCover(rawCover) };
-                                    });
+                                    currentPlaylist = [d.tracks[0]].map(t => ({ ...t, hqCover: getHqCover(extractCoverSafely(t)) }));
                                     currentContext='single'; playTrack(0);
                                 }
                             };
@@ -1934,10 +1918,7 @@
                         });
                     }
                     if (data.songs) {
-                        currentArtistSongsCache = data.songs.map(t => {
-                            let rawCover = t.cover || t.thumbnail || (t.thumbnails ? t.thumbnails[t.thumbnails.length - 1].url : '');
-                            return { ...t, hqCover: getHqCover(rawCover) };
-                        });
+                        currentArtistSongsCache = data.songs.map(t => ({ ...t, hqCover: getHqCover(extractCoverSafely(t)) }));
                         currentArtistSongsCache.forEach((track, index) => {
                             const item = document.createElement('div'); item.className = 'track-item'; item.style.background = 'transparent'; 
                             item.onclick = () => { currentPlaylist = currentArtistSongsCache; currentContext='album'; playTrack(index); };
@@ -1965,10 +1946,7 @@
                 const res = await fetch(`${SERVER_URL}/api/album_tracks?id=${browseId}&artist=${encodeURIComponent(artistName)}`); const tracks = await res.json();
                 document.getElementById('loadingAlbum').style.display = 'none';
                 if(tracks.length > 0) {
-                    let tempPlaylist = tracks.map(t => {
-                        let rawCover = t.cover || t.thumbnail || (t.thumbnails ? t.thumbnails[t.thumbnails.length - 1].url : '');
-                        return { ...t, hqCover: getHqCover(rawCover) };
-                    });
+                    let tempPlaylist = tracks.map(t => ({ ...t, hqCover: getHqCover(extractCoverSafely(t)) }));
                     
                     document.getElementById('albumPlayBtn').style.display = 'flex';
                     document.getElementById('albumPlayBtn').onclick = () => { currentPlaylist = tempPlaylist; currentContext='album'; playTrack(0); };
@@ -2030,10 +2008,7 @@
                     `;
                 }
 
-                let tempPlaylist = data.tracks.map(track => {
-                    let rawCover = track.cover || track.thumbnail || (track.thumbnails ? track.thumbnails[track.thumbnails.length - 1].url : '');
-                    return { ...track, hqCover: getHqCover(rawCover) };
-                });
+                let tempPlaylist = data.tracks.map(track => ({ ...track, hqCover: getHqCover(extractCoverSafely(track)) }));
                 
                 tempPlaylist.forEach((track, index) => {
                     const item = document.createElement('div'); item.className = 'track-item';
@@ -2158,17 +2133,7 @@
                 const res = await fetch(url);
                 const data = await res.json();
                 let newTracks = mode === 'radio' ? data : (data.tracks || []);
-                newTracks = newTracks.map(t => {
-                    let rawCover = '';
-                    if (t.cover && typeof t.cover === 'string') rawCover = t.cover;
-                    else if (t.thumbnail && typeof t.thumbnail === 'string') rawCover = t.thumbnail;
-                    else if (t.thumbnails && Array.isArray(t.thumbnails) && t.thumbnails.length > 0) {
-                        rawCover = t.thumbnails[t.thumbnails.length - 1].url;
-                    } else if (t.thumbnail && t.thumbnail.url) {
-                        rawCover = t.thumbnail.url;
-                    }
-                    return {...t, hqCover: getHqCover(rawCover)};
-                });
+                newTracks = newTracks.map(t => ({...t, hqCover: getHqCover(extractCoverSafely(t))}));
                 newTracks = newTracks.filter(nt => !currentPlaylist.find(ct => ct.id === nt.id));
                 
                 if (newTracks.length > 0) {
