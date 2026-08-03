@@ -1117,6 +1117,8 @@
         const FAV_ARTISTS_IMGS_KEY = 'fav_artists_imgs_' + userId;
         const RECENT_TRACKS_KEY = 'recent_tracks_' + userId;
         const PLAYER_STATE_KEY = 'player_state_' + userId; 
+        
+        // 🌟 لینک فعال و درست کلودفلر شما
         const SERVER_URL = "https://programmer-flags-brass-gba.trycloudflare.com";
         
         let authToken = localStorage.getItem('musick_token');
@@ -1547,7 +1549,7 @@
             if (prepend) card.classList.add('new-arrival');
             
             let hqImage = getHqCover(image);
-            card.innerHTML = `<img class="artist-img" src="${hqImage}" alt="${name}"><div class="artist-name">${name}</div>`;
+            card.innerHTML = `<img class="artist-img" src="${hqImage}" onerror="this.src='${DEFAULT_COVER}'" alt="${name}"><div class="artist-name">${name}</div>`;
             card.onclick = () => toggleArtistSelection(card, name, hqImage);
             
             if (prepend) grid.insertBefore(card, grid.firstChild);
@@ -1573,7 +1575,7 @@
                         const newCard = document.createElement('div');
                         newCard.className = 'artist-card new-arrival'; 
                         let hqImage = getHqCover(r.image);
-                        newCard.innerHTML = `<img class="artist-img" src="${hqImage}" alt="${r.name}"><div class="artist-name">${r.name}</div>`;
+                        newCard.innerHTML = `<img class="artist-img" src="${hqImage}" onerror="this.src='${DEFAULT_COVER}'" alt="${r.name}"><div class="artist-name">${r.name}</div>`;
                         newCard.onclick = () => toggleArtistSelection(newCard, r.name, hqImage);
                         insertReference.insertAdjacentElement('afterend', newCard);
                         insertReference = newCard; 
