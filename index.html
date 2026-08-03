@@ -97,7 +97,7 @@
 
         #home-screen { padding: 20px; display: none; }
         
-        /* 🌟 ایده اول: پر شدن با موج مایع (بدون کثیف‌کاری سایه) */
+        /* 🌟 ایده اول: پر شدن با موج مایع */
         .app-logo { 
             position: relative;
             font-family: 'Playfair Display', serif; 
@@ -446,11 +446,6 @@
             <div class="horizontal-scroll" id="speedDialList"></div>
         </div>
         
-        <div id="genre-mix-section" style="display: none;">
-            <div class="section-title">Explore Genres</div>
-            <div class="horizontal-scroll" id="genreMixList"></div>
-        </div>
-        
         <div id="releases-section">
             <div id="loadingReleases" class="loading-text">Curating your feed...</div>
             <div id="new-albums-section" style="display:none;">
@@ -466,6 +461,12 @@
         <div id="fav-artists-section">
             <div class="section-title">Your Favorite Artists</div>
             <div class="horizontal-scroll" id="favArtistsList"></div>
+        </div>
+
+        <!-- NEW LOCATION FOR GENRE MIX -->
+        <div id="genre-mix-section" style="display: none;">
+            <div class="section-title">Explore Genres</div>
+            <div class="horizontal-scroll" id="genreMixList"></div>
         </div>
 
         <div id="made-for-you-section" style="display: none;">
@@ -703,12 +704,12 @@
         const iconPauseWhite = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
         
         const genres = [
-            { title: 'Hip-Hop Vibes', query: 'Hip Hop', cover: 'https://images.unsplash.com/photo-1542204165-65bf26472b9b?w=500&q=80' },
-            { title: 'Pop Hits', query: 'Pop', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&q=80' },
-            { title: 'R&B Essentials', query: 'R&B', cover: 'https://images.unsplash.com/photo-1493225457124-a1a2b5358a9e?w=500&q=80' },
-            { title: 'Electronic Dance', query: 'Electronic', cover: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=500&q=80' },
-            { title: 'Rock Anthems', query: 'Rock', cover: 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=500&q=80' },
-            { title: 'Chill & Relax', query: 'Chill', cover: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80' }
+            { title: 'Hip-Hop Vibes', query: 'Hip Hop', cover: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=500&q=80' },
+            { title: 'Pop Hits', query: 'Pop', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=500&q=80' },
+            { title: 'R&B Essentials', query: 'R&B', cover: 'https://images.unsplash.com/photo-1516280440502-37f8e0019599?auto=format&fit=crop&w=500&q=80' },
+            { title: 'Electronic Dance', query: 'Electronic', cover: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=500&q=80' },
+            { title: 'Rock Anthems', query: 'Rock', cover: 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?auto=format&fit=crop&w=500&q=80' },
+            { title: 'Chill & Relax', query: 'Chill', cover: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=500&q=80' }
         ];
         
         let selectedArtists = []; let selectedArtistsData = []; let displayedArtists = new Set(); 
@@ -744,7 +745,10 @@
 
         function getHqCover(url) {
             if (!url) return '';
-            if (url.includes('=')) return url.split('=')[0] + '=w800-h800-l90-rj';
+            // این شرط باعث میشه فقط کیفیت عکس‌های سرورهای گوگل/یوتیوب تغییر کنه
+            if (url.includes('ggpht.com') || url.includes('googleusercontent.com')) {
+                if (url.includes('=')) return url.split('=')[0] + '=w800-h800-l90-rj';
+            }
             return url;
         }
 
