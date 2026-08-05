@@ -1119,7 +1119,7 @@
         const PLAYER_STATE_KEY = 'player_state_' + userId; 
         
         // 🌟 لینک فعال و درست کلودفلر شما
-        const SERVER_URL = "https://programmer-flags-brass-gba.trycloudflare.com";
+        const SERVER_URL = "https://clearance-est-wall-consumers.trycloudflare.com";
         
         let authToken = localStorage.getItem('musick_token');
         let tempEmail = '';
@@ -1638,16 +1638,23 @@
                     let tempPlaylist = tracks.map(t => ({ ...t, hqCover: getHqCover(extractCoverSafely(t)) }));
                     
                     document.getElementById('albumPlayBtn').style.display = 'flex';
-                    document.getElementById('albumPlayBtn').onclick = () => { currentPlaylist = tempPlaylist; currentContext='album'; playTrack(0); };
+                    document.getElementById('albumPlayBtn').onclick = () => { 
+                        currentPlaylist = tempPlaylist; 
+                        currentContext = 'album'; 
+                        playTrack(0); 
+                    };
 
                     tempPlaylist.forEach((track, index) => {
                         const trackEl = document.createElement('div'); trackEl.className = 'track-item'; trackEl.style.background = 'transparent';
-                        trackEl.onclick = () => { currentPlaylist = tempPlaylist; currentContext='album'; playTrack(index); };
+                        trackEl.onclick = () => { currentPlaylist = tempPlaylist; currentContext = 'album'; playTrack(index); };
                         trackEl.innerHTML = `<img src="${track.hqCover}" onerror="this.src='${DEFAULT_COVER}'"><div class="track-info"><div class="track-title">${track.title}</div><div class="track-artist">${track.artist}</div></div>`;
                         document.getElementById('albumTrackList').appendChild(trackEl);
                     });
-                } else { document.getElementById('loadingAlbum').style.display = 'block'; document.getElementById('loadingAlbum').innerText = "No tracks."; }
-            } catch(e) {}
+                } else {
+                    document.getElementById('loadingAlbum').style.display = 'block';
+                    document.getElementById('loadingAlbum').innerText = "No tracks found.";
+                }
+            } catch(e) { document.getElementById('loadingAlbum').innerText = "Error loading tracks."; }
         }
 
         function liveUpdateMadeForYou(seedTrack) {
