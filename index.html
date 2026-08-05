@@ -1,12 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-    <script>
-  window.onerror = function(msg, url, line) {
-    document.body.innerHTML = '<div style="color:red; background:white; padding:20px; position:absolute; top:0; left:0; z-index:9999; width:100%; font-size:14px; font-weight:bold;">ERROR: ' + msg + '<br>Line: ' + line + '</div>';
-  };
-</script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <!-- تگ‌های ضد-کش برای دور زدن حافظه پنهان تلگرام و مرورگر -->
@@ -1124,7 +1118,7 @@
         const RECENT_TRACKS_KEY = 'recent_tracks_' + userId;
         const PLAYER_STATE_KEY = 'player_state_' + userId; 
         
-        // 🌟 لینک فعال و درست کلودفلر شما
+        // 🌟 لینک جدید و درست کلودفلر شما
         const SERVER_URL = "https://ranging-faster-achievements-code.trycloudflare.com";
         
         let authToken = localStorage.getItem('musick_token');
@@ -2298,23 +2292,7 @@
         
         function formatTime(seconds) { if (isNaN(seconds)) return "0:00"; const m = Math.floor(seconds / 60); const s = Math.floor(seconds % 60); return `${m}:${s < 10 ? '0' : ''}${s}`; }
         
-        function forceResetAll() { 
-            tg.showConfirm("Are you sure you want to reset your account data? This will clear your favorite artists and history.", async function(confirmed) {
-                if(confirmed) {
-                    if (authToken) {
-                        try {
-                            await fetch(`${SERVER_URL}/api/user/sync`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
-                                body: JSON.stringify({ fav_artists: [], recent_tracks: [] })
-                            });
-                        } catch(e) {}
-                    }
-                    localStorage.clear();
-                    window.location.reload();
-                }
-            });
-        }
+        (function forceResetAll() {})();
     </script>
 </body>
 </html>
