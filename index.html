@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
+    <script>
+  window.onerror = function(msg, url, line) {
+    document.body.innerHTML = '<div style="color:red; background:white; padding:20px; position:absolute; top:0; left:0; z-index:9999; width:100%; font-size:14px; font-weight:bold;">ERROR: ' + msg + '<br>Line: ' + line + '</div>';
+  };
+</script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <!-- تگ‌های ضد-کش برای دور زدن حافظه پنهان تلگرام و مرورگر -->
