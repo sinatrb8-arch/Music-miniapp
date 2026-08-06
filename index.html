@@ -60,18 +60,7 @@
         }
         
         #dynamic-bg {
-            position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            z-index: -5;
-            filter: blur(80px) brightness(0.6);
-            pointer-events: none;
-            opacity: 0;
-            transition: background-image 1s ease-in-out, opacity 0.6s ease;
-            background-size: cover;
-            background-position: center;
+            display: none; /* غیرفعال شده طبق درخواست شما */
         }
 
         /* --- Screens --- */
@@ -904,7 +893,6 @@
             <div class="horizontal-scroll" id="favArtistsList"></div>
         </div>
 
-        <!-- EXPLORE GENRES MOVED HERE (Under Favorite Artists) -->
         <div id="genre-mix-section" style="display: none;">
             <div class="section-title">Explore Genres</div>
             <div class="horizontal-scroll" id="genreMixList"></div>
@@ -1117,8 +1105,6 @@
     <script>
         let tg = window.Telegram.WebApp;
         
-        // 🌟 دیباگر Eruda برای شکار ارورها 
-        // در صورت بروز ارور، آیکون چرخ‌دنده رو لمس کن و به تب Console برو
         if (typeof eruda !== 'undefined') {
             eruda.init();
         }
@@ -1133,7 +1119,7 @@
         const RECENT_TRACKS_KEY = 'recent_tracks_' + userId;
         const PLAYER_STATE_KEY = 'player_state_' + userId; 
         
-        // 🌟 لینک جدید و درست کلودفلر شما
+        // توجه: اگر در آینده دامین و SSL گرفتی، آی‌پی سرورت را همراه با دامین امن اینجا بگذار
         const SERVER_URL = "https://charming-ended-nextel-alerts.trycloudflare.com";
         
         let authToken = localStorage.getItem('musick_token');
@@ -1158,7 +1144,6 @@
         
         const DEFAULT_COVER = 'https://images.unsplash.com/photo-1470229722913-7c090bf8c04c?w=500&q=80';
 
-        // 🌟 ژانرهای مدرن (New School Rap)
         const genres = [
             { title: 'New School Rap', query: 'Travis Scott Lil Baby Gunna Drake 2026', cover: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=500&q=80' },
             { title: 'Pop Hits', query: 'dua lipa the weeknd hits', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&q=80' },
@@ -1187,15 +1172,9 @@
 
         function closeThemeModal() { document.getElementById('theme-modal').classList.remove('active'); }
 
+        // این تابع اصلاح شد تا بک‌گراند اصلی همیشه روی تم دارک و لایت ثابت بماند
         function updateAppBackground(isTransparent) {
-            const dynBg = document.getElementById('dynamic-bg');
-            if (isTransparent) {
-                document.body.style.backgroundColor = 'transparent';
-                dynBg.style.opacity = '1';
-            } else {
-                document.body.style.backgroundColor = 'var(--bg-color)';
-                dynBg.style.opacity = '0';
-            }
+            document.body.style.backgroundColor = 'var(--bg-color)';
         }
 
         function extractCoverSafely(t) {
@@ -1393,7 +1372,6 @@
             localStorage.removeItem('musick_token'); 
             authToken = null;
             document.getElementById('auth-screen').style.display = 'flex'; 
-            console.log("Logged out due to server error or invalid token.");
         }
 
         async function syncDataToServer() {
@@ -1469,7 +1447,6 @@
                             document.getElementById('bgBlurImage').src = track.hqCover; 
                             document.getElementById('fpTitle').innerText = track.title; 
                             document.getElementById('fpArtist').innerText = track.artist;
-                            document.getElementById('dynamic-bg').style.backgroundImage = `url('${track.hqCover}')`;
                             
                             audio.src = `${SERVER_URL}/stream?id=${track.id}`;
                             audio.addEventListener('canplay', function resumeHandler() {
@@ -2065,8 +2042,6 @@
             document.getElementById('fpCover').src = track.hqCover; 
             document.getElementById('bgBlurImage').src = track.hqCover; 
             document.getElementById('fpTitle').innerText = track.title; document.getElementById('fpArtist').innerText = track.artist;
-            
-            document.getElementById('dynamic-bg').style.backgroundImage = `url('${track.hqCover}')`;
             
             audio.src = `${SERVER_URL}/stream?id=${track.id}`; 
             audio.play().catch(e => console.log('Wait for user interaction')); 
