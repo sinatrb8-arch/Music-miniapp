@@ -1389,7 +1389,12 @@
             }
         }
         
-        function logout() { localStorage.removeItem('musick_token'); window.location.reload(); }
+        function logout() { 
+            localStorage.removeItem('musick_token'); 
+            authToken = null;
+            document.getElementById('auth-screen').style.display = 'flex'; 
+            console.log("Logged out due to server error or invalid token.");
+        }
 
         async function syncDataToServer() {
             if(!authToken) return;
@@ -1402,14 +1407,14 @@
             }).catch(()=>{});
         }
 
-        window.onload = async () => {
+        setTimeout(async () => {
             updateAppBackground(false); 
             if (!authToken) {
                 document.getElementById('auth-screen').style.display = 'flex';
             } else {
                 await loadUserDataAndStart();
             }
-        };
+        }, 100);
 
         async function loadUserDataAndStart() {
             document.getElementById('auth-screen').style.display = 'none'; 
